@@ -64,6 +64,7 @@ create table orders(
     quantity double,
     current_state varchar(10),
     created_time timestamp,
+    type char(1),
     primary key(id),
     foreign key(consignor) references usr(id),
     foreign key(consignee) references usr(id),
