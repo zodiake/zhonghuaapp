@@ -7,6 +7,11 @@ var config = require('../config');
 
 var user_mobile = {};
 
+var user_type = {
+    consignee: 'ROLE_CONSIGNEE',
+    consignor: 'ROLE_CONSIGNOR'
+};
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     userService
@@ -39,21 +44,37 @@ router.get('/captcha', function(req, res, next) {
 router.post('/signup', function(req, res) {
     var name = req.body.name,
         password = req.body.password,
-        mobile = req.body.mobile,
-        captcha = req.body.captcha;
+        captcha = req.body.captcha,
+        type = user_type[req.body.type];
+
     if (captcha != user_mobile[mobile]) {
-        res.json({
+        res.status(503).json({
             status: 'fail',
             message: 'captcha not match'
         });
     }
+    if (type == undefined) {
+        res.status(500).json({
+            status: 'fail',
+            message: 'type can not be null'
+        });
+    }
+
     userService.save({
         name: name,
         password: password,
-        mobile: mobile
+        type: type
     }).then(function() {
         delete user_mobile[mobile]
-        res.json(signedPassword);
+        var token = jwt.sign({
+            id: usr.id,
+            name: usr.name,
+            authority: usr.authority
+        }, config.key);
+        res.json({
+            status: 'success',
+            data: token
+        });
     });
 });
 
@@ -76,7 +97,7 @@ router.post('/login', function(req, res) {
                 })
             } else {
                 var usr = data[0];
-                token = jwt.sign({
+                var token = jwt.sign({
                     id: usr.id,
                     name: usr.name,
                     authority: usr.authority
@@ -88,6 +109,5 @@ router.post('/login', function(req, res) {
             }
         });
 });
-
 
 module.exports = router;

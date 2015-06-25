@@ -14,8 +14,8 @@ var service = {
         return pool.query('select count(*) as usrCount from usr where mobile=?', [mobile]);
     },
     save: function(usr) {
-        var sql = 'insert into usr(name,password,mobile) values(?,?,?)';
-        return pool.insert(sql, [usr.name, usr.password, usr.mobile]);
+        var sql = 'insert into usr(name,password,authority) values(?,?,?)';
+        return pool.insert(sql, [usr.name, usr.password, usr.type]);
     }
 };
 

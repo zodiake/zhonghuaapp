@@ -7,9 +7,9 @@ var config = require('../config');
 var webService = require('../service/webService');
 
 var orderState = {
-    transport: '运送中',
     dispatch: '待分配',
     confirm: '待确认',
+    transport: '运送中',
     arrive: '已送达',
     appraise: '已评价'
 };
