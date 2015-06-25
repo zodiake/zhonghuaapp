@@ -13,7 +13,7 @@ var user_type = {
 };
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
     userService
         .findOne(1)
         .then(function(data) {
@@ -21,12 +21,12 @@ router.get('/', function(req, res, next) {
         });
 });
 
-router.get('/captcha', function(req, res, next) {
+router.get('/captcha', function(req, res) {
     var mobile = req.query.mobile;
     userService
         .countByMobile(mobile)
         .then(function(data) {
-            if (data[0].usrCount == 0) {
+            if (data[0].usrCount === 0) {
                 //todo send short message
                 user_mobile[mobile] = "1111";
                 res.json({
@@ -47,14 +47,14 @@ router.post('/signup', function(req, res) {
         captcha = req.body.captcha,
         type = user_type[req.body.type];
 
-    if (captcha != user_mobile[mobile]) {
-        res.status(503).json({
+    if (!user_mobile[name] || captcha != user_mobile[name]) {
+        res.json({
             status: 'fail',
             message: 'captcha not match'
         });
     }
-    if (type == undefined) {
-        res.status(500).json({
+    if (type === undefined) {
+        res.json({
             status: 'fail',
             message: 'type can not be null'
         });
@@ -63,17 +63,21 @@ router.post('/signup', function(req, res) {
     userService.save({
         name: name,
         password: password,
-        type: type
-    }).then(function() {
-        delete user_mobile[mobile]
+        authority: type
+    }).then(function(result) {
+        delete user_mobile[name]
         var token = jwt.sign({
-            id: usr.id,
-            name: usr.name,
-            authority: usr.authority
+            id: result.insertId,
+            name: name,
+            authority: type
         }, config.key);
         res.json({
             status: 'success',
             data: token
+        });
+    }).error(function(err) {
+        res.json({
+            status: 'fail'
         });
     });
 });

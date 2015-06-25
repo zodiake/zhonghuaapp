@@ -9,6 +9,8 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var orders = require('./routes/orders');
 
+var http = require('http');
+
 var app = express();
 
 // view engine setup
@@ -49,6 +51,7 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         console.log(err.name);
+        console.log(err.message);
         if (err.name === 'UnauthorizedError') {
             res.json({
                 status: 'fail',
@@ -69,7 +72,6 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-    console.log(err.name);
     if (err.name === 'UnauthorizedError') {
         res.json({
             status: 'fail',
@@ -86,6 +88,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;

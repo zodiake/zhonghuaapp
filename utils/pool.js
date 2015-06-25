@@ -5,30 +5,32 @@ var pool = mysql.createPool({
     host: '192.168.1.137',
     user: 'root',
     password: '1',
-    database: 'test'
+    database: 'zh'
 });
 
 var service = {
     query: function(sql, param) {
         var defer = q.defer();
-        pool.query(sql, param, function(err, rows, fields) {
+        var query = pool.query(sql, param, function(err, rows, fields) {
             if (err) {
                 defer.reject(err)
             } else {
                 defer.resolve(rows)
             }
         });
+        console.log(query.sql);
         return defer.promise;
     },
     insert: function(sql, param) {
         var defer = q.defer();
-        pool.query(sql, param, function(err, result) {
+        var query = pool.query(sql, param, function(err, result) {
             if (err) {
                 defer.reject(err)
             } else {
                 defer.resolve(result.insertId);
             }
         });
+        console.log(query.sql);
         return defer.promise;
     }
 };

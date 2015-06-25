@@ -11,11 +11,12 @@ var service = {
         return pool.query('select * from usr limit ?,?', [page.page, page.size]);
     },
     countByMobile: function(mobile) {
-        return pool.query('select count(*) as usrCount from usr where mobile=?', [mobile]);
+        return pool.query('select count(*) as usrCount from usr where name=?', [mobile]);
     },
     save: function(usr) {
-        var sql = 'insert into usr(name,password,authority) values(?,?,?)';
-        return pool.insert(sql, [usr.name, usr.password, usr.type]);
+        usr.activate = 1;
+        var sql = 'insert into usr set ?';
+        return pool.insert(sql, usr);
     }
 };
 
