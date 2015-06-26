@@ -32,6 +32,24 @@ var service = {
         });
         console.log(query.sql);
         return defer.promise;
+    },
+    update: function(sql, param) {
+        var defer = q.defer();
+        var query = pool.query(sql, param, function(err, result) {
+            if (err) {
+                defer.reject(err)
+            } else {
+                defer.resolve(result.changedRows);
+            }
+        });
+        console.log(query.sql);
+        return defer.promise;
+    },
+    batchInsert: function(sql, param) {
+        pool.query(sql, param, function(err) {
+            if (err)
+                console.log(err);
+        });
     }
 };
 

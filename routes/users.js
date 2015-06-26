@@ -4,13 +4,11 @@ var jwt = require('jsonwebtoken');
 var e_jwt = require('express-jwt');
 var userService = require('../service/userService');
 var config = require('../config');
+var user_type = require('../userAuthority');
+var userDetailService = require('../service/userDetailService');
+var genderType = require('../gender');
 
 var user_mobile = {};
-
-var user_type = {
-    consignee: 'ROLE_CONSIGNEE',
-    consignor: 'ROLE_CONSIGNOR'
-};
 
 /* GET users listing. */
 router.get('/', function(req, res) {
@@ -21,6 +19,11 @@ router.get('/', function(req, res) {
         });
 });
 
+var verify = e_jwt({
+    secret: config.key
+});
+
+//获取验证码
 router.get('/captcha', function(req, res) {
     var mobile = req.query.mobile;
     userService
@@ -41,7 +44,8 @@ router.get('/captcha', function(req, res) {
         });
 });
 
-router.post('/signup', function(req, res) {
+//注册
+router.post('/signup', function(req, res, next) {
     var name = req.body.name,
         password = req.body.password,
         captcha = req.body.captcha,
@@ -52,12 +56,14 @@ router.post('/signup', function(req, res) {
             status: 'fail',
             message: 'captcha not match'
         });
+        return next();
     }
     if (type === undefined) {
         res.json({
             status: 'fail',
             message: 'type can not be null'
         });
+        return next();
     }
 
     userService.save({
@@ -65,23 +71,28 @@ router.post('/signup', function(req, res) {
         password: password,
         authority: type
     }).then(function(result) {
-        delete user_mobile[name]
-        var token = jwt.sign({
-            id: result.insertId,
-            name: name,
-            authority: type
-        }, config.key);
-        res.json({
-            status: 'success',
-            data: token
-        });
-    }).error(function(err) {
-        res.json({
-            status: 'fail'
-        });
+        return userDetailService
+            .save({
+                id: result
+            })
+            .then(function(data) {
+                delete user_mobile[name]
+                var token = jwt.sign({
+                    id: result,
+                    name: name,
+                    authority: type
+                }, config.key);
+                res.json({
+                    status: 'success',
+                    data: token
+                });
+            })
+    }).catch(function(err) {
+        return next(err);
     });
 });
 
+//登入
 router.post('/login', function(req, res) {
     var name = req.body.name,
         password = req.body.password;
@@ -114,4 +125,77 @@ router.post('/login', function(req, res) {
         });
 });
 
+//修改密码
+router.post('/changePwd',
+    verify,
+    function(req, res, next) {
+        var oldPwd = req.body.oldPwd,
+            newPwd = req.body.newPwd,
+            usrId = req.user.id;
+        //todo encrypt password
+
+        userService
+            .findOne(usrId)
+            .then(function(data) {
+                if (data.password == oldPwd) {
+                    return userService.updatePwd({
+                        id: usrId,
+                        password: newPwd
+                    });
+                } else {
+                    throw new Error('oldPassword not correct');
+                }
+            })
+            .then(function() {
+                res.json({
+                    status: 'success'
+                });
+            })
+            .catch(function(err) {
+                return next(err);
+            });
+    });
+
+router.get('/detail',
+    verify,
+    function(req, res, next) {
+        var id = req.user.id;
+        userDetailService
+            .findOne(id)
+            .then(function(data) {
+                res.json({
+                    status: 'success',
+                    data: data[0]
+                });
+            })
+            .catch(function(err) {
+                next(err);
+            });
+    });
+
+router.post('/detail',
+    verify,
+    function(req, res, next) {
+        var usr = req.user,
+            name = req.body.name,
+            gender = genderType[req.body.gender],
+            identfied_number = req.body.identify,
+            company_name = req.body.companyName;
+        userDetailService
+            .update({
+                id: usr.id,
+                name: name,
+                gender: gender,
+                identfied_number: identfied_number,
+                company_name: company_name
+            })
+            .then(function(data) {
+                res.json({
+                    status: 'success'
+                });
+            }).catch(function(err) {
+                next(err);
+            })
+
+    });
 module.exports = router;

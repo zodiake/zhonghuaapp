@@ -17,6 +17,10 @@ var service = {
         usr.activate = 1;
         var sql = 'insert into usr set ?';
         return pool.insert(sql, usr);
+    },
+    updatePwd: function(usr) {
+        var sql = 'update usr set ?';
+        return pool.update(sql, usr);
     }
 };
 

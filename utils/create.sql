@@ -16,7 +16,7 @@ create table usr(
 create table usr_detail(
     id int,
     name varchar(10),
-    gender char(2),
+    gender char(1),
     identified_number char(18),
     company_name varchar(20),
     primary key(id),
@@ -144,6 +144,9 @@ create table advertise(
 /*test usr*/
 insert into usr(id,name,password,authority,activate) values(1,'tom','123','ROLE_CONSIGNEE',1);
 insert into usr(id,name,password,authority,activate) values(2,'peter','123','ROLE_CONSIGNOR',1);
+
+/*test user detail*/    
+insert into usr_detail(id,name,gender) values(1,'tomeii','f');
 
 /*test category*/
 insert into cargoo_category(id,name,activate) values(1,'firstcategory1',1);

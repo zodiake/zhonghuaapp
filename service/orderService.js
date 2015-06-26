@@ -3,6 +3,7 @@ var _ = require('lodash');
 var q = require('q');
 var request = require('request');
 var config = require('../config');
+var userAuthority = require('../userAuthority');
 
 
 var service = {
@@ -14,19 +15,45 @@ var service = {
         });
         return 'id=[' + array.join(',') + ']';
     },
-    findByUsrAndState: function(userId, state, page) {
-        var sqlWithState = 'select * from orders where user_id=? and state=? order by created_time limit ?,?';
-        var sql = 'select * from orders where user_id=? order by created_time limit ?,?';
+    /*find all orders by consingor or consignee */
+    findByConsignorAndState: function(userId, state, page) {
+        var sqlAll = 'select * from orders where consignor=? order by created_time limit ?,?';
+        var sqlWithState = 'select * from orders where consignor=? and state=? order by created_time limit ?,?';
 
-        if (state == 'all') {
-            return pool.query(sql, [userId, page.page, page.size]);
-        } else {
+        if (state == 'all')
+            return pool.query(sqlAll, [userId, page.page, page.size]);
+        else
             return pool.query(sqlWithState, [userId, state, page.page, page.size]);
-        }
     },
-    findByUsrIdAndId: function(userId, orderId) {
-        var sql = 'select * from orders where user_id=? and id=?';
-        return pool.query(sql, [userId, orderId]);
+    findByConsigneeAndState: function(userId, state, page) {
+        var sqlAll = 'select * from orders where consignee=? order by created_time limit ?,?';
+        var sqlWithState = 'select * from orders where consignee=? and state=? order by created_time limit ?,?';
+
+        if (state == 'all')
+            return pool.query(sqlAll, [userId, page.page, page.size]);
+        else
+            return pool.query(sqlWithState, [userId, state, page.page, page.size]);
+    },
+    findByUsrAndState: function(user, state, page) {
+        if (user.authority == userAuthority.consignee)
+            return this.findByConsigneeAndState(user.id, state, page);
+        else
+            return this.findByConsignorAndState(user.id, state, page);
+    },
+    /*findOne by consignee or consignor */
+    findByConsigneeAndId: function(userId, id) {
+        var sql = 'select * from orders where consignee=? and id=?';
+        return pool.query(sql, [userId, id]);
+    },
+    findByConsignorAndId: function(userId, id) {
+        var sql = 'select * from orders where consignor=? and id=?';
+        return pool.query(sql, [userId, id]);
+    },
+    findByUsrIdAndId: function(user, orderId) {
+        if (user.authority == userAuthority.consignee)
+            return this.findByConsignorAndId(user.id, orderId);
+        else
+            return this.findByConsignorAndId(user.id, orderId);
     },
     save: function(order) {
         var sql = 'insert into orders(user_id,total,created_time,state) values(?,?,?,?)';

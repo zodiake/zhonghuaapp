@@ -5,87 +5,56 @@ var e_jwt = require('express-jwt');
 var orderService = require('../service/orderService');
 var config = require('../config');
 var webService = require('../service/webService');
-
-var orderState = {
-    dispatch: '待分配',
-    confirm: '待确认',
-    transport: '运送中',
-    arrive: '已送达',
-    appraise: '已评价'
-};
-
-var dateFormat = function(date) {
-    var year = date.getYear(),
-        month = date.getMonth() + 1,
-        day = date.getDate(),
-        hour = date.getHours(),
-        minute = date.getMinutes(),
-        second = date.getSeconds();
-    var array = [year, month, day, hour, minute, second];
-    return array.join("-");
-}
+var orderState = require('../orderState');
+var userAuthority = require('../userAuthority');
+var positionService = require('../service/positionService');
+var _ = require('lodash');
 
 router.use(e_jwt({
     secret: config.key
 }));
 
 //list
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
     var page = req.query.page || 1,
         size = req.query.size || 10,
-        state = orderState[req.query.state] || 'all';
+        state = orderState[req.query.state] || 'all',
+        user = req.user;
 
     var pageable = {
         page: page - 1,
         size: size
     };
 
-    if (state == 'all' || state == orderState.transport) {
-        orderService
-            .findByUsrAndState(req.user.id, state, pageable)
-            .then(function(data) {
-                var query = orderService.convertArrayToString(data);
-                var defer = webService.queryFromWeb(query);
-                defer.then(function(serviceData) {
-                    var resultData = orderService.merge(serviceData, data);
-                    var result = {
-                        status: 'success',
-                        data: resultData
-                    };
-                    res.json(result);
-                });
-            }).catch(function(err) {
+    orderService
+        .findByUsrAndState(user, state, pageable)
+        .then(function(data) {
+            //todo needed to group by type and merge results
+            var query = orderService.convertArrayToString(data);
+            return webService.queryFromWeb(query).then(function(serviceData) {
+                var result = orderService.merge(serviceData, data);
                 res.json({
-                    status: 'fail',
-                    err: err
-                });
-            });
-    } else {
-        orderService
-            .findByUsrAndState(req.user.id, state, pageable)
-            .then(function(data) {
-                result = {
                     status: 'success',
-                    data: data
-                };
-                res.json(result);
-            }).catch(function(err) {
-                result = {
-                    status: 'fail',
-                    err: err
-                };
-                res.json(result);
+                    data: result
+                })
             });
-    }
+        }).catch(function(err) {
+            return next(err);
+        });
 });
 
 //getone
-router.get('/:id', function(req, res) {
+router.get('/:id', function(req, res, next) {
     var id = req.params.id;
     orderService
-        .findByUsrIdAndId(req.user.id, id)
+        .findByUsrIdAndId(req.user, id)
         .then(function(data) {
-            res.json(data[0]);
+            res.json({
+                status: 'success',
+                data: data[0]
+            });
+        }).catch(function(err) {
+            next(err);
         });
 });
 
@@ -107,8 +76,28 @@ router.post('/', function(req, res) {
 });
 
 //update
-router.post('/:id', function(req, res) {
+router.post(/\d+/, function(req, res) {
+    res.json({
+        status: 'success',
+        data: 'todo'
+    })
+});
 
+router.post('/geo', function(req, res, next) {
+    var array = req.body;
+    if (!_.isArray(array))
+        return next(new Error('body not array'));
+    _.each(array, function(a) {
+        positionService.insert({
+            longitude: a.longitude,
+            latitude: a.latitude,
+            order_id: a.orderId,
+            created_time: new Date()
+        });
+    });
+    res.json({
+        status: 'success'
+    });
 });
 
 module.exports = router;

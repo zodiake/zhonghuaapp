@@ -1,0 +1,7 @@
+{
+    "dispatch": "待分配",
+    "confirm": "待确认",
+    "transport": "运送中",
+    "arrive": "已送达",
+    "appraise": "已评价"
+}

@@ -50,22 +50,23 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
-        console.log(err.name);
-        console.log(err.message);
         if (err.name === 'UnauthorizedError') {
             res.json({
                 status: 'fail',
                 message: 'invalid request'
             });
+        } else if (err.name === 'TokenExpiredError') {
+            res.json({
+                status: 'fail',
+                message: 'token expire'
+            });
+        } else {
+            res.status(err.status || 500);
+            res.render('error', {
+                message: err.message,
+                error: err
+            });
         }
-        next();
-    });
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
     });
 }
 
@@ -77,16 +78,17 @@ app.use(function(err, req, res, next) {
             status: 'fail',
             message: 'invalid request'
         });
+    } else if (err.name === 'TokenExpiredError') {
+        res.json({
+            status: 'fail',
+            message: 'token expire'
+        });
+    } else {
+        res.status(err.status || 500).json({
+            status: 'fail',
+            message: err.message
+        });
     }
-    next();
-});
-
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
 });
 
 module.exports = app;
