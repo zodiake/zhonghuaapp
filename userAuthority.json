@@ -1,4 +1,5 @@
 {
     "consignee": "ROLE_CONSIGNEE",
-    "consignor": "ROLE_CONSIGNOR"
+    "consignor": "ROLE_CONSIGNOR",
+    "admin": "ROLE_ADMIN"
 }

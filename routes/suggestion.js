@@ -3,6 +3,7 @@ var router = express.Router();
 var service = require('../service/suggestService');
 var e_jwt = require('express-jwt');
 var config = require('../config');
+var userAuthority = require('../userAuthority');
 
 var router = express.Router();
 
@@ -11,7 +12,7 @@ router.use(e_jwt({
 }));
 
 var verify = function(req, res, next) {
-    if (req.user.authority != 'ROLE_ADMIN') {
+    if (req.user.authority != userAuthority.admin) {
         var err = new Error();
         err.name = 'UnauthorizedError';
         return next(err);
