@@ -1,3 +1,4 @@
+/*-------------express deprends-----------*/
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -5,9 +6,13 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+/*--------------custom routes------------*/
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var orders = require('./routes/orders');
+
+/*---------------amqp---------------------*/
+var queue = require('./service/amqpService');
 
 var http = require('http');
 

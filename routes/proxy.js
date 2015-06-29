@@ -1,5 +1,10 @@
 var express = require('express');
 var router = express.Router();
+var amqp = require('amqp');
+
+var connection = amqp.createConnection({
+    url: "amqp://guest:guest@localhost:5672/zhonghua"
+});
 
 router.get('/', function(req, res) {
     res.status(200).json([{
@@ -27,6 +32,19 @@ router.get('/', function(req, res) {
         state: 'b',
         vehicle: 2
     }]);
+});
+
+router.get('/amqp', function(req, res) {
+    var exchange = connection.exchange('test-exchange', {
+        autoDelete: false,
+    });
+    exchange.publish('order.create', {
+        id: 1,
+        name: 'tom'
+    }, {
+        contentType: 'application/json'
+    });
+    res.json('ok');
 });
 
 module.exports = router;
