@@ -10,6 +10,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var orders = require('./routes/orders');
+var suggestions = require('./routes/suggestion');
 
 /*---------------amqp---------------------*/
 var queue = require('./service/amqpService');
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 app.use('/orders', orders);
+app.use('/suggestions', suggestions);
 
 //just test remote web service should deleted from productd
 if (app.get('env') === 'development') {

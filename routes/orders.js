@@ -49,16 +49,17 @@ router.get('/:id', function(req, res, next) {
     orderService
         .findByUsrIdAndId(req.user, id)
         .then(function(data) {
+            var result = data[0] || {};
             res.json({
                 status: 'success',
-                data: data[0]
+                data: result
             });
         }).catch(function(err) {
-            next(err);
+            return next(err);
         });
 });
 
-//save
+//save new
 router.post('/', function(req, res) {
     var total = req.body.total,
         createdTime = dateFormat(new Date);
@@ -76,7 +77,7 @@ router.post('/', function(req, res) {
 });
 
 //update
-router.post(/\d+/, function(req, res) {
+router.put('/:id', function(req, res) {
     res.json({
         status: 'success',
         data: 'todo'

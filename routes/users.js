@@ -169,7 +169,7 @@ router.get('/detail',
                 });
             })
             .catch(function(err) {
-                next(err);
+                return next(err);
             });
     });
 
@@ -194,8 +194,9 @@ router.post('/detail',
                     status: 'success'
                 });
             }).catch(function(err) {
-                next(err);
+                return next(err);
             })
 
     });
+
 module.exports = router;
