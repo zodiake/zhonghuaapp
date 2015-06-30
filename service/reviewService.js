@@ -1,11 +1,11 @@
+/*jslint node: true */
+'use strict';
 var pool = require('../utils/pool');
-var q = require('q');
-var config = require('../config');
 var orderService = require('./orderService');
 var userDetailService = require('./userDetailService');
 
 var service = {
-    findOne: function(id) {
+    findOne: function() {
 
     },
     findAll: function() {

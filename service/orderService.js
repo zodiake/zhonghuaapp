@@ -1,8 +1,7 @@
+/*jslint node: true */
+'use strict';
 var pool = require('../utils/pool');
 var _ = require('lodash');
-var q = require('q');
-var request = require('request');
-var config = require('../config');
 var userAuthority = require('../userAuthority');
 
 
@@ -13,7 +12,7 @@ var service = {
     },
     convertArrayToString: function(data) {
         var array = _.chain(data).filter(function(d) {
-            return d.state = '运送中';
+            return d.state == '运送中';
         }).map(function(d) {
             return d.id;
         });
@@ -66,7 +65,7 @@ var service = {
     updateState: function(order) {
         var sql = 'update order set current_state=? where id=?';
         return pool.query(sql, [order.state, order.id]);
-    }
+    },
     merge: function(webData, data) {
         return _.map(data, function(d) {
             _.each(webData, function(wd) {
@@ -75,7 +74,7 @@ var service = {
                     d.vehicle = wd.vehicle;
                     return;
                 }
-            })
+            });
             return d;
         });
     }

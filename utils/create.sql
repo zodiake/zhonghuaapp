@@ -126,6 +126,8 @@ create table vehicle(
     vehicle_type varchar(10),
     vehicle_length varchar(10),
     vehicle_weight varchar(10),
+    usr_id int,
+    foreign key(usr_id) references usr(id),
     primary key(id)
 )CHARACTER SET utf8;
 
