@@ -16,6 +16,7 @@
     "jsonwebtoken": "5.0.2",
     "lodash": "^3.9.3",
     "morgan": "~1.5.3",
+    "multer": "^0.1.8",
     "mysql": "^2.7.0",
     "q": "^1.4.1",
     "request": "^2.58.0",

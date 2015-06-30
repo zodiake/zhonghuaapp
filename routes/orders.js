@@ -1,6 +1,7 @@
+/*jslint node: true */
+'use strict';
 var express = require('express');
 var router = express.Router();
-var jwt = require('jsonwebtoken');
 var e_jwt = require('express-jwt');
 
 var orderService = require('../service/orderService');
@@ -8,7 +9,6 @@ var webService = require('../service/webService');
 var reviewService = require('../service/reviewService');
 
 var orderState = require('../orderState');
-var userAuthority = require('../userAuthority');
 var positionService = require('../service/positionService');
 var _ = require('lodash');
 var config = require('../config');
@@ -39,7 +39,7 @@ router.get('/', function(req, res, next) {
                 res.json({
                     status: 'success',
                     data: result
-                })
+                });
             });
         }).catch(function(err) {
             return next(err);
@@ -64,12 +64,11 @@ router.get('/:id', function(req, res, next) {
 
 //save new
 router.post('/', function(req, res) {
-    var total = req.body.total,
-        createdTime = dateFormat(new Date);
+    var total = req.body.total;
 
     var order = {
         total: total,
-        createdTime: createdTime
+        createdTime: new Date()
     };
 
     orderService
@@ -84,7 +83,13 @@ router.put('/:id', function(req, res) {
     res.json({
         status: 'success',
         data: 'todo'
-    })
+    });
+});
+
+router.post('/:id/upload', function(req, res, next) {
+    var file = req.files;
+    console.log(req.body);
+    res.json('ok');
 });
 
 router.post('/geo', function(req, res, next) {
@@ -104,6 +109,10 @@ router.post('/geo', function(req, res, next) {
     });
 });
 
+router.get('/geo', function(req, res, next) {
+
+});
+
 router.post('/:id/reviews', function(req, res, next) {
     var orderId = req.params.id,
         desc = req.body.desc,
@@ -113,13 +122,13 @@ router.post('/:id/reviews', function(req, res, next) {
     reviewService
         .countByOrder(orderId)
         .then(function(data) {
-            if (data[0].countNum == 0) {
+            if (data[0].countNum === 0) {
                 var review = {
                     description: desc,
                     order_id: orderId,
                     level: level,
                     consignor: userId
-                }
+                };
                 return reviewService.save(review);
             } else {
                 return -1;
