@@ -106,9 +106,11 @@ create table reviews(
     consignor int,
     consignee int,
     DESCRIPTION varchar(200),
+    order_id int,
     primary key(id),
     foreign key(consignor) references usr(id),
-    foreign key(consignee) references usr(id)
+    foreign key(consignee) references usr(id),
+    foreign key(order_id) references orders(id)
 )CHARACTER SET utf8;
 
 create table suggestion(

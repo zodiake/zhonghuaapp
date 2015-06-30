@@ -7,6 +7,10 @@ var userAuthority = require('../userAuthority');
 
 
 var service = {
+    findOne: function(id) {
+        var sql = 'select * from orders where id=?';
+        return pool.query(sql, [id]);
+    },
     convertArrayToString: function(data) {
         var array = _.chain(data).filter(function(d) {
             return d.state = '运送中';
@@ -59,6 +63,10 @@ var service = {
         var sql = 'insert into orders(user_id,total,created_time,state) values(?,?,?,?)';
         return pool.query(sql, [order.userId, order.total, order.createdTime, order.state]);
     },
+    updateState: function(order) {
+        var sql = 'update order set current_state=? where id=?';
+        return pool.query(sql, [order.state, order.id]);
+    }
     merge: function(webData, data) {
         return _.map(data, function(d) {
             _.each(webData, function(wd) {

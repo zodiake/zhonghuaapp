@@ -21,9 +21,9 @@ var service = {
         var sql = 'insert into suggestion set ?';
         return pool.insert(sql, suggestion);
     },
-    updateState: function(id) {
-        var sql = 'update suggestion set state=1 where id=?';
-        return pool.update(sql, [id]);
+    updateState: function(state, id) {
+        var sql = 'update suggestion set state=? where id=?';
+        return pool.update(sql, [state, id]);
     }
 };
 

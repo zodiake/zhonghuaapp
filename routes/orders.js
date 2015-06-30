@@ -2,13 +2,16 @@ var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
 var e_jwt = require('express-jwt');
+
 var orderService = require('../service/orderService');
-var config = require('../config');
 var webService = require('../service/webService');
+var reviewService = require('../service/reviewService');
+
 var orderState = require('../orderState');
 var userAuthority = require('../userAuthority');
 var positionService = require('../service/positionService');
 var _ = require('lodash');
+var config = require('../config');
 
 router.use(e_jwt({
     secret: config.key
@@ -99,6 +102,52 @@ router.post('/geo', function(req, res, next) {
     res.json({
         status: 'success'
     });
+});
+
+router.post('/:id/reviews', function(req, res, next) {
+    var orderId = req.params.id,
+        desc = req.body.desc,
+        level = req.body.level,
+        userId = req.user.id;
+
+    reviewService
+        .countByOrder(orderId)
+        .then(function(data) {
+            if (data[0].countNum == 0) {
+                var review = {
+                    description: desc,
+                    order_id: orderId,
+                    level: level,
+                    consignor: userId
+                }
+                return reviewService.save(review);
+            } else {
+                return -1;
+            }
+        })
+        .then(function(data) {
+            //insert success data is the return id
+            if (data > 1) {
+                res.json({
+                    status: 'success'
+                });
+            } else if (data == -1) {
+                //the order has been reviewed
+                res.json({
+                    status: 'fail',
+                    message: 'already reviewed'
+                });
+            } else {
+                //mysql error
+                res.json({
+                    status: 'fail',
+                    message: 'review fail'
+                });
+            }
+        })
+        .catch(function(err) {
+            return next(err);
+        });
 });
 
 module.exports = router;

@@ -57,28 +57,27 @@ router.post('/', function(req, res, next) {
         });
 });
 
+//get suggestion detail
 router.get('/:id', verify, function(req, res, next) {
     var id = req.params.id;
 
     service
         .findOne(id)
         .then(function(data) {
+            //if state is readed do nothing
             if (data[0].state == 1) {
-                res.json({
-                    status: 'success',
-                    data: data[0]
-                })
+                return data[0];
             } else {
-                return service
-                    .updateState(data[0].id)
-                    .then(function(d) {
-                        data[0].state = 1;
-                        res.json({
-                            status: 'success',
-                            data: data[0]
-                        });
-                    })
+                //if state is unreaded update state to readed
+                return service.updateState(1, data[0].id)
             }
+        })
+        .then(function(data) {
+            data.state = 1;
+            res.json({
+                status: 'success',
+                data: data
+            });
         })
         .catch(function(err) {
             return next(err);
