@@ -88,8 +88,11 @@ router.put('/:id', function(req, res) {
 
 router.post('/:id/upload', function(req, res, next) {
     var file = req.files;
-    console.log(req.body);
-    res.json('ok');
+    console.log(file);
+    res.json({
+        status: 'success',
+        data: file.path
+    });
 });
 
 router.post('/geo', function(req, res, next) {
