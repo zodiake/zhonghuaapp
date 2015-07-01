@@ -1,4 +1,6 @@
 /*-------------express deprends-----------*/
+/*jslint node: true */
+'use strict';
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -13,11 +15,11 @@ var users = require('./routes/users');
 var orders = require('./routes/orders');
 var suggestions = require('./routes/suggestion');
 var vehicle = require('./routes/vehicle');
+var admin = require('./routes/admin');
+var category = require('./routes/category');
 
 /*---------------amqp---------------------*/
 var queue = require('./service/amqpService');
-
-var http = require('http');
 
 var app = express();
 
@@ -27,10 +29,10 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(logger('dev'));
 app.use(multer({
     dest: './public/images'
 }));
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
@@ -43,6 +45,8 @@ app.use('/users', users);
 app.use('/orders', orders);
 app.use('/suggestions', suggestions);
 app.use('/vehicle', vehicle);
+app.use('/admin', admin);
+app.use('/category', category);
 
 //just test remote web service should deleted from productd
 if (app.get('env') === 'development') {

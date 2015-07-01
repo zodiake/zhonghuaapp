@@ -9,14 +9,20 @@ var pool = mysql.createPool({
 });
 
 var service = {
-    query: function(sql, param) {
+    query: function(sql, param, object, key) {
         var defer = q.defer();
         var query = pool.query(sql, param, function(err, rows, fields) {
             if (err) {
                 defer.reject(err)
             } else {
+                if (object && key && rows.length > 0) {
+                    object[key] = rows;
+                }
                 defer.resolve(rows)
             }
+        });
+        param.forEach(function(i) {
+            console.log(i);
         });
         console.log(query.sql);
         return defer.promise;

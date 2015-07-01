@@ -7,8 +7,13 @@ var config = require('../config');
 var user_type = require('../userAuthority');
 var userDetailService = require('../service/userDetailService');
 var genderType = require('../gender');
+var crypto = require('crypto');
 
 var user_mobile = {};
+
+var cryptoPwd = function(password) {
+    return crypto.createHash('md5').update(password).digest('hex');
+}
 
 /* GET users listing. */
 router.get('/', function(req, res) {
@@ -68,7 +73,7 @@ router.post('/signup', function(req, res, next) {
 
     userService.save({
         name: name,
-        password: password,
+        password: cryptoPwd(password),
         authority: type
     }).then(function(result) {
         return userDetailService
@@ -104,7 +109,7 @@ router.post('/login', function(req, res) {
                     status: 'fail',
                     message: 'user not exist'
                 });
-            } else if (data[0].password != password) {
+            } else if (data[0].password != cryptoPwd(password)) {
                 //to do password encode
                 res.json({
                     status: 'fail',
