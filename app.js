@@ -68,11 +68,6 @@ if (app.get('env') === 'development') {
                 status: 'fail',
                 message: 'invalid request'
             });
-        } else if (err.name === 'TokenExpiredError') {
-            res.json({
-                status: 'fail',
-                message: 'token expire'
-            });
         } else {
             res.status(err.status || 500);
             res.render('error', {
@@ -90,11 +85,6 @@ app.use(function(err, req, res, next) {
         res.json({
             status: 'fail',
             message: 'invalid request'
-        });
-    } else if (err.name === 'TokenExpiredError') {
-        res.json({
-            status: 'fail',
-            message: 'token expire'
         });
     } else {
         res.status(err.status || 500).json({
