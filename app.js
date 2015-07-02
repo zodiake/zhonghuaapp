@@ -31,7 +31,11 @@ app.set('view engine', 'jade');
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(multer({
-    dest: './public/images'
+    dest: './uploads/',
+    group: {
+        image: './public/images',
+        csv: './csv'
+    }
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({

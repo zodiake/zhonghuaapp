@@ -12,7 +12,10 @@ var service = {
             defer.resolve(this.cache[categoryId]);
             return defer.promise;
         } else {
-            return pool.query(sql, [categoryId], this.cache, categoryId);
+            return pool.query(sql, [categoryId]).then(function(data) {
+                this.cache[categoryId] = data;
+                return data;
+            });
         }
     }
 };

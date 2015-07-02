@@ -5,6 +5,9 @@ var router = express.Router();
 var e_jwt = require('express-jwt');
 var userAuthority = require('../userAuthority');
 var config = require('../config');
+var csv = require('csv');
+var fs = require('fs');
+var join = require('path').join;
 
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
@@ -19,8 +22,13 @@ router.use(function(req, res, next) {
         err.name = 'UnauthorizedError';
         return next(err);
     }
+    next();
 });
 
-router.get('/')
+router.post('/csv/upload', function(req, res) {
+    var path = join(__dirname, '..', req.files.file.path);
+    fs.createWriteStream(path);
+    res.json('ok');
+});
 
 module.exports = router;

@@ -8,16 +8,15 @@ var pool = mysql.createPool({
     database: 'zh'
 });
 
+//@object the cache object
+//@key cache object key
 var service = {
-    query: function(sql, param, object, key) {
+    query: function(sql, param) {
         var defer = q.defer();
         var query = pool.query(sql, param, function(err, rows, fields) {
             if (err) {
                 defer.reject(err)
             } else {
-                if (object && key && rows.length > 0) {
-                    object[key] = rows;
-                }
                 defer.resolve(rows)
             }
         });

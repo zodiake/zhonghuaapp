@@ -3,6 +3,8 @@
 var express = require('express');
 var router = express.Router();
 var e_jwt = require('express-jwt');
+var path = require('path');
+var fs = require('fs');
 
 var orderService = require('../service/orderService');
 var webService = require('../service/webService');
@@ -87,8 +89,7 @@ router.put('/:id', function(req, res) {
 });
 
 router.post('/:id/upload', function(req, res, next) {
-    var file = req.files;
-    console.log(file);
+    var file = req.files.file;
     res.json({
         status: 'success',
         data: file.path
