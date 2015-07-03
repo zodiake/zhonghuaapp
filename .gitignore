@@ -39,7 +39,7 @@ local.properties
 build/
 web/src/main/resources/static/upload/
 .idea/
-.public/uploads/
+public/uploads/
 csv/
 *.log
 *.iml
