@@ -2,7 +2,6 @@ var consignor = angular.module('Consignor', []);
 
 consignor.service('ConsignorService', ['$http', function($http) {
     this.findAll = function(option) {
-        console.log(option);
         return $http.get('/admin/users', {
             params: option
         });

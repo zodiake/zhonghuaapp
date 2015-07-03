@@ -97,4 +97,8 @@ router.post('/csv/upload', fileMulter, function(req, res) {
     }
 });
 
+router.get('/orders', function(req, res, next) {
+
+});
+
 module.exports = router;

@@ -3,7 +3,7 @@
 var pool = require('../utils/pool');
 var _ = require('lodash');
 var userAuthority = require('../userAuthority');
-
+var squel = require("squel");
 
 var service = {
     findOne: function(id) {
@@ -57,6 +57,9 @@ var service = {
             return this.findByConsignorAndId(user.id, orderId);
         else
             return this.findByConsignorAndId(user.id, orderId);
+    },
+    findByOption: function(option, page) {
+        var sql = squel.select().from('orders');
     },
     save: function(order) {
         var sql = 'insert into orders(user_id,total,created_time,state) values(?,?,?,?)';

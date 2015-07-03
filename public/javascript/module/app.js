@@ -1,4 +1,4 @@
-var app = angular.module('app', ['angular-jwt', 'ui.router', 'Login', 'Consignor']);
+var app = angular.module('app', ['angular-jwt', 'ui.router', 'Login', 'Consignor', 'Order']);
 
 app.config(['$stateProvider',
     '$urlRouterProvider',
@@ -28,6 +28,11 @@ app.config(['$stateProvider',
                 url: '/consignor',
                 templateUrl: '/template/consignor.html',
                 controller: 'ConsignorController'
+            })
+            .state('tabs.order', {
+                url: '/order',
+                templateUrl: '/template/order.html',
+                controller: 'OrderController'
             });
     }
 ]);
