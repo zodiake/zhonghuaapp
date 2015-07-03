@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.default.css">
+    <link href="/stylesheets/bootstrap-timepicker.min.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="js/html5shiv.js"></script>
+        <script src="js/respond.min.js"></script>
+        <![endif]-->
+</head>
+
+<body>
+    <header>
+        <div class="headerwrapper">
+            <div class="header-left">
+                <a href="#" class="logo">
+                        中石化管理系统
+                    </a>
+                <div class="pull-right">
+                    <a href="#" class="menu-collapse">
+                        <i class="fa fa-bars"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="pull-right">
+                    <div class="btn-group btn-group-messages">
+                        <button type="button" class="btn btn-default">
+                            <span class="badge">admin</span>
+                        </button>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default">退出</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section>
+        <div class="mainwrapper">
+            <div class="leftpanel">
+                <ul class="nav nav-pills nav-stacked">
+                    <li class="active"><a href="#"><i class="fa fa-user"></i> <span>货主管理</span></a></li>
+                    <li class=""><a href="#"><i class="fa fa-user"></i> <span>司机管理</span></a></li>
+                    <li class=""><a href="#"><i class="fa fa-user"></i> <span>运单管理</span></a></li>
+                    <li class=""><a href="#"><i class="fa fa-user"></i> <span>货物管理</span></a></li>
+                    <li class=""><a href="#"><i class="fa fa-user"></i> <span>轮播图广告</span></a></li>
+                    <li class=""><a href="#"><i class="fa fa-user"></i> <span>消息推送</span></a></li>
+                    <li class=""><a href="#"><i class="fa fa-user"></i> <span>用户统计</span></a></li>
+                    <li class=""><a href="#"><i class="fa fa-user"></i> <span>运单统计</span></a></li>
+                    <li class=""><a href="#"><i class="fa fa-user"></i> <span>建议反馈</span></a></li>
+                </ul>
+            </div>
+            <div class="mainpanel">
+                <div class="contentpanel">
+                    <div class="panel-body">
+                        <form class="form-inline">
+                            <div class="form-group" style="margin:0">
+                                <select style="width:150px;height:30px;border-radius:3px;border:1px solid #ccc">
+                                    <option value="">全部状态</option>
+                                    <option value="">停用</option>
+                                    <option value="">使用中</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin: 0 5px 0 0">
+                                <input class="form-control" placeholder="请输入您要查找的手机号" type="text" style="width:200px;">
+                            </div>
+                            <button class="btn btn-primary btn-xs" type="submit">搜索</button>
+                        </form>
+                    </div>
+                    <table class="table table-bordered table1">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>手机号</th>
+                                <th>姓名</th>
+                                <th>性别</th>
+                                <th>身份证</th>
+                                <th>公司名称</th>
+                                <th>状态</th>
+                                <th>注册日期</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>1123354564</td>
+                                <td>张三</td>
+                                <td>男</td>
+                                <td>41055111111585</td>
+                                <td>销售公司</td>
+                                <td>使用中</td>
+                                <td>2015-05-20</td>
+                                <td><a class="text-info">解冻</a></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>1123354564</td>
+                                <td>小薇</td>
+                                <td>女</td>
+                                <td>41055111111585</td>
+                                <td>销售公司</td>
+                                <td>使用中</td>
+                                <td>2015-05-20</td>
+                                <td><a class="text-info">解冻</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
