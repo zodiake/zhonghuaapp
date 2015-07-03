@@ -9,6 +9,7 @@ var csv = require('csv');
 var fs = require('fs');
 var join = require('path').join;
 var pool = require('../utils/pool');
+var multer = require('multer');
 
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
@@ -16,6 +17,13 @@ var userService = require('../service/userService');
 router.use(e_jwt({
     secret: config.key
 }));
+
+var fileMulter = multer({
+    dest: './uploads/',
+    group: {
+        csv: './csv'
+    }
+});
 
 router.use(function(req, res, next) {
     if (req.user.authority != userAuthority.admin) {
@@ -26,7 +34,7 @@ router.use(function(req, res, next) {
     next();
 });
 
-router.post('/csv/upload', function(req, res) {
+router.post('/csv/upload', fileMulter, function(req, res) {
     if (req.files && req.files.file.mimetype == 'text/csv') {
         var path = join(__dirname, '..', req.files.file.path);
 

@@ -39,7 +39,9 @@ local.properties
 build/
 web/src/main/resources/static/upload/
 .idea/
-
+.public/uploads/
+csv/
+*.log
 *.iml
 
 admin/src/main/resources/static/upload/
