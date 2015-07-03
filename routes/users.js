@@ -78,7 +78,8 @@ router.post('/signup', function(req, res, next) {
     }).then(function(result) {
         return userDetailService
             .save({
-                id: result
+                id: result,
+                created_Time: new Date()
             })
             .then(function(data) {
                 delete user_mobile[name]
@@ -101,6 +102,7 @@ router.post('/signup', function(req, res, next) {
 router.post('/login', function(req, res) {
     var name = req.body.name,
         password = req.body.password;
+    console.log(cryptoPwd(password));
     userService
         .findByName(name)
         .then(function(data) {

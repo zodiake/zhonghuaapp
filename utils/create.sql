@@ -15,10 +15,11 @@ create table usr(
 
 create table usr_detail(
     id int,
-    name varchar(10),
+    detail_name varchar(10),
     gender char(1),
     identified_number char(18),
     company_name varchar(20),
+    created_time timestamp,
     primary key(id),
     foreign key(id) references usr(id)
 )CHARACTER SET utf8;
@@ -146,8 +147,9 @@ create table advertise(
 );
 
 /*test usr*/
-insert into usr(id,name,password,authority,activate) values(1,'tom','123','ROLE_CONSIGNEE',1);
-insert into usr(id,name,password,authority,activate) values(2,'peter','123','ROLE_CONSIGNOR',1);
+insert into usr(id,name,password,authority,activate) values(1,'tom','202cb962ac59075b964b07152d234b70','ROLE_CONSIGNEE',1);
+insert into usr(id,name,password,authority,activate) values(2,'peter','202cb962ac59075b964b07152d234b70','ROLE_CONSIGNOR',1);
+insert into usr(id,name,password,authority,activate) values(3,'admin','202cb962ac59075b964b07152d234b70','ROLE_ADMIN',1);
 
 /*test user detail*/    
 insert into usr_detail(id,name,gender) values(1,'tomeii','f');

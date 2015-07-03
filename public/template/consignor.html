@@ -1,17 +1,17 @@
 <div class="contentpanel">
     <div class="panel-body">
-        <form class="form-inline">
+        <form ng-submit="search()" class="form-inline" name="searchForm">
             <div class="form-group" style="margin:0">
-                <select style="width:150px;height:30px;border-radius:3px;border:1px solid #ccc">
+                <select style="width:150px;height:30px;border-radius:3px;border:1px solid #ccc" name="activate" ng-model="option.activate">
                     <option value="">全部状态</option>
-                    <option value="">停用</option>
-                    <option value="">使用中</option>
+                    <option value="0">停用</option>
+                    <option value="1">使用中</option>
                 </select>
             </div>
             <div class="form-group" style="margin: 0 5px 0 0">
-                <input class="form-control" placeholder="请输入您要查找的手机号" type="text" style="width:200px;">
+                <input class="form-control" placeholder="请输入您要查找的手机号" type="text" style="width:200px;" name="mobile" ng-model="option.mobile" />
             </div>
-            <button class="btn btn-primary btn-xs" type="submit">搜索</button>
+            <input class="btn btn-primary btn-xs" type="submit" value="搜索" />
         </form>
     </div>
     <table class="table table-bordered table1">
@@ -29,26 +29,15 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td>1123354564</td>
-                <td>张三</td>
-                <td>男</td>
-                <td>41055111111585</td>
-                <td>销售公司</td>
-                <td>使用中</td>
-                <td>2015-05-20</td>
-                <td><a class="text-info">解冻</a></td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>1123354564</td>
-                <td>小薇</td>
-                <td>女</td>
-                <td>41055111111585</td>
-                <td>销售公司</td>
-                <td>使用中</td>
-                <td>2015-05-20</td>
+            <tr ng-repeat="item in items">
+                <td>{{$index+1}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.detail_name}}</td>
+                <td>{{item.gender==1?'male':'female'}}</td>
+                <td>{{item.identified_number}}</td>
+                <td>{{item.company_name}}</td>
+                <td>{{item.activate}}</td>
+                <td>{{item.created_time}}</td>
                 <td><a class="text-info">解冻</a></td>
             </tr>
         </tbody>

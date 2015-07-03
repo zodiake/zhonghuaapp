@@ -50,7 +50,10 @@ router.get('/users', function(req, res, next) {
     userService
         .findByOption(option, pageable)
         .then(function(data) {
-            res.json(data);
+            res.json({
+                status: 'success',
+                data: data
+            });
         })
         .catch(function(err) {
             return next(err);

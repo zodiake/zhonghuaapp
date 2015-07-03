@@ -13,6 +13,7 @@ var service = {
     },
     findByOption: function(option, page) {
         var sql = squel.select().from('usr')
+        sql.join('usr_detail', null, 'usr.id=usr_detail.id');
         pool.buildSql(sql, option);
         return pool.query(sql.toString(), []);
     },
