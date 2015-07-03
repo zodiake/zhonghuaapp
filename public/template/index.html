@@ -2,11 +2,40 @@
 <html>
 
 <head>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.default.css">
+    <script type="text/javascript" src="/javascript/jquery-1.11.1.min.js"></script>
     <title></title>
 </head>
 
 <body>
-    haha
+    <form id="search_form">
+        <input name="tel" id="tel" value="输入手机号">
+        <input name="tels" id="tels" value="输入手机号">
+        <select>
+            <option>1111</option>
+            <option>2222</option>
+            <option>3333</option>
+        </select>
+        <button type="">提交</button>
+    </form>
+    <script type="text/javascript">
+    $('button').click(function() {
+        var tel = $('#tel').val();
+        var selected = $('option:selected').text()
+        $.ajax({
+            type: 'post',
+            url: 'search.action',
+            data: 'tel=' + tel + '&option=' + selected,
+            success: function() {
+                alert('发送成功')
+            },
+            error: function() {
+                alert("失败!");
+            }
+
+        })
+    })
+    </script>
 </body>
 
 </html>
