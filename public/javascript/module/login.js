@@ -15,14 +15,16 @@ login.controller('LoginController', [
     '$scope',
     'LoginService',
     '$state',
-    function($scope, LoginService, $state) {
+    '$window',
+    function($scope, LoginService, $state, $window) {
         $scope.user = {};
         $scope.login = function() {
             if ($scope.loginForm.$valid) {
                 LoginService
                     .login($scope.user)
                     .success(function(data) {
-                        $state.go('consignor');
+                        $state.go('tabs.consignor');
+                        $window.localStorage.user = data.token;
                     })
                     .error(function(err) {
 
