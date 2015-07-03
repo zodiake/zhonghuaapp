@@ -34,6 +34,29 @@ router.use(function(req, res, next) {
     next();
 });
 
+router.get('/users', function(req, res, next) {
+    var pageable = {
+        page: req.query.page - 1 || 0,
+        size: req.query.size || 15
+    };
+    var option = {
+        name: {
+            value: req.query.mobile
+        },
+        activate: {
+            value: req.query.activate
+        }
+    };
+    userService
+        .findByOption(option, pageable)
+        .then(function(data) {
+            res.json(data);
+        })
+        .catch(function(err) {
+            return next(err);
+        });
+});
+
 router.post('/csv/upload', fileMulter, function(req, res) {
     if (req.files && req.files.file.mimetype == 'text/csv') {
         var path = join(__dirname, '..', req.files.file.path);

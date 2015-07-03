@@ -55,6 +55,15 @@ var service = {
             if (err)
                 console.log(err);
         });
+    },
+    buildSql: function(sql, option) {
+        for (i in option) {
+            if (option[i].value) {
+                var operator = option[i].operator || '='
+                sql.where(i + operator + option[i].value);
+            }
+        }
+        return sql;
     }
 };
 

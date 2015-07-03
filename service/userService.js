@@ -1,4 +1,5 @@
 var pool = require('../utils/pool');
+var squel = require("squel");
 
 var service = {
     findOne: function(id) {
@@ -9,6 +10,11 @@ var service = {
     },
     findAll: function(page) {
         return pool.query('select * from usr limit ?,?', [page.page, page.size]);
+    },
+    findByOption: function(option, page) {
+        var sql = squel.select().from('usr')
+        pool.buildSql(sql, option);
+        return pool.query(sql.toString(), []);
     },
     countByMobile: function(mobile) {
         return pool.query('select count(*) as usrCount from usr where name=?', [mobile]);
