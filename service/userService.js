@@ -1,5 +1,7 @@
+/*jslint node: true */
+'use strict';
 var pool = require('../utils/pool');
-var squel = require("squel");
+var squel = require('squel');
 
 var service = {
     findOne: function(id) {
@@ -11,11 +13,25 @@ var service = {
     findAll: function(page) {
         return pool.query('select * from usr limit ?,?', [page.page, page.size]);
     },
-    findByOption: function(option, page) {
-        var sql = squel.select().from('usr')
+    $$search: function(option, pageable, count) {
+        var sql, page = pageable.page,
+            size = pageable.size;
+        if (count)
+            sql = squel.select().field('count(*)', 'countNum').from('usr');
+        else {
+            sql = squel.select().from('usr');
+            sql.offset(page * size).limit(size);
+        }
         sql.join('usr_detail', null, 'usr.id=usr_detail.id');
         pool.buildSql(sql, option);
         return pool.query(sql.toString(), []);
+    },
+    findByOption: function(option, page) {
+        console.log(page.page, page.size);
+        return this.$$search(option, page, false);
+    },
+    countByOption: function(option, page) {
+        return this.$$search(option, page, true);
     },
     countByMobile: function(mobile) {
         return pool.query('select count(*) as usrCount from usr where name=?', [mobile]);

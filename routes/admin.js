@@ -44,12 +44,14 @@ router.get('/users', function(req, res, next) {
         name: req.query.mobile,
         activate: req.query.activate
     };
-    userService
-        .findByOption(option, pageable)
-        .then(function(data) {
+    q.all([userService.findByOption(option, pageable), userService.countByOption(option, pageable)])
+        .then(function(result) {
             res.json({
                 status: 'success',
-                data: data
+                data: {
+                    totol: result[1][0].countNum,
+                    data: result[0]
+                }
             });
         })
         .catch(function(err) {

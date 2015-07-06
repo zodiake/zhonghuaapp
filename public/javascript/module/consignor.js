@@ -11,27 +11,36 @@ consignor.service('ConsignorService', ['$http', function($http) {
 consignor.controller('ConsignorController', ['$scope',
     'ConsignorService',
     function($scope, ConsignorService) {
-        (function() {
-            ConsignorService
-                .findAll()
-                .success(function(data) {
-                    $scope.items = data.data;
-                })
-                .error(function(err) {
-
-                });
-        }());
-
         $scope.option = {};
-        $scope.search = function() {
+        $scope.currentPage = 1;
+        $scope.size = 15;
+
+        function init(option) {
             ConsignorService
-                .findAll($scope.option)
+                .findAll(option)
                 .success(function(data) {
-                    $scope.items = data.data;
+                    console.log(data);
+                    if (data.status == 'success') {
+                        $scope.items = data.data.data;
+                        $scope.total = data.data.total;
+                    } else {
+
+                    }
                 })
                 .error(function(err) {
 
                 });
+        }
+
+        init();
+
+        $scope.search = function() {
+            init({
+                page: $scope.currentPage,
+                size: $scope.size,
+                mobile: $scope.option.mobile,
+                activate: $scope.option.activate
+            });
         };
     }
 ]);
