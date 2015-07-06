@@ -8,6 +8,7 @@ var app = angular.module('app', [
     'Consignor',
     'Order',
     'ScrollImage',
+    'Cargoo',
     'Consignee'
 ]);
 
@@ -55,6 +56,11 @@ app.config(['$stateProvider',
                 url: '/scrollImage',
                 templateUrl: '/template/scrollImage.html',
                 controller: 'ScrollController'
+            })
+            .state('tabs.cargoo', {
+                url: '/cargoo',
+                templateUrl: '/template/cargoo.html',
+                controller: 'CargooController'
             })
             .state('tabs.consignee', {
                 url: '/consignee',
