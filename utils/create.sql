@@ -152,7 +152,7 @@ insert into usr(id,name,password,authority,activate) values(2,'peter','202cb962a
 insert into usr(id,name,password,authority,activate) values(3,'admin','202cb962ac59075b964b07152d234b70','ROLE_ADMIN',1);
 
 /*test user detail*/    
-insert into usr_detail(id,name,gender) values(1,'tomeii','f');
+insert into usr_detail(id,detail_name,gender) values(1,'tomeii','f');
 
 /*test category*/
 insert into cargoo_category(id,name,activate) values(1,'firstcategory1',1);
