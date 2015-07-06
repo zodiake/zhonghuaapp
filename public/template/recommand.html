@@ -1,0 +1,58 @@
+<div class="contentpanel">
+    <div class="panel-body">
+        <form class="form-inline">
+            <div class="form-group">
+                <select name="state" style="width:150px;height:30px;border-radius:3px;border:1px solid #ccc">
+                    <option value="">全部状态</option>
+                    <option value="">停用</option>
+                    <option value="">使用中</option>
+                </select>
+            </div>
+            <div class="form-group">
+                反馈建议生成
+                <input class="form-control" name="beginTime" placeholder="开始时间" type="date"> ~
+                <input class="form-control" name="endTime" placeholder="结束时间" type="date">
+            </div>
+            <input class="btn btn-primary btn-xs" type="submit" value="查询"></input>
+        </form>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>内容</th>
+                <th>状态</th>
+                <th>反馈日期</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1123354564</td>
+                <td>张三</td>
+                <td>已读</td>
+                <td>2015-04-25</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="panel-footer">
+        <pagination total-items="total" items-per-page="15" max-size="7" ng-model="currentPage" ng-change="pageChanged()"></pagination>
+    </div>
+    <div class="panel-body user_d">
+        <dl class="col-md-2">
+            <dt>注册用户数总计</dt>
+            <dd>124346</dd>
+        </dl>
+        <dl class="col-md-2">
+            <dt>注册用户数总计</dt>
+            <dd>124346</dd>
+        </dl>
+        <dl class="col-md-2">
+            <dt>注册用户数总计</dt>
+            <dd>124346</dd>
+        </dl>
+        <dl class="col-md-2">
+            <dt>注册用户数总计</dt>
+            <dd>124346</dd>
+        </dl>
+    </div>
+</div>
