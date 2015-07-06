@@ -2,34 +2,34 @@ var order = angular.module('Order', []);
 
 order.service('OrderService', ['$http', function($http) {
     this.findAll = function(option) {
-        return $http.get('/admin/order/');
+        return $http.get('/admin/orders', {
+            params: option
+        });
     }
 }]);
 
-order.controller('OrderController', ['$scope', function($scope) {
-    $scope.today = function() {
-        $scope.dt = new Date();
-    };
-    $scope.today();
+order.controller('OrderController', ['$scope', 'OrderService', function($scope, OrderService) {
+    $scope.currentPage = 1;
+    $scope.page = 15;
 
-    $scope.clear = function() {
-        $scope.dt = null;
-    };
+    function init() {
+        OrderService.findAll({
+            page: $scope.currentPage,
+            size: $scope.page
+        }).then(function(data) {
+            if (data.data.status == 'success') {
+                $scope.items = data.data.data.data;
+                $scope.total = data.data.data.total;
+            } else {
 
-    // Disable weekend selection
-    $scope.disabled = function(date, mode) {
-        return (mode === 'day' && (date.getDay() === 0 || date.getDay() === 6));
-    };
+            }
+        }).catch(function(err) {
 
-    $scope.toggleMin = function() {
-        $scope.minDate = $scope.minDate ? null : new Date();
-    };
-    $scope.toggleMin();
+        });
+    }
 
-    $scope.open = function($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
+    init();
 
-        $scope.opened = true;
-    };
+    $scope.pageChanged = init;
+
 }]);

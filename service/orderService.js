@@ -58,8 +58,31 @@ var service = {
         else
             return this.findByConsignorAndId(user.id, orderId);
     },
-    findByOption: function(option, page) {
-        var sql = squel.select().from('orders');
+    $$buildOptionSql: function(page, option, count) {
+        var limit = page.size;
+        var offset = (page.page - 1) * limit;
+        var sql;
+        if (count)
+            sql = squel.select().field('count(*)', 'countNum').from('orders');
+        else
+            sql = squel.select().from('orders');
+        if (option.begin_time && option.begin_time.value) {
+            sql.where('created_time >' + option.begin_time.value);
+        }
+        delete option.begin_time;
+        if (option.end_time && option.end_time.value) {
+            sql.where('created_time <' + option.end_time.value);
+        }
+        delete option.end_time;
+        sql = pool.buildSql(sql, option);
+        sql.offset(offset).limit(limit);
+        return sql;
+    },
+    findByOption: function(page, option) {
+        return pool.query(this.$$buildOptionSql(page, option, false).toString(), []);
+    },
+    countByOption: function(page, option) {
+        return pool.query(this.$$buildOptionSql(page, option, true).toString(), []);
     },
     save: function(order) {
         var sql = 'insert into orders(user_id,total,created_time,state) values(?,?,?,?)';

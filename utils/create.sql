@@ -52,6 +52,7 @@ create table common_consignee(
 
 create table orders(
     id int auto_increment,
+    order_id varchar(20),
     license varchar(15),
     consignor int,
     consignee int,
@@ -169,7 +170,7 @@ insert into cargoo_name(id,name,category_id) values(3,'second5-name',5);
 insert into cargoo_name(id,name,category_id) values(4,'second6-name',6);
 
 /*test orders*/
-insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state) values(1,'沪A-123456',2,1,'tom','haha',1,'待分配');
-insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state) values(2,'沪A-123456',2,1,'tom','haha',2,'待确认');
-insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state) values(3,'沪A-123456',2,1,'tom','haha',3,'运送中');
-insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state) values(4,'沪A-123456',2,1,'tom','haha',4,'已送达');
+insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_id) values(1,'沪A-123456',2,1,'tom','haha',1,'待分配','aabbcc');
+insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_id) values(2,'沪A-123456',2,1,'tom','haha',2,'待确认','aabbcc');
+insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_id) values(3,'沪A-123456',2,1,'tom','haha',3,'运送中','aabbcc');
+insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_id) values(4,'沪A-123456',2,1,'tom','haha',4,'已送达','aabbcc');

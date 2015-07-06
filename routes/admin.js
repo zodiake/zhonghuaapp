@@ -10,6 +10,7 @@ var fs = require('fs');
 var join = require('path').join;
 var pool = require('../utils/pool');
 var multer = require('multer');
+var q = require('q');
 
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
@@ -98,7 +99,41 @@ router.post('/csv/upload', fileMulter, function(req, res) {
 });
 
 router.get('/orders', function(req, res, next) {
-
+    var page = req.query.page || 1,
+        size = req.query.size || 15,
+        mobile = req.query.mobile,
+        beginTime = req.query.beginTime,
+        endTime = req.query.endTime,
+        orderId = req.query.orderId;
+    var option = {
+        mobile: mobile,
+        begin_time: {
+            operator: '>',
+            value: beginTime
+        },
+        end_time: {
+            operator: '<',
+            value: endTime
+        },
+        order_id: orderId
+    };
+    var page = {
+        page: page,
+        size: size
+    }
+    q.all([orderService.findByOption(page, option), orderService.countByOption(page, option)])
+        .then(function(result) {
+            res.json({
+                status: 'success',
+                data: {
+                    totol: result[1][0].countNum,
+                    data: result[0]
+                }
+            });
+        })
+        .catch(function(err) {
+            return next(err);
+        });
 });
 
 module.exports = router;

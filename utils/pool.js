@@ -59,9 +59,11 @@ var service = {
     },
     buildSql: function(sql, option) {
         for (i in option) {
-            if (option[i].value) {
+            if (option[i] && option[i].value) {
                 var operator = option[i].operator || '='
                 sql.where(i + operator + option[i].value);
+            } else if (option[i]) {
+                sql.where(i + '=' + option[i]);
             }
         }
         return sql;
