@@ -2599,14 +2599,18 @@ th {
     padding: 5px
 }
 
-.table-bordered {}
+.table-bordered {
+    border: 1px solid #ddd
+}
 
 .table-bordered>thead>tr>th,
 .table-bordered>tbody>tr>th,
 .table-bordered>tfoot>tr>th,
 .table-bordered>thead>tr>td,
 .table-bordered>tbody>tr>td,
-.table-bordered>tfoot>tr>td {}
+.table-bordered>tfoot>tr>td {
+    border: 1px solid #ddd
+}
 
 .table-bordered>thead>tr>th,
 .table-bordered>thead>tr>td {}
@@ -2924,7 +2928,7 @@ input[type=search] {
 input[type=date] {
     padding: 4px 0;
 }
-/*
+
 input[type=time],
 input[type=datetime-local],
 input[type=month] {
@@ -2945,7 +2949,6 @@ input[type=datetime-local].input-lg,
 input[type=month].input-lg {
     line-height: 46px
 }
-*/
 
 .form-group {
     margin-bottom: 15px
