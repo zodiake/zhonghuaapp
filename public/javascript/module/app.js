@@ -1,4 +1,4 @@
-var app = angular.module('app', ['angular-jwt', 'ui.router', 'Login', 'Consignor', 'Order']);
+var app = angular.module('app', ['angular-jwt', 'ui.router', 'Login', 'Consignor', 'Order', 'ScrollImage']);
 
 app.config(['$stateProvider',
     '$urlRouterProvider',
@@ -33,6 +33,11 @@ app.config(['$stateProvider',
                 url: '/order',
                 templateUrl: '/template/order.html',
                 controller: 'OrderController'
+            })
+            .state('tabs.scrollImage', {
+                url: '/scrollImage',
+                templateUrl: '/template/scrollImage.html',
+                controller: 'scrollController'
             });
     }
 ]);
