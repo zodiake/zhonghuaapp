@@ -129,6 +129,9 @@ router.post('/login', function(req, res) {
                     token: token
                 })
             }
+        })
+        .catch(function(err) {
+            return next(err);
         });
 });
 

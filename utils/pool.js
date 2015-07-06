@@ -5,8 +5,13 @@ var pool = mysql.createPool({
     host: '192.168.1.137',
     user: 'root',
     password: '1234',
+<<<<<<< HEAD
+    database: 'zh',
+    port: '3307'
+=======
     port: '3307',
     database: 'zh'
+>>>>>>> 4ba76c487558f355f09278a888960f685de64f42
 });
 
 //@object the cache object

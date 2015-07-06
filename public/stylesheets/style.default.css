@@ -19,6 +19,10 @@ a:active,
 a:focus {
     text-decoration: none;
 }
+
+a:hover {
+    cursor: pointer;
+}
 /********** 3. HEADER STYLES **********/
 /**************************************/
 
@@ -1977,8 +1981,7 @@ a:focus {
     color: #a94442;
 }
 
-.errorForm label
-:last-child {
+.errorForm label:last-child {
     margin-bottom: 20px !important;
 }
 
@@ -3914,4 +3917,15 @@ body.rtl .formError .formErrorArrow {
 
 .panel-heading > .panel-btns {
     display: none!important
+}
+
+.cargoo-list .lab {
+    width: 20%;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 50%;
+}
+
+.cargoo-list table {
+    width: 80%;
 }
