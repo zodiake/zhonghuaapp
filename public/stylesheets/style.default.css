@@ -3918,3 +3918,14 @@ body.rtl .formError .formErrorArrow {
 .panel-heading > .panel-btns {
     display: none!important
 }
+
+.cargoo-list .lab {
+    width: 20%;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 50%;
+}
+
+.cargoo-list table {
+    width: 80%;
+}

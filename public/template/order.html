@@ -2,28 +2,28 @@
     <div class="panel-body">
         <form class="form-inline">
             <a class="btn btn-success btn-sm" href="#modal" data-toggle="modal">导入</a>
-            <div class="form-group" style="margin:0">
+            <div class="form-group">
                 <select name="state" style="width:150px;height:30px;border-radius:3px;border:1px solid #ccc">
                     <option value="">全部状态</option>
                     <option value="">停用</option>
                     <option value="">使用中</option>
                 </select>
             </div>
-            <div class="form-group" style="margin:0">
+            <div class="form-group">
                 运单生成
-                <input class="form-control datepicker" name="beginTime" placeholder="开始时间" type="text"> ~
+                <input class="form-control" name="beginTime" placeholder="开始时间" type="date"> ~
                 <input class="form-control datepicker" name="endTime" placeholder="结束时间" type="text">
             </div>
-            <div class="form-group" style="margin: 0 5px 0 0">
+            <div class="form-group">
                 <input class="form-control" name="mobile" placeholder="请输入您要查找的手机号" type="text" style="width:200px;">
             </div>
-            <div class="form-group" style="margin: 0 5px 0 0">
+            <div class="form-group">
                 <input class="form-control" name="mobile" placeholder="请输入您要查找的手机号" type="text" style="width:200px;">
             </div>
             <input class="btn btn-primary btn-xs" type="submit" value="搜索"></input>
         </form>
     </div>
-    <table class="table table-bordered table1">
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <th>运单号</th>
@@ -39,8 +39,8 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
+            <tr ng-repeat="item in items">
+                <td><a href="#/tabs/orderDetail.html/{{item.id}}">1</a></td>
                 <td>1123354564</td>
                 <td>张三</td>
                 <td>232434545646</td>
@@ -54,7 +54,7 @@
         </tbody>
     </table>
     <div class="panel-footer">
-        <ul class="pagination" style="float:right;margin:0">
+        <ul class="pagination">
             <li class="paginate_button previous disabled" aria-controls="basicTable" tabindex="0">
                 <a href="#">Previous</a>
             </li>

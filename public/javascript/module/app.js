@@ -1,4 +1,15 @@
-var app = angular.module('app', ['angular-jwt', 'ui.router', 'Login', 'Consignor', 'Order', 'ScrollImage']);
+var app = angular.module('app', [
+    'angular-jwt',
+    'ui.router',
+    'ui.bootstrap',
+    'ui.router.tabs',
+    'Tabs',
+    'Login',
+    'Consignor',
+    'Order',
+    'ScrollImage',
+    'Consignee'
+]);
 
 app.config(['$stateProvider',
     '$urlRouterProvider',
@@ -22,7 +33,8 @@ app.config(['$stateProvider',
             .state('tabs', {
                 url: '/tabs',
                 templateUrl: '/template/tabs.html',
-                abstract: true
+                abstract: true,
+                controller: 'TabsController'
             })
             .state('tabs.consignor', {
                 url: '/consignor',
@@ -34,10 +46,20 @@ app.config(['$stateProvider',
                 templateUrl: '/template/order.html',
                 controller: 'OrderController'
             })
+            .state('tabs.orderDetail', {
+                url: '/orderDetail',
+                templateUrl: '/template/orderDetail.html',
+                controller: 'OrderDetailController'
+            })
             .state('tabs.scrollImage', {
                 url: '/scrollImage',
                 templateUrl: '/template/scrollImage.html',
-                controller: 'scrollController'
+                controller: 'ScrollController'
+            })
+            .state('tabs.consignee', {
+                url: '/consignee',
+                templateUrl: '/template/consignee.html',
+                controller: 'ConsigneeController'
             });
     }
 ]);
