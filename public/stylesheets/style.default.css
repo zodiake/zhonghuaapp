@@ -3929,3 +3929,7 @@ body.rtl .formError .formErrorArrow {
 .cargoo-list table {
     width: 80%;
 }
+
+.ml100 {
+    margin-left: 100px;
+}
