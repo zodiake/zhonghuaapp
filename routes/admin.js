@@ -41,12 +41,8 @@ router.get('/users', function(req, res, next) {
         size: req.query.size || 15
     };
     var option = {
-        name: {
-            value: req.query.mobile
-        },
-        activate: {
-            value: req.query.activate
-        }
+        name: req.query.mobile,
+        activate: req.query.activate
     };
     userService
         .findByOption(option, pageable)
