@@ -3919,27 +3919,13 @@ body.rtl .formError .formErrorArrow {
     display: none!important
 }
 
-.cargoo-list {
-    width: 100%;
-    display: table;
-}
-
 .cargoo-list .lab {
     width: 20%;
-    display: table-cell;
-    vertical-align: middle;
     text-align: center;
-    border: 1px solid #ddd;
+    vertical-align: middle;
+    line-height: 50%;
 }
 
-.cargoo-list .lab:first-child {
-    border-bottom: none;
-}
-
-.cargoo-list .table-bordered {
-    border: none;
-}
-
-.panel-footer.cargoo-page {
-    border-top: 1px solid #ddd;
+.cargoo-list table {
+    width: 80%;
 }
