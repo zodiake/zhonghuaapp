@@ -1,5 +1,8 @@
+/*jslint node: true */
+'use strict';
 var mysql = require('mysql');
 var q = require('q');
+var _ = require('lodash');
 var pool = mysql.createPool({
     connectionLimit: 10,
     host: '192.168.1.137',
@@ -16,9 +19,9 @@ var service = {
         var defer = q.defer();
         var query = pool.query(sql, param, function(err, rows, fields) {
             if (err) {
-                defer.reject(err)
+                defer.reject(err);
             } else {
-                defer.resolve(rows)
+                defer.resolve(rows);
             }
         });
         param.forEach(function(i) {
@@ -31,7 +34,7 @@ var service = {
         var defer = q.defer();
         var query = pool.query(sql, param, function(err, result) {
             if (err) {
-                defer.reject(err)
+                defer.reject(err);
             } else {
                 defer.resolve(result.insertId);
             }
@@ -43,7 +46,7 @@ var service = {
         var defer = q.defer();
         var query = pool.query(sql, param, function(err, result) {
             if (err) {
-                defer.reject(err)
+                defer.reject(err);
             } else {
                 defer.resolve(result.changedRows);
             }
@@ -58,12 +61,18 @@ var service = {
         });
     },
     buildSql: function(sql, option) {
-        for (i in option) {
-            if (option[i] && option[i].value) {
-                var operator = option[i].operator || '='
-                sql.where(i + operator + option[i].value);
-            } else if (option[i]) {
-                sql.where(i + '=' + option[i]);
+        for (var i in option) {
+            if (option[i]) {
+                var operator = option[i].operator || '=';
+                var value;
+                if (option[i].value)
+                    value = option[i].value;
+                else
+                    value = option[i];
+                if (_.isString(value))
+                    sql.where(i + operator + "'" + value + "'");
+                else
+                    sql.where(i + operator + value);
             }
         }
         return sql;

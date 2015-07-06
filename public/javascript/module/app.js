@@ -48,7 +48,7 @@ app.config(['$stateProvider',
                 controller: 'OrderController'
             })
             .state('tabs.orderDetail', {
-                url: '/orderDetail',
+                url: '/orderDetail/:id',
                 templateUrl: '/template/orderDetail.html',
                 controller: 'OrderDetailController'
             })
