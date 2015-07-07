@@ -3933,3 +3933,26 @@ body.rtl .formError .formErrorArrow {
 .ml100 {
     margin-left: 100px;
 }
+
+.user_d dl {
+    margin: 0 20px 30px;
+    padding: 0;
+    border: 1px solid #ddd;
+}
+
+.user_d dt {
+    line-height: 30px;
+    background: #ddd;
+    border-bottom: 1px solid #ccc;
+}
+
+.user_d dt,
+.user_d dd {
+    text-align: center;
+    line-height: 35px;
+}
+
+.order_d h4 {
+    padding-left: 30px;
+    width: 120px;
+}

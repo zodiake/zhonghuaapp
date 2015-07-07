@@ -9,7 +9,8 @@ var app = angular.module('app', [
     'Order',
     'ScrollImage',
     'Cargoo',
-    'Consignee'
+    'Consignee',
+    'Recommand'
 ]);
 
 app.config(['$stateProvider',
@@ -66,6 +67,11 @@ app.config(['$stateProvider',
                 url: '/consignee',
                 templateUrl: '/template/consignee.html',
                 controller: 'ConsigneeController'
+            })
+            .state('tabs.recommand', {
+                url: '/recommand',
+                templateUrl: '/template/recommand.html',
+                controller: 'RecommandController'
             });
     }
 ]);
