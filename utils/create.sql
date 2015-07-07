@@ -154,6 +154,7 @@ insert into usr(id,name,password,authority,activate) values(3,'admin','202cb962a
 
 /*test user detail*/    
 insert into usr_detail(id,detail_name,gender) values(1,'tomeii','f');
+insert into usr_detail(id,detail_name,gender) values(2,'peter lei','m');
 
 /*test category*/
 insert into cargoo_category(id,name,activate) values(1,'firstcategory1',1);

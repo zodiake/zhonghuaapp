@@ -35,29 +35,36 @@ router.use(function(req, res, next) {
     next();
 });
 
-router.get('/users', function(req, res, next) {
-    var pageable = {
-        page: req.query.page - 1 || 0,
-        size: req.query.size || 15
-    };
-    var option = {
-        name: req.query.mobile,
-        activate: req.query.activate
-    };
-    q.all([userService.findByOption(option, pageable), userService.countByOption(option, pageable)])
-        .then(function(result) {
-            res.json({
-                status: 'success',
-                data: {
-                    totol: result[1][0].countNum,
-                    data: result[0]
-                }
+var usrCall = function(role) {
+    return function(req, res, next) {
+        var pageable = {
+            page: req.query.page - 1 || 0,
+            size: req.query.size || 15
+        };
+        var option = {
+            name: req.query.mobile,
+            activate: req.query.activate,
+            authority: role
+        };
+        q.all([userService.findByOption(option, pageable), userService.countByOption(option, pageable)])
+            .then(function(result) {
+                res.json({
+                    status: 'success',
+                    data: {
+                        totol: result[1][0].countNum,
+                        data: result[0]
+                    }
+                });
+            })
+            .catch(function(err) {
+                return next(err);
             });
-        })
-        .catch(function(err) {
-            return next(err);
-        });
-});
+    }
+}
+
+router.get('/consignor', usrCall('ROLE_CONSIGNOR'));
+
+router.get('/consignee', usrCall('ROLE_CONSIGNEE'));
 
 router.post('/csv/upload', fileMulter, function(req, res) {
     if (req.files && req.files.file.mimetype == 'text/csv') {
