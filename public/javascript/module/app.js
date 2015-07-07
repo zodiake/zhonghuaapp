@@ -100,6 +100,6 @@ app.config(['$stateProvider',
                 url: '/cargooAdd',
                 templateUrl: '/template/cargooAdd.html',
                 controller: 'cargooAddController'
-            })
+            });
     }
 ]);
