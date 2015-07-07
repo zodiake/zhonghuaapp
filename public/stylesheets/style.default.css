@@ -3952,7 +3952,23 @@ body.rtl .formError .formErrorArrow {
     line-height: 35px;
 }
 
-.order_d h4 {
+.user_d .hd {
     padding-left: 30px;
+    padding-bottom: 20px;
+    font-size: 18px;
     width: 120px;
+}
+
+.messages_box select {
+    width: 180px;
+    padding: 2px 0;
+}
+
+.messages_box .form-group {
+    border: none;
+}
+
+.messages_box textarea {
+    width: 400px;
+    height: 200px;
 }
