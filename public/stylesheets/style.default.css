@@ -3972,3 +3972,8 @@ body.rtl .formError .formErrorArrow {
     width: 400px;
     height: 200px;
 }
+
+.order-d select {
+    width: 150px;
+    padding: 4px 0;
+}
