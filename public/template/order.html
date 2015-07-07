@@ -1,7 +1,7 @@
 <div class="contentpanel">
     <div class="panel-body">
         <form class="form-inline">
-            <a class="btn btn-success btn-sm" href="#modal" data-toggle="modal">导入</a>
+            <a class="btn btn-success btn-sm" href="#/tabs/orderImport">导入</a>
             <div class="form-group">
                 <select name="state" style="width:150px;height:30px;border-radius:3px;border:1px solid #ccc">
                     <option value="">全部状态</option>
@@ -54,6 +54,7 @@
         </tbody>
     </table>
     <div class="panel-footer">
-        <pagination total-items="total" items-per-page="15" max-size="7" ng-model="currentPage" ng-change="pageChanged()"></pagination>
+        <pagination total-items="total" items-per-page="15" max-size="7" ng-model="currentPage" ng-change="pageChanged()">
+        </pagination>
     </div>
 </div>

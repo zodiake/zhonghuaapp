@@ -3977,3 +3977,17 @@ body.rtl .formError .formErrorArrow {
     width: 150px;
     padding: 4px 0;
 }
+
+.cargoo_d {
+    width: 70%;
+}
+
+.w180 {
+    width: 190px;
+    padding-right: 0;
+}
+
+.detail_txt {width: 500px;
+
+    height: 100px;
+}

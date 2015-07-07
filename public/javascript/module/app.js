@@ -90,6 +90,16 @@ app.config(['$stateProvider',
                 url: '/message',
                 templateUrl: '/template/message.html',
                 controller: 'MessageController'
-            });
+            })
+            .state('tabs.orderImport', {
+                url: '/orderImport',
+                templateUrl: '/template/orderImport.html',
+                controller: 'orderImportController'
+            })
+            .state('tabs.cargooAdd', {
+                url: '/cargooAdd',
+                templateUrl: '/template/cargooAdd.html',
+                controller: 'cargooAddController'
+            })
     }
 ]);
