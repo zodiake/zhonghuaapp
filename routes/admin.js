@@ -59,12 +59,12 @@ var usrCall = function(role) {
             .catch(function(err) {
                 return next(err);
             });
-    }
-}
+    };
+};
 
-router.get('/consignor', usrCall('ROLE_CONSIGNOR'));
+router.get('/consignor', usrCall(userAuthority.consignor));
 
-router.get('/consignee', usrCall('ROLE_CONSIGNEE'));
+router.get('/consignee', usrCall(userAuthority.consignee));
 
 router.post('/csv/upload', fileMulter, function(req, res) {
     if (req.files && req.files.file.mimetype == 'text/csv') {
@@ -122,11 +122,11 @@ router.get('/orders', function(req, res, next) {
         },
         order_id: orderId
     };
-    var page = {
+    var pageable = {
         page: page,
         size: size
-    }
-    q.all([orderService.findByOption(page, option), orderService.countByOption(page, option)])
+    };
+    q.all([orderService.findByOption(pageable, option), orderService.countByOption(pageable, option)])
         .then(function(result) {
             res.json({
                 status: 'success',

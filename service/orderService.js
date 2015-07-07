@@ -74,6 +74,7 @@ var service = {
             sql.where('created_time <' + option.end_time.value);
         }
         delete option.end_time;
+        sql.join('usr', null, 'usr.id=orders.consignor');
         sql = pool.buildSql(sql, option);
         sql.offset(offset).limit(limit);
         return sql;

@@ -41,13 +41,13 @@
         <tbody>
             <tr ng-repeat="item in items">
                 <td><a href="#/tabs/orderDetail/{{item.id}}">1</a></td>
-                <td>1123354564</td>
-                <td>张三</td>
-                <td>232434545646</td>
-                <td>得得得</td>
-                <td>1</td>
-                <td>232434545646</td>
-                <td>得得得</td>
+                <td>{{item.mobile}}</td>
+                <td>{{item.consignee_name}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.company_name}}</td>
+                <td>{{item.cargoo_name}}</td>
+                <td>{{item.quantity}}</td>
+                <td>{{item.current_state}}</td>
                 <td>2015-05-20</td>
                 <td><a class="text-info">解冻</a>|<a class="text-info">恢复</a></td>
             </tr>

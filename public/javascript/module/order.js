@@ -18,6 +18,7 @@ order.controller('OrderController', ['$scope', 'OrderService', function($scope, 
             size: $scope.page
         }).then(function(data) {
             if (data.data.status == 'success') {
+                console.log(data);
                 $scope.items = data.data.data.data;
                 $scope.total = data.data.data.total;
             } else {
