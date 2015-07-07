@@ -3935,7 +3935,7 @@ body.rtl .formError .formErrorArrow {
 }
 
 .user_d dl {
-    margin: 0 20px;
+    margin: 0 20px 30px;
     padding: 0;
     border: 1px solid #ddd;
 }
@@ -3943,9 +3943,16 @@ body.rtl .formError .formErrorArrow {
 .user_d dt {
     line-height: 30px;
     background: #ddd;
+    border-bottom: 1px solid #ccc;
 }
 
-dt,
-dd {
+.user_d dt,
+.user_d dd {
     text-align: center;
+    line-height: 35px;
+}
+
+.order_d h4 {
+    padding-left: 30px;
+    width: 120px;
 }
