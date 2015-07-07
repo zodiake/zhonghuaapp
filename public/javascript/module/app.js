@@ -94,12 +94,17 @@ app.config(['$stateProvider',
             .state('tabs.orderImport', {
                 url: '/orderImport',
                 templateUrl: '/template/orderImport.html',
-                controller: 'orderImportController'
+                controller: 'CrderImportController'
+            })
+            .state('tabs.scrollImageAdd', {
+                url: '/scrollImageAdd',
+                templateUrl: '/template/scrollImageAdd.html',
+                controller: 'ScrollImageAddController'
             })
             .state('tabs.cargooAdd', {
                 url: '/cargooAdd',
                 templateUrl: '/template/cargooAdd.html',
-                controller: 'cargooAddController'
+                controller: 'CargooAddController'
             });
     }
 ]);
