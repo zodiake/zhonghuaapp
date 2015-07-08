@@ -10,7 +10,10 @@ var app = angular.module('app', [
     'ScrollImage',
     'Cargoo',
     'Consignee',
-    'Recommand'
+    'Recommand',
+    'User',
+    'OrderReport',
+    'Message'
 ]);
 
 app.config(['$stateProvider',
@@ -72,6 +75,36 @@ app.config(['$stateProvider',
                 url: '/recommand',
                 templateUrl: '/template/recommand.html',
                 controller: 'RecommandController'
+            })
+            .state('tabs.user', {
+                url: '/user',
+                templateUrl: '/template/user.html',
+                controller: 'UserController'
+            })
+            .state('tabs.orderReport', {
+                url: '/orderReport',
+                templateUrl: '/template/orderReport.html',
+                controller: 'OrderReportController'
+            })
+            .state('tabs.message', {
+                url: '/message',
+                templateUrl: '/template/message.html',
+                controller: 'MessageController'
+            })
+            .state('tabs.orderImport', {
+                url: '/orderImport',
+                templateUrl: '/template/orderImport.html',
+                controller: 'CrderImportController'
+            })
+            .state('tabs.scrollImageAdd', {
+                url: '/scrollImageAdd',
+                templateUrl: '/template/scrollImageAdd.html',
+                controller: 'ScrollImageAddController'
+            })
+            .state('tabs.cargooAdd', {
+                url: '/cargooAdd',
+                templateUrl: '/template/cargooAdd.html',
+                controller: 'CargooAddController'
             });
     }
 ]);
