@@ -4,6 +4,7 @@ var pool = require('../utils/pool');
 var _ = require('lodash');
 var userAuthority = require('../userAuthority');
 var squel = require('squel');
+var q = require('q');
 
 var service = {
     findOne: function(id) {
@@ -66,11 +67,17 @@ var service = {
     },
     countByUsrIdAndId: function(user, orderId) {
         var consigneeSql = 'select count(*) as countnum from orders where id=? and consignee=?';
-        var consigneeSql = 'select count(*) as countnum from orders where id=? and consignor=?';
-        if (user.authority == userAuthority.consignee)
+        var consignorSql = 'select count(*) as countnum from orders where id=? and consignor=?';
+        if (user.authority == userAuthority.consignee) {
             return pool.query(consigneeSql, [orderId, user.id]);
-        else if (user.authority == userAuthority.consignee)
-            return pool.query(consignorSql);
+        } else if (user.authority == userAuthority.consignor) {
+            return pool.query(consignorSql, [orderId, user.id]);
+        } else {
+            var defer = q.defer();
+            defer.reject();
+            return defer.promise;
+        }
+
     },
     findByOrderId: function(orderId) {
         var sql = 'select * from orders join usr on orders.consignee=usr.id where order_id=?';
@@ -104,12 +111,16 @@ var service = {
         return pool.query(this.$$buildOptionSql(page, option, true).toString(), []);
     },
     save: function(order) {
-        var sql = 'insert into orders(user_id,total,created_time,state) values(?,?,?,?)';
-        return pool.query(sql, [order.userId, order.total, order.createdTime, order.state]);
+        var sql = 'insert into orders set ?';
+        return pool.insert(sql, order);
     },
     updateState: function(order) {
-        var sql = 'update order set current_state=? where id=?';
+        var sql = 'update orders set current_state=? where id=?';
         return pool.query(sql, [order.state, order.id]);
+    },
+    update: function(order, id) {
+        var sql = 'update orders set ? where id=?';
+        return pool.query(sql, [order, id]);
     },
     merge: function(webData, data) {
         return _.map(data, function(d) {

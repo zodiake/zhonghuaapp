@@ -61,6 +61,7 @@ create table orders(
     created_time timestamp,
     etd timestamp,
     type char(4),
+    mobile char(11),
     primary key(id),
     foreign key(consignor) references usr(id),
     foreign key(consignee) references usr(id),

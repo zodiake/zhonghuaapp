@@ -9,6 +9,7 @@ var q = require('q');
 var orderService = require('../service/orderService');
 var webService = require('../service/webService');
 var reviewService = require('../service/reviewService');
+var userService = require('../service/userService');
 
 var orderState = require('../orderState');
 var positionService = require('../service/positionService');
@@ -113,87 +114,161 @@ router.get('/:id', function(req, res, next) {
         });
 });
 
-function insert(state) {
-    return function(req, res, next) {
-        var license = req.body.license,
-            mobile = req.body.mobile,
-            consigneeName = req.body.consigneeName,
-            companyName = req.body.companyName,
-            category = req.body.category,
-            cargooName = req.body.cargooName,
-            origin = req.body.origin,
-            destination = req.body.destination,
-            etd = req.body.etd,
-            quantity = req.body.quantity;
+var saveOrUpdate = function(req, res, next) {
+    var license = req.body.license,
+        mobile = req.body.mobile,
+        consigneeName = req.body.consigneeName,
+        companyName = req.body.companyName,
+        category = req.body.category,
+        cargooName = req.body.cargooName,
+        origin = req.body.origin,
+        destination = req.body.destination,
+        etd = req.body.etd,
+        quantity = req.body.quantity,
+        state = orderState[req.body.state],
+        user = req.user;
 
-        var order = {
-            license: license,
-            mobile: mobile,
-            consignee_name: consigneeName,
-            company_name: companyName,
-            category: category,
-            cargoo_name: cargooName,
-            origin: origin,
-            destination: destination,
-            etd: etd,
-            quantity: quantity,
-            createdTime: new Date(),
-            state: state
-        };
-
-        orderService
-            .save(order)
-            .then(function(resultId) {
-                res.json({
-                    status: 'success',
-                    data: resultId
-                });
-            })
-            .catch(function(err) {
-                return next(err);
-            });
+    var order = {
+        license: license,
+        mobile: mobile,
+        consignee_name: consigneeName,
+        company_name: companyName,
+        category: category,
+        cargoo_name: cargooName,
+        origin: origin,
+        destination: destination,
+        etd: etd,
+        quantity: quantity,
+        created_time: new Date(),
+        current_state: state,
+        consignor: user.id
     };
-}
+    return order;
 
-//insert dispatch
-router.post('/dispatch', insert('dispatch'));
-
-//insert confirm
-router.post('/confirm', insert('confirm'));
-
-//update state
-var verifyUsrAndState = function(req, res, next) {
-    var authority = req.user.authority,
-        state = req.body.state,
-        id = req.user.id;
 };
 
-router.put('/:id/state', function(req, res, next) {
-    var state = req.body.state,
-        id = req.params.id;
-    if (!orderState[state]) {
-        var err = new Error('state can not be null');
-        return next(err);
-    }
+//insert dispatch
+router.post('/', function(req, res, next) {
+    var order = saveOrUpdate(req, res, next);
+    userService
+        .findByName(order.mobile)
+        .then(function(data) {
+            if (data.length === 0) {
+                return null;
+            } else {
+                order.consignee = data[0].id;
+                return orderService.save(order);
+            }
+        })
+        .then(function(resultId) {
+            if (!resultId) {
+                res.json({
+                    status: 'fail',
+                    message: 'driver not exist'
+                });
+                return;
+            }
+            res.json({
+                status: 'success',
+                data: resultId
+            });
+
+        })
+        .catch(function(err) {
+            return next(err);
+        });
 });
 
 //update
 router.put('/:id', function(req, res, next) {
+    var id = req.params.id;
+    var order = saveOrUpdate(req, res, next);
+    delete order.current_state;
+
+    userService
+        .findByName(order.mobile)
+        .then(function(data) {
+            if (data.length === 0) {
+                return null;
+            } else {
+                order.consignee = data[0].id;
+                return orderService.update(order, id);
+            }
+        })
+        .then(function(resultId) {
+            if (!resultId) {
+                res.json({
+                    status: 'fail',
+                    message: 'driver not exist'
+                });
+                return;
+            }
+            res.json({
+                status: 'success',
+                data: resultId.changedRows
+            });
+
+        })
+        .catch(function(err) {
+            return next(err);
+        });
+});
+
+var verifyUser = function() {
+    return function(req, res, next) {
+        var state = req.body.state;
+        req.body.state = orderState[state];
+
+        if (!orderState[state]) {
+            var err = new Error('state can not be empty');
+            return next(err);
+        }
+        next();
+    };
+};
+
+//update state
+router.put('/state/:id', verifyUser(), function(req, res, next) {
     var state = req.body.state,
         id = req.params.id;
-    if (!orderState[state]) {
-        new Error('state ')
-    }
-
-    orderService.updateState({
-        id: id,
-        state: orderState[state]
-    });
-    res.json({
-        status: 'success',
-        data: 'todo'
-    });
+    console.log(id);
+    orderService
+        .countByUsrIdAndId(req.user, id)
+        .then(function(data) {
+            if (data[0].countnum === 0) {
+                res.json({
+                    status: 'fail'
+                });
+            } else {
+                return orderService.updateState({
+                    id: id,
+                    state: state
+                });
+            }
+        })
+        .then(function(data) {
+            if (data.changedRows > 0)
+                res.json({
+                    status: 'success'
+                });
+            else {
+                res.json({
+                    status: 'fail',
+                    message: 'no order updated'
+                });
+            }
+        })
+        .fail(function() {
+            res.json({
+                status: 'fail',
+                message: 'no authority'
+            });
+        })
+        .catch(function(err) {
+            return next(err);
+        });
 });
+
 
 router.post('/:id/upload', fileMulter, function(req, res) {
     var file = req.files.file;
@@ -256,12 +331,6 @@ router.post('/:id/reviews', function(req, res, next) {
                 res.json({
                     status: 'fail',
                     message: 'already reviewed'
-                });
-            } else {
-                //mysql error
-                res.json({
-                    status: 'fail',
-                    message: 'review fail'
                 });
             }
         })
