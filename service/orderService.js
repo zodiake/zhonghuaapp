@@ -3,17 +3,23 @@
 var pool = require('../utils/pool');
 var _ = require('lodash');
 var userAuthority = require('../userAuthority');
-var squel = require("squel");
+var squel = require('squel');
 
 var service = {
     findOne: function(id) {
         var sql = 'select * from orders where id=?';
         return pool.query(sql, [id]);
     },
+    findOneAndState: function(usr, id) {
+        var sql;
+        if (usr.authority == userAuthority.consignee)
+            sql = 'select * from orders left join order_state on order_state.order_id=orders.id where orders.id=? and orders.consignee=? order by created_time';
+        if (usr.authority == userAuthority.consignor)
+            sql = 'select * from orders left join order_state on order_state.order_id=orders.id where orders.id=? and orders.consignor=? order by created_time';
+        return pool.query(sql, [id, usr.id]);
+    },
     convertArrayToString: function(data) {
-        var array = _.chain(data).filter(function(d) {
-            return d.state == '运送中';
-        }).map(function(d) {
+        var array = data.map(function(d) {
             return d.id;
         });
         return 'id=[' + array.join(',') + ']';
@@ -57,6 +63,18 @@ var service = {
             return this.findByConsignorAndId(user.id, orderId);
         else
             return this.findByConsignorAndId(user.id, orderId);
+    },
+    countByUsrIdAndId: function(user, orderId) {
+        var consigneeSql = 'select count(*) as countnum from orders where id=? and consignee=?';
+        var consigneeSql = 'select count(*) as countnum from orders where id=? and consignor=?';
+        if (user.authority == userAuthority.consignee)
+            return pool.query(consigneeSql, [orderId, user.id]);
+        else if (user.authority == userAuthority.consignee)
+            return pool.query(consignorSql);
+    },
+    findByOrderId: function(orderId) {
+        var sql = 'select * from orders join usr on orders.consignee=usr.id where order_id=?';
+        return pool.query(sql, [orderId]);
     },
     $$buildOptionSql: function(page, option, count) {
         var limit = page.size;

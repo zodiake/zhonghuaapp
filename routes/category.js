@@ -26,15 +26,13 @@ router.get('/', function(req, res, next) {
         });
 });
 
-router.get('/:id/cargoName', function(req, res, next) {
-    var id = req.params.id;
-    cargoNameService
-        .findByCategory(id)
+router.get('/all', function(req, res, next) {
+    service.findAll()
         .then(function(data) {
             res.json({
                 status: 'success',
                 data: data
-            })
+            });
         })
         .catch(function(err) {
             return next(err);

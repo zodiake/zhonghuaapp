@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 var e_jwt = require('express-jwt');
 var userAuthority = require('../userAuthority');
+var orderState = require('../orderState');
 var config = require('../config');
 var csv = require('csv');
 var fs = require('fs');
@@ -109,9 +110,10 @@ router.get('/orders', function(req, res, next) {
         mobile = req.query.mobile,
         beginTime = req.query.beginTime,
         endTime = req.query.endTime,
-        orderId = req.query.orderId;
+        orderId = req.query.orderId,
+        state = req.query.state;
     var option = {
-        mobile: mobile,
+        name: mobile,
         begin_time: {
             operator: '>',
             value: beginTime
@@ -122,6 +124,9 @@ router.get('/orders', function(req, res, next) {
         },
         order_id: orderId
     };
+
+    if (state != undefined && orderState[state] != undefined)
+        option.current_state = orderState[state];
     var pageable = {
         page: page,
         size: size
@@ -135,6 +140,21 @@ router.get('/orders', function(req, res, next) {
                     data: result[0]
                 }
             });
+        })
+        .catch(function(err) {
+            return next(err);
+        });
+});
+
+router.get('/orders/:id', function(req, res, next) {
+    var orderId = req.params.id;
+    orderService
+        .findByOrderId(orderId)
+        .then(function(data) {
+            res.json({
+                status: 'success',
+                data: data[0]
+            })
         })
         .catch(function(err) {
             return next(err);

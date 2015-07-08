@@ -10,7 +10,7 @@ var service = {
         var sql;
         var self = this;
         if (parentId === null) {
-            sql = 'select * from cargoo_category where parent_id is null';
+            sql = 'select * from cargoo_name where parent_id is null and activate=1';
             if (this.cache.first) {
                 defer.resolve(this.cache.first);
                 return defer.promise;
@@ -21,7 +21,7 @@ var service = {
                 });
             }
         } else {
-            sql = 'select * from cargoo_category where parent_id=?';
+            sql = 'select * from cargoo_name where parent_id=? and activate=1';
             if (this.cache[parentId]) {
                 defer.resolve(this.cache[parentId]);
                 return defer.promise;
@@ -32,6 +32,20 @@ var service = {
                 });
             }
 
+        }
+    },
+    findAll: function() {
+        var sql = 'select * from cargoo_name where activate=1';
+        var defer = q.defer();
+        var self = this;
+        if (this.cache.all) {
+            defer.resolve(this.cache.all);
+            return defer.promise;
+        } else {
+            return pool.query(sql, []).then(function(data) {
+                self.cache.all = data;
+                return data;
+            });
         }
     }
 };

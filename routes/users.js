@@ -1,3 +1,5 @@
+/*jslint node: true */
+'use strict';
 var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
@@ -8,12 +10,13 @@ var user_type = require('../userAuthority');
 var userDetailService = require('../service/userDetailService');
 var genderType = require('../gender');
 var crypto = require('crypto');
+var multer = require('multer');
 
 var user_mobile = {};
 
 var cryptoPwd = function(password) {
     return crypto.createHash('md5').update(password).digest('hex');
-}
+};
 
 /* GET users listing. */
 router.get('/', function(req, res) {
@@ -24,9 +27,20 @@ router.get('/', function(req, res) {
         });
 });
 
+var fileMulter = multer({
+    dest: './uploads/',
+    group: {
+        image: './public/uploads'
+    }
+});
+
 var verify = e_jwt({
     secret: config.key
 });
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 //获取验证码
 router.get('/captcha', function(req, res) {
@@ -36,7 +50,7 @@ router.get('/captcha', function(req, res) {
         .then(function(data) {
             if (data[0].usrCount === 0) {
                 //todo send short message
-                user_mobile[mobile] = "1111";
+                user_mobile[mobile] = 1111; //getRandomInt(1000, 9999);
                 res.json({
                     status: 'success',
                 });
@@ -82,7 +96,7 @@ router.post('/signup', function(req, res, next) {
                 created_Time: new Date()
             })
             .then(function(data) {
-                delete user_mobile[name]
+                delete user_mobile[name];
                 var token = jwt.sign({
                     id: result,
                     name: name,
@@ -92,43 +106,49 @@ router.post('/signup', function(req, res, next) {
                     status: 'success',
                     data: token
                 });
-            })
+            });
     }).catch(function(err) {
         return next(err);
     });
 });
 
 //登入
-router.post('/login', function(req, res) {
+router.post('/login', function(req, res, next) {
     var name = req.body.name,
         password = req.body.password;
     console.log(cryptoPwd(password));
     userService
         .findByName(name)
         .then(function(data) {
-            if (data.length == 0) {
+            if (data.length === 0) {
                 res.json({
                     status: 'fail',
                     message: 'user not exist'
                 });
+                return;
             } else if (data[0].password != cryptoPwd(password)) {
                 //to do password encode
                 res.json({
                     status: 'fail',
                     message: 'password error'
-                })
-            } else {
-                var usr = data[0];
-                var token = jwt.sign({
-                    id: usr.id,
-                    name: usr.name,
-                    authority: usr.authority
-                }, config.key);
-                res.json({
-                    status: 'success',
-                    token: token
-                })
+                });
+                return;
             }
+            return userDetailService
+                .findOne(data[0].id)
+                .then(function(detail) {
+                    var usr = data[0];
+                    var token = jwt.sign({
+                        id: usr.id,
+                        name: usr.name,
+                        authority: usr.authority
+                    }, config.key);
+                    res.json({
+                        status: 'success',
+                        token: token,
+                        data: detail[0]
+                    });
+                });
         })
         .catch(function(err) {
             return next(err);
@@ -153,13 +173,19 @@ router.post('/changePwd',
                         password: newPwd
                     });
                 } else {
-                    throw new Error('oldPassword not correct');
+                    return 'fail';
                 }
             })
-            .then(function() {
-                res.json({
-                    status: 'success'
-                });
+            .then(function(data) {
+                if (data == 'fail')
+                    res.json({
+                        status: 'fail',
+                        message: 'oldPwd not match'
+                    });
+                else
+                    res.json({
+                        status: 'success'
+                    });
             })
             .catch(function(err) {
                 return next(err);
@@ -190,14 +216,18 @@ router.post('/detail',
             name = req.body.name,
             gender = genderType[req.body.gender],
             identfied_number = req.body.identify,
-            company_name = req.body.companyName;
+            company_name1 = req.body.companyName1,
+            company_name2 = req.body.companyName2,
+            company_name3 = req.body.companyName3;
         userDetailService
             .update({
                 id: usr.id,
-                name: name,
+                detail_name: name,
                 gender: gender,
-                identfied_number: identfied_number,
-                company_name: company_name
+                identified_number: identfied_number,
+                company_name1: company_name1,
+                company_name2: company_name2,
+                company_name3: company_name3
             })
             .then(function(data) {
                 res.json({
@@ -205,7 +235,7 @@ router.post('/detail',
                 });
             }).catch(function(err) {
                 return next(err);
-            })
+            });
 
     });
 
