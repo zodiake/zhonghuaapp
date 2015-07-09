@@ -228,24 +228,15 @@ var verifyUser = function() {
 };
 
 //update state
-router.put('/state/:id', verifyUser(), function(req, res, next) {
+router.put('/:id/state', verifyUser(), function(req, res, next) {
     var state = req.body.state,
-        id = req.params.id;
-    console.log(id);
+        id = req.params.id,
+        user = req.user;
     orderService
-        .countByUsrIdAndId(req.user, id)
-        .then(function(data) {
-            if (data[0].countnum === 0) {
-                res.json({
-                    status: 'fail'
-                });
-            } else {
-                return orderService.updateState({
-                    id: id,
-                    state: state
-                });
-            }
-        })
+        .updateStateByIdAndUser({
+            id: id,
+            state: state
+        }, user)
         .then(function(data) {
             if (data.changedRows > 0)
                 res.json({
@@ -261,7 +252,7 @@ router.put('/state/:id', verifyUser(), function(req, res, next) {
         .fail(function() {
             res.json({
                 status: 'fail',
-                message: 'no authority'
+                message: 'sql error'
             });
         })
         .catch(function(err) {

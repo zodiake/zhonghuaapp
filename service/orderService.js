@@ -114,9 +114,14 @@ var service = {
         var sql = 'insert into orders set ?';
         return pool.insert(sql, order);
     },
-    updateState: function(order) {
-        var sql = 'update orders set current_state=? where id=?';
-        return pool.query(sql, [order.state, order.id]);
+    updateStateByIdAndUser: function(order, user) {
+        var sql;
+        if (user.authority == userAuthority.consignor) {
+            sql = 'update orders set current_state=? where id=? and consignor=?';
+        } else if (user.authority == userAuthority.consignee) {
+            sql = 'update orders set current_state=? where id=? and consignee=?';
+        }
+        return pool.query(sql, [order.state, order.id, user.id]);
     },
     update: function(order, id) {
         var sql = 'update orders set ? where id=?';
