@@ -25,30 +25,24 @@ var service = {
         });
         return 'id=[' + array.join(',') + ']';
     },
-    /*find all orders by consingor or consignee */
-    findByConsignorAndState: function(userId, state, page) {
-        var sqlAll = 'select * from orders where consignor=? order by created_time limit ?,?';
-        var sqlWithState = 'select * from orders where consignor=? and state=? order by created_time limit ?,?';
-
-        if (state == 'all')
-            return pool.query(sqlAll, [userId, page.page, page.size]);
-        else
-            return pool.query(sqlWithState, [userId, state, page.page, page.size]);
-    },
-    findByConsigneeAndState: function(userId, state, page) {
-        var sqlAll = 'select * from orders where consignee=? order by created_time limit ?,?';
-        var sqlWithState = 'select * from orders where consignee=? and state=? order by created_time limit ?,?';
-
-        if (state == 'all')
-            return pool.query(sqlAll, [userId, page.page, page.size]);
-        else
-            return pool.query(sqlWithState, [userId, state, page.page, page.size]);
-    },
     findByUsrAndState: function(user, state, page) {
-        if (user.authority == userAuthority.consignee)
-            return this.findByConsigneeAndState(user.id, state, page);
-        else
-            return this.findByConsignorAndState(user.id, state, page);
+        var sql = squel.select().from('orders');
+        var filter = squel.expr();
+        if (state.length > 0) {
+            state.forEach(function(d) {
+                filter.or("current_state='" + d + "'");
+            });
+        }
+        if (user.authority == userAuthority.consignor) {
+            filter.and("consignor='" + user.id + "'");
+        } else if (user.authority == userAuthority.consignee) {
+            filter.and("consignee='" + user.id + "'");
+        }
+
+        sql.where(filter);
+        sql.limit(page.size).offset(page.page * page.size);
+        console.log(sql.toString());
+        return pool.query(sql.toString(), []);
     },
     /*findOne by consignee or consignor */
     findByConsigneeAndId: function(userId, id) {
@@ -110,6 +104,10 @@ var service = {
     countByOption: function(page, option) {
         return pool.query(this.$$buildOptionSql(page, option, true).toString(), []);
     },
+    countByStateAndConsignee: function(order) {
+        var sql = 'select count(*) as countNum from orders where current_state=? and consignee=?';
+        return pool.query(sql, [order.state, order.consignee]);
+    },
     save: function(order) {
         var sql = 'insert into orders set ?';
         return pool.insert(sql, order);
@@ -130,7 +128,7 @@ var service = {
     merge: function(webData, data) {
         return _.map(data, function(d) {
             _.each(webData, function(wd) {
-                if (d.id == wd.id) {
+                if (d.id == wd.id && wd.status == 'success') {
                     d.sub = wd.state;
                     d.vehicle = wd.vehicle;
                     return;

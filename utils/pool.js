@@ -76,6 +76,15 @@ var service = {
             }
         }
         return sql;
+    },
+    getConnection: function() {
+        var defer = q.defer();
+        pool.getConnection(function(err, connection) {
+            if (err)
+                defer.reject(err)
+            defer.resolve(connection);
+        });
+        return defer.promise;
     }
 };
 

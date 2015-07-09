@@ -5,16 +5,18 @@ var router = express.Router();
 var e_jwt = require('express-jwt');
 var multer = require('multer');
 var q = require('q');
+var _ = require('lodash');
 
 var orderService = require('../service/orderService');
 var webService = require('../service/webService');
 var reviewService = require('../service/reviewService');
 var userService = require('../service/userService');
+var positionService = require('../service/positionService');
 
 var orderState = require('../orderState');
-var positionService = require('../service/positionService');
-var _ = require('lodash');
+var userAuthority = require('../userAuthority');
 var config = require('../config');
+var reasonEnmu = require('../reason');
 
 router.use(e_jwt({
     secret: config.key
@@ -31,7 +33,7 @@ var fileMulter = multer({
 router.get('/', function(req, res, next) {
     var page = req.query.page || 1,
         size = req.query.size || 10,
-        state = orderState[req.query.state] || 'all',
+        state = req.query.state.split(','),
         user = req.user;
 
     var pageable = {
@@ -39,34 +41,47 @@ router.get('/', function(req, res, next) {
         size: size
     };
 
+
+    var states = _.map(state, function(s) {
+        return orderState[s];
+    });
+
     orderService
-        .findByUsrAndState(user, state, pageable)
+        .findByUsrAndState(user, states, pageable)
         .then(function(data) {
-            //todo needed to group by type and merge results
-            var remote = [];
-            var transportData = _.chain(data)
-                .filter(function(d) {
+            var flag = data.some(function(d) {
+                return d.current_state == orderState.transport && d.type;
+            });
+            if (flag) {
+                var remote = [];
+                var filtedData = _.chain(data).filter(function(d) {
                     return d.current_state == orderState.transport && d.type;
-                })
-                .groupBy(function(d) {
+                }).groupBy(function(d) {
                     return d.type;
                 }).value();
-            for (var i in transportData) {
-                var query = orderService.convertArrayToString(transportData[i]);
-                remote.push(webService.queryFromWeb(i, query));
-            }
-            return q.all(remote).then(function(result) {
-                _.forEach(result, function(r) {
-                    if (r.status == 'success') {
-                        orderService.merge(r.data, data);
-                    }
+
+                for (var i in filtedData) {
+                    var query = orderService.convertArrayToString(filtedData[i]);
+                    remote.push(webService.queryFromWeb(i, query));
+                }
+                return q.all(remote).then(function(result) {
+                    _.forEach(result, function(r) {
+                        orderService.merge(r, data);
+                    });
+                    return data;
                 });
+            } else {
                 return data;
-            });
+            }
         }).then(function(data) {
             res.json({
                 status: 'success',
                 data: data
+            });
+        }).fail(function(err) {
+            res.json({
+                status: 'fail',
+                message: err
             });
         }).catch(function(err) {
             return next(err);
@@ -214,24 +229,47 @@ router.put('/:id', function(req, res, next) {
         });
 });
 
-var verifyUser = function() {
+var verifyState = function() {
     return function(req, res, next) {
-        var state = req.body.state;
+        var state = req.body.state,
+            user = req.user;
         req.body.state = orderState[state];
 
+        //if state is null throw err
         if (!orderState[state]) {
             var err = new Error('state can not be empty');
             return next(err);
         }
-        next();
+        if (orderState[state] == orderState.transport && user.authority == userAuthority.consignee) {
+            orderService
+                .countByStateAndConsignee({
+                    state: orderState[state],
+                    consignee: user.id
+                })
+                .then(function(data) {
+                    if (data[0].countNum > 0) {
+                        var err = new Error('already having a transport order');
+                        return next(err);
+                    } else {
+                        next();
+                    }
+                })
+                .catch(function(err) {
+                    return next(err);
+                });
+        } else {
+            next();
+        }
     };
 };
 
 //update state
-router.put('/:id/state', verifyUser(), function(req, res, next) {
+router.put('/:id/state', verifyState(), function(req, res, next) {
     var state = req.body.state,
         id = req.params.id,
         user = req.user;
+
+    //consignee can only have one transport order
     orderService
         .updateStateByIdAndUser({
             id: id,
@@ -260,6 +298,7 @@ router.put('/:id/state', verifyUser(), function(req, res, next) {
         });
 });
 
+router.put('/:id/refuse', function(req, res, next) {});
 
 router.post('/:id/upload', fileMulter, function(req, res) {
     var file = req.files.file;
@@ -270,31 +309,54 @@ router.post('/:id/upload', fileMulter, function(req, res) {
 });
 
 router.post('/geo', function(req, res, next) {
-    var array = req.body;
-    if (!_.isArray(array))
-        return next(new Error('body not array'));
-    _.each(array, function(a) {
-        positionService.insert({
-            longitude: a.longitude,
-            latitude: a.latitude,
-            order_id: a.orderId,
+    var longitude = req.body.longitude,
+        latitude = req.body.latitude,
+        order_id = req.body.orderId;
+
+    positionService
+        .insert({
+            longitude: longitude,
+            latitude: latitude,
+            order_id: order_id,
             created_time: new Date()
+        })
+        .then(function() {
+            res.json({
+                status: 'success'
+            });
+        })
+        .fail(function(err) {
+            return next(err);
+        })
+        .catch(function(err) {
+            return next(err);
         });
-    });
-    res.json({
-        status: 'success'
-    });
 });
 
-router.get('/geo', function(req, res, next) {
-
+router.get('/:id/geo', function(req, res, next) {
+    var id = req.params.id;
+    positionService
+        .findAll(id)
+        .then(function(data) {
+            res.json({
+                status: 'success',
+                data: data
+            });
+        })
+        .fail(function(err) {
+            return next(err);
+        })
+        .catch(function(err) {
+            return next(err);
+        });
 });
 
 router.post('/:id/reviews', function(req, res, next) {
     var orderId = req.params.id,
         desc = req.body.desc,
         level = req.body.level,
-        userId = req.user.id;
+        userId = req.user.id,
+        reason = req.body.reason;
 
     reviewService
         .countByOrder(orderId)
@@ -304,6 +366,7 @@ router.post('/:id/reviews', function(req, res, next) {
                     description: desc,
                     order_id: orderId,
                     level: level,
+                    reason: reasonEnmu[reason],
                     consignor: userId
                 };
                 return reviewService.save(review);
@@ -313,17 +376,22 @@ router.post('/:id/reviews', function(req, res, next) {
         })
         .then(function(data) {
             //insert success data is the return id
-            if (data > 1) {
-                res.json({
-                    status: 'success'
-                });
-            } else if (data == -1) {
-                //the order has been reviewed
+            if (data === -1) {
                 res.json({
                     status: 'fail',
-                    message: 'already reviewed'
+                    message: 'already review'
                 });
+                return;
             }
+            res.json({
+                status: 'success'
+            });
+        })
+        .fail(function(err) {
+            res.json({
+                status: 'fail',
+                message: err
+            });
         })
         .catch(function(err) {
             return next(err);

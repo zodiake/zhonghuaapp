@@ -3,5 +3,6 @@
     "confirm": "待确认",
     "transport": "运送中",
     "arrive": "已送达",
-    "appraise": "已评价"
+    "appraise": "已评价",
+    "refuse": "已拒绝"
 }

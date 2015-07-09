@@ -17,7 +17,6 @@ var service = {
             }
             if (response.statusCode == 200) {
                 defer.resolve(JSON.parse(body));
-                console.log('resolved');
             } else {
                 defer.reject({
                     status: 'fail',

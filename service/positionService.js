@@ -6,7 +6,7 @@ var service = {
         var sql = 'insert into order_gis set ?';
         return pool.batchInsert(sql, data);
     },
-    findAll: function(orderId) {
+    findAll: function(orderId, cb) {
         var sql = 'select * from order_gis where order_id=? order by created_time';
         return pool.query(sql, [orderId]);
     }

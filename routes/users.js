@@ -133,6 +133,12 @@ router.post('/login', function(req, res, next) {
                     message: 'password error'
                 });
                 return;
+            } else if (data[0].activate === 0) {
+                res.json({
+                    status: 'fail',
+                    message: 'user is frozen'
+                });
+                return;
             }
             return userDetailService
                 .findOne(data[0].id)

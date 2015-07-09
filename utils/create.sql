@@ -22,6 +22,7 @@ create table usr_detail(
     company_name2 varchar(50),
     company_name3 varchar(50),
     created_time timestamp,
+    praise int,
     primary key(id),
     foreign key(id) references usr(id)
 )CHARACTER SET utf8;
@@ -100,12 +101,11 @@ create table order_state(
 create table reviews(
     id int auto_increment,
     consignor int,
-    consignee int,
     DESCRIPTION varchar(200),
     order_id int,
+    level smallint,
     primary key(id),
     foreign key(consignor) references usr(id),
-    foreign key(consignee) references usr(id),
     foreign key(order_id) references orders(id)
 )CHARACTER SET utf8;
 

@@ -9,26 +9,32 @@ var connection = amqp.createConnection({
 router.get('/', function(req, res) {
     res.status(200).json([{
         id: 1,
+        status: 'success',
         state: 'a',
         vehicle: 2
     }, {
         id: 2,
+        status: 'success',
         state: 'b',
         vehicle: 2
     }, {
         id: 3,
+        status: 'success',
         state: 'c',
         vehicle: 2
     }, {
         id: 4,
+        status: 'success',
         state: 'd',
         vehicle: 2
     }, {
         id: 5,
+        status: 'success',
         state: 'a',
         vehicle: 2
     }, {
         id: 6,
+        status: 'success',
         state: 'b',
         vehicle: 2
     }]);
