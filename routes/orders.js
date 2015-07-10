@@ -12,6 +12,7 @@ var webService = require('../service/webService');
 var reviewService = require('../service/reviewService');
 var userService = require('../service/userService');
 var positionService = require('../service/positionService');
+var orderStateService = require('../service/orderStateService');
 
 var orderState = require('../orderState');
 var userAuthority = require('../userAuthority');
@@ -129,44 +130,68 @@ router.get('/:id', function(req, res, next) {
         });
 });
 
-var saveOrUpdate = function(req, res, next) {
-    var license = req.body.license,
-        mobile = req.body.mobile,
-        consigneeName = req.body.consigneeName,
-        companyName = req.body.companyName,
-        category = req.body.category,
-        cargooName = req.body.cargooName,
-        origin = req.body.origin,
-        destination = req.body.destination,
-        etd = req.body.etd,
-        quantity = req.body.quantity,
-        state = orderState[req.body.state],
-        user = req.user;
-
-    var order = {
-        license: license,
-        mobile: mobile,
-        consignee_name: consigneeName,
-        company_name: companyName,
-        category: category,
-        cargoo_name: cargooName,
-        origin: origin,
-        destination: destination,
-        etd: etd,
-        quantity: quantity,
-        created_time: new Date(),
-        current_state: state,
-        consignor: user.id
+var userAuthorityVerify = function() {
+    return function(req, res, next) {
+        var user = req.user;
+        if (user.authority != userAuthority.consignor) {
+            var err = new Error('authority should be consignor');
+            return next(err);
+        }
+        next();
     };
-    return order;
+};
 
+var extractOrder = function() {
+    return function(req, res, next) {
+        var license = req.body.license,
+            mobile = req.body.mobile,
+            consigneeName = req.body.consigneeName,
+            companyName = req.body.companyName,
+            category = req.body.category,
+            cargooName = req.body.cargooName,
+            origin = req.body.origin,
+            destination = req.body.destination,
+            etd = req.body.etd,
+            quantity = req.body.quantity,
+            state = orderState[req.body.state],
+            user = req.user;
+
+        var order = {
+            license: license,
+            mobile: mobile,
+            consignee_name: consigneeName,
+            company_name: companyName,
+            category: category,
+            cargoo_name: cargooName,
+            origin: origin,
+            destination: destination,
+            etd: etd,
+            quantity: quantity,
+            created_time: new Date(),
+            current_state: state,
+            consignor: user.id
+        };
+        req.order = order;
+        next();
+    };
+};
+
+var stateVerify = function() {
+    return function(req, res, next) {
+        var order = req.order;
+        if (order.current_state != orderState.dispatch && order.current_state != orderState.confirm) {
+            var err = new Error('state should be dispath or confirm');
+            return next(err);
+        }
+        next();
+    };
 };
 
 //insert dispatch
-router.post('/', function(req, res, next) {
-    var order = saveOrUpdate(req, res, next);
+router.post('/', userAuthorityVerify(), extractOrder(), stateVerify(), function(req, res, next) {
+    var order = req.order;
     userService
-        .findByName(order.mobile)
+        .findByNameAndAuthority(order.mobile, userAuthority.consignee)
         .then(function(data) {
             if (data.length === 0) {
                 return null;
@@ -195,9 +220,9 @@ router.post('/', function(req, res, next) {
 });
 
 //update
-router.put('/:id', function(req, res, next) {
+router.put('/:id', extractOrder(), function(req, res, next) {
     var id = req.params.id;
-    var order = saveOrUpdate(req, res, next);
+    var order = req.order;
     delete order.current_state;
 
     userService
@@ -210,17 +235,10 @@ router.put('/:id', function(req, res, next) {
                 return orderService.update(order, id);
             }
         })
-        .then(function(resultId) {
-            if (!resultId) {
-                res.json({
-                    status: 'fail',
-                    message: 'driver not exist'
-                });
-                return;
-            }
+        .then(function(result) {
             res.json({
                 status: 'success',
-                data: resultId.changedRows
+                data: result.changedRows
             });
 
         })
@@ -276,16 +294,25 @@ router.put('/:id/state', verifyState(), function(req, res, next) {
             state: state
         }, user)
         .then(function(data) {
-            if (data.changedRows > 0)
-                res.json({
-                    status: 'success'
+            if (data.changedRows > 0) {
+                return orderState.save({
+                    order_id: id,
+                    state_name: state,
+                    created_time: new Date()
                 });
-            else {
+            } else {
                 res.json({
                     status: 'fail',
                     message: 'no order updated'
                 });
+                return;
             }
+        })
+        .then(function(data) {
+            res.json({
+                status: 'success',
+                data: data.changedRows
+            });
         })
         .fail(function() {
             res.json({
@@ -298,7 +325,37 @@ router.put('/:id/state', verifyState(), function(req, res, next) {
         });
 });
 
-router.put('/:id/refuse', function(req, res, next) {});
+router.post('/:id/refuse', function(req, res, next) {
+    var desc = req.body.desc,
+        reason = req.body.reason,
+        id = req.params.id,
+        user = req.user;
+    orderService
+        .updateStateByIdAndUser({
+            id: id,
+            state: orderState.refuse
+        }, user)
+        .then(function() {
+            var refuse = {
+                order_id: id,
+                state_name: orderState.refuse,
+                refuse_reason: reason,
+                refuse_desc: desc,
+                created_time: new Date()
+            };
+            return orderStateService.save(refuse);
+        })
+        .fail(function(err) {
+            console.log(err);
+            res.json({
+                status: 'fail',
+                message: 'sql error'
+            });
+        })
+        .catch(function(err) {
+            return next(err);
+        });
+});
 
 router.post('/:id/upload', fileMulter, function(req, res) {
     var file = req.files.file;
@@ -387,10 +444,10 @@ router.post('/:id/reviews', function(req, res, next) {
                 status: 'success'
             });
         })
-        .fail(function(err) {
+        .fail(function() {
             res.json({
                 status: 'fail',
-                message: err
+                message: 'insert into review fail'
             });
         })
         .catch(function(err) {

@@ -10,6 +10,9 @@ var service = {
     findByName: function(name) {
         return pool.query('select * from usr where name=?', [name]);
     },
+    findByNameAndAuthority: function(name, authority) {
+        return pool.query('select * from usr where name=? and authority=?', [name, authority]);
+    },
     findAll: function(page) {
         return pool.query('select * from usr limit ?,?', [page.page, page.size]);
     },
