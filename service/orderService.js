@@ -14,9 +14,9 @@ var service = {
     findOneAndState: function(usr, id) {
         var sql;
         if (usr.authority == userAuthority.consignee)
-            sql = 'select * from orders left join order_state on order_state.order_id=orders.id where orders.id=? and orders.consignee=? order by created_time';
+            sql = 'select * from orders left join order_state on order_state.order_id=orders.id where orders.id=? and orders.consignee=? order by order_state.created_time';
         if (usr.authority == userAuthority.consignor)
-            sql = 'select * from orders left join order_state on order_state.order_id=orders.id where orders.id=? and orders.consignor=? order by created_time';
+            sql = 'select * from orders left join order_state on order_state.order_id=orders.id where orders.id=? and orders.consignor=? order by order_state.created_time';
         return pool.query(sql, [id, usr.id]);
     },
     convertArrayToString: function(data) {

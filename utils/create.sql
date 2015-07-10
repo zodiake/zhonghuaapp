@@ -22,7 +22,7 @@ create table usr_detail(
     company_name2 varchar(50),
     company_name3 varchar(50),
     created_time timestamp,
-    praise int,
+    praise int default 0,
     primary key(id),
     foreign key(id) references usr(id)
 )CHARACTER SET utf8;
@@ -73,16 +73,11 @@ create table orders(
 create table order_gis(
     id bigint auto_increment,
     order_id int,
-    LONGITUDE decimal,
-    latitude decimal,
+    LONGITUDE varchar(11),
+    latitude varchar(11),
+    created_time timestamp,
     primary key(id),
     foreign key(order_id) references orders(id)
-)CHARACTER SET utf8;
-
-create table refuse_reason(
-    id int auto_increment,
-    name varchar(20),
-    primary key(id)
 )CHARACTER SET utf8;
 
 create table order_state(
@@ -90,12 +85,11 @@ create table order_state(
     order_id int,
     state_name varchar(10),
     img_url varchar(50),
-    refuse_reason int ,
+    refuse_reason char(1) ,
     refuse_desc varchar(200),
     created_time timestamp,
     primary key(id),
     foreign key(order_id) references orders(id),
-    foreign key(refuse_reason) references refuse_reason(id)
 )CHARACTER SET utf8;
 
 create table reviews(
@@ -145,6 +139,7 @@ create table advertise(
 insert into usr(id,name,password,authority,activate) values(1,'tom','202cb962ac59075b964b07152d234b70','ROLE_CONSIGNEE',1);
 insert into usr(id,name,password,authority,activate) values(2,'peter','202cb962ac59075b964b07152d234b70','ROLE_CONSIGNOR',1);
 insert into usr(id,name,password,authority,activate) values(3,'admin','202cb962ac59075b964b07152d234b70','ROLE_ADMIN',1);
+insert into usr(id,name,password,authority,activate) values(4,'mary','202cb962ac59075b964b07152d234b70','ROLE_CONSIGNEE',1);
 
 /*test user detail*/    
 insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company_name3) values(1,'tomeii','f','company1','company2','company3');

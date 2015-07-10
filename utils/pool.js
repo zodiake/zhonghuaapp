@@ -19,13 +19,11 @@ var service = {
         var defer = q.defer();
         var query = pool.query(sql, param, function(err, rows, fields) {
             if (err) {
+                console.log(err);
                 defer.reject(err);
             } else {
                 defer.resolve(rows);
             }
-        });
-        param.forEach(function(i) {
-            console.log(i);
         });
         console.log(query.sql);
         return defer.promise;

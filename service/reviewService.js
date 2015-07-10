@@ -1,9 +1,7 @@
 /*jslint node: true */
 'use strict';
 var pool = require('../utils/pool');
-var connection = pool.pool;
-var orderService = require('./orderService');
-var userDetailService = require('./userDetailService');
+var orderState = require('../orderState');
 var q = require('q');
 
 var service = {
@@ -67,9 +65,23 @@ var service = {
                                         state_name: orderState.appraise,
                                         created_time: new Date()
                                     }, function(err, result) {
-
-                                        connection.commit(function() {
-                                            defer.resolve();
+                                        if (err) {
+                                            console.log(err);
+                                            connection.rollback(function() {
+                                                defer.reject('praise err');
+                                            });
+                                        }
+                                        var sql = 'update orders set current_state=? where id=?';
+                                        connection.query(sql, [orderState.praise, review.order_id], function(err, result) {
+                                            if (err) {
+                                                console.log(err);
+                                                connection.rollback(function() {
+                                                    defer.reject('praise err');
+                                                });
+                                            }
+                                            connection.commit(function() {
+                                                defer.resolve();
+                                            });
                                         });
                                     });
                                 });
@@ -80,7 +92,6 @@ var service = {
             return defer.promise;
         } else {
             //todo
-            var defer = q.defer();
             pool
                 .getConnection()
                 .then(function(connection) {
@@ -92,7 +103,7 @@ var service = {
                             if (err) {
                                 connection.rollback(function(err) {
                                     defer.reject(err);
-                                })
+                                });
                             }
                             connection.query('insert into order_state set ?', {
                                 order_id: review.order_id,
@@ -104,8 +115,15 @@ var service = {
                                         defer.reject(err);
                                     });
                                 }
-                                connection.commit(function() {
-                                    defer.resolve();
+                                connection.query('update orders set ?', [], function(err, result) {
+                                    if (err) {
+                                        connection.rollback(function(err) {
+                                            defer.reject(err);
+                                        });
+                                    }
+                                    connection.commit(function() {
+                                        defer.resolve();
+                                    });
                                 });
                             });
                         });

@@ -197,7 +197,17 @@ router.post('/', userAuthorityVerify(), extractOrder(), stateVerify(), function(
                 return null;
             } else {
                 order.consignee = data[0].id;
-                return orderService.save(order);
+                return orderService
+                    .save(order)
+                    .then(function(resultId) {
+                        return orderStateService.save({
+                            order_id: resultId,
+                            state_name: orderState.created,
+                            created_time: new Date()
+                        }).then(function() {
+                            return resultId;
+                        });
+                    });
             }
         })
         .then(function(resultId) {
@@ -247,6 +257,7 @@ router.put('/:id', extractOrder(), function(req, res, next) {
         });
 });
 
+//one consignee can only have one transport order
 var verifyState = function() {
     return function(req, res, next) {
         var state = req.body.state,
@@ -295,7 +306,7 @@ router.put('/:id/state', verifyState(), function(req, res, next) {
         }, user)
         .then(function(data) {
             if (data.changedRows > 0) {
-                return orderState.save({
+                return orderStateService.save({
                     order_id: id,
                     state_name: state,
                     created_time: new Date()
@@ -310,11 +321,10 @@ router.put('/:id/state', verifyState(), function(req, res, next) {
         })
         .then(function(data) {
             res.json({
-                status: 'success',
-                data: data.changedRows
+                status: 'success'
             });
         })
-        .fail(function() {
+        .fail(function(err) {
             res.json({
                 status: 'fail',
                 message: 'sql error'
@@ -331,11 +341,20 @@ router.post('/:id/refuse', function(req, res, next) {
         id = req.params.id,
         user = req.user;
     orderService
-        .updateStateByIdAndUser({
-            id: id,
-            state: orderState.refuse
-        }, user)
-        .then(function() {
+        .findOne(id)
+        .then(function(data) {
+            if (data[0].current_state == orderState.confirm) {
+                return orderService.updateStateByIdAndUser({
+                    id: id,
+                    state: orderState.refuse
+                }, user);
+            }
+            return;
+        })
+        .then(function(data) {
+            if (!data) {
+                return null;
+            }
             var refuse = {
                 order_id: id,
                 state_name: orderState.refuse,
@@ -344,6 +363,18 @@ router.post('/:id/refuse', function(req, res, next) {
                 created_time: new Date()
             };
             return orderStateService.save(refuse);
+        })
+        .then(function(data) {
+            if (!data) {
+                res.json({
+                    status: 'fail',
+                    message: 'state should be confirm'
+                });
+                return;
+            }
+            res.json({
+                status: 'success'
+            });
         })
         .fail(function(err) {
             console.log(err);
@@ -368,14 +399,16 @@ router.post('/:id/upload', fileMulter, function(req, res) {
 router.post('/geo', function(req, res, next) {
     var longitude = req.body.longitude,
         latitude = req.body.latitude,
-        order_id = req.body.orderId;
+        order_id = req.body.orderId,
+        created_time = req.body.createdTime;
 
+    console.log(longitude);
     positionService
         .insert({
             longitude: longitude,
             latitude: latitude,
             order_id: order_id,
-            created_time: new Date()
+            created_time: created_time
         })
         .then(function() {
             res.json({
@@ -412,8 +445,7 @@ router.post('/:id/reviews', function(req, res, next) {
     var orderId = req.params.id,
         desc = req.body.desc,
         level = req.body.level,
-        userId = req.user.id,
-        reason = req.body.reason;
+        userId = req.user.id;
 
     reviewService
         .countByOrder(orderId)
@@ -423,7 +455,6 @@ router.post('/:id/reviews', function(req, res, next) {
                     description: desc,
                     order_id: orderId,
                     level: level,
-                    reason: reasonEnmu[reason],
                     consignor: userId
                 };
                 return reviewService.save(review);
@@ -438,7 +469,6 @@ router.post('/:id/reviews', function(req, res, next) {
                     status: 'fail',
                     message: 'already review'
                 });
-                return;
             }
             res.json({
                 status: 'success'
