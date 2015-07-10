@@ -15,9 +15,9 @@ var positionService = require('../service/positionService');
 var orderStateService = require('../service/orderStateService');
 
 var orderState = require('../orderState');
+var reason = require('../reason');
 var userAuthority = require('../userAuthority');
 var config = require('../config');
-var reasonEnmu = require('../reason');
 
 router.use(e_jwt({
     secret: config.key
@@ -96,36 +96,52 @@ router.get('/:id', function(req, res, next) {
         .findOneAndState(req.user, id)
         .then(function(data) {
             var state = [];
-            var result;
+            var result = {
+                id: data[0].id,
+                order_id: data[0].order_id,
+                license: data[0].license,
+                consignor: data[0].consignor,
+                consignee: data[0].consignee,
+                companyName: data[0].company_name,
+                category: data[0].category,
+                cargooName: data[0].cargoo_name,
+                origin: data[0].origin,
+                destination: data[0].destination,
+                quantity: data[0].quantity,
+                currentState: data[0].current_state,
+                createdTime: data[0].created_time,
+                type: data[0].type
+            };
             if (data.length > 0) {
-                result = {
-                    id: data[0].id,
-                    order_id: data[0].order_id,
-                    license: data[0].license,
-                    consignor: data[0].consignor,
-                    consignee: data[0].consignee,
-                    companyName: data[0].company_name,
-                    category: data[0].category,
-                    cargooName: data[0].cargoo_name,
-                    origin: data[0].origin,
-                    destination: data[0].destination,
-                    quantity: data[0].quantity,
-                    currentState: data[0].current_state,
-                    createdTime: data[0].created_time
-                };
                 data.forEach(function(d) {
-                    state.push({
+                    var s = {
                         stateName: d.state_name,
                         createTime: d.created_time
-                    });
+                    };
+                    if (d.state_name == orderState.refuse) {
+                        s.refuse_reason = reason[d.refuse_reason];
+                        s.refuse_desc = d.refuse_desc;
+                    }
+                    if (d.state_name == orderState.appraise) {
+                        s.image_url = d.img_url;
+                    }
+                    state.push(s);
                 });
             }
             result.states = state;
+            if (result.currentState == orderState.transport && result.type) {
+                return webService.merge(result, result.type, '?order_id=1');
+            } else {
+                return result;
+            }
+        })
+        .then(function(data) {
             res.json({
                 status: 'success',
-                data: result
+                data: data
             });
-        }).catch(function(err) {
+        })
+        .catch(function(err) {
             return next(err);
         });
 });

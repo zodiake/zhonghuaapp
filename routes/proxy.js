@@ -40,6 +40,14 @@ router.get('/', function(req, res) {
     }]);
 });
 
+router.get('/:id', function(req, res) {
+    res.json({
+        order_id: '1',
+        waiting: '4',
+        status: true
+    });
+});
+
 router.get('/amqp', function(req, res) {
     var exchange = connection.exchange('test-exchange', {
         autoDelete: false,
