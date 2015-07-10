@@ -12,4 +12,7 @@ recommand.controller('RecommandController', ['$scope', function($scope) {
         status: '已读',
         date: '2015-07-09'
     }]
+    $scope.search = function() {
+
+    }
 }]);
