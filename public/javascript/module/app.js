@@ -105,6 +105,11 @@ app.config(['$stateProvider',
                 url: '/cargooAdd',
                 templateUrl: '/template/cargooAdd.html',
                 controller: 'CargooAddController'
+            })
+            .state('tabs.recommandDetail', {
+                url: '/recommandDetail',
+                templateUrl: '/template/recommandDetail.html',
+                controller: 'recommandDetailController'
             });
     }
 ]);

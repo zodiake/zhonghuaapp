@@ -1,6 +1,6 @@
 <div class="contentpanel">
     <div class="panel-body">
-        <form class="form-inline">
+        <form class="form-inline" ng-submit="search()">
             <div class="form-group">
                 <select name="state" style="width:150px;height:30px;border-radius:3px;border:1px solid #ccc">
                     <option value="">全部状态</option>
@@ -26,11 +26,11 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1123354564</td>
-                <td>张三</td>
-                <td>已读</td>
-                <td>2015-04-25</td>
+            <tr ng-repeat="item in items">
+                <td><a href="#/tabs/recommandDetail">{{item.recommand_id}}</a></td>
+                <td>{{item.con}}</td>
+                <td>{{item.status}}</td>
+                <td>{{item.date}}</td>
             </tr>
         </tbody>
     </table>

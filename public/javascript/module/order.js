@@ -62,7 +62,6 @@ order.controller('OrderDetailController', [
                     console.log($scope.item);
                 });
         }
-
         init();
     }
 ])
