@@ -22,7 +22,6 @@ var service = {
         return pool.query(sql, [id]);
     },
     save: function(review) {
-        var sql = 'insert into reviews set ?';
         //if user give good praise
         var defer = q.defer();
         if (review.level == 1) {
@@ -35,8 +34,8 @@ var service = {
                         }
                         console.log('transaction begin');
                         //insert into reviews
+                        var sql = 'insert into reviews set ?';
                         connection.query(sql, review, function(err, result) {
-                            console.log('insert reviews begin');
                             if (err) {
                                 connection.rollback(function() {
                                     console.log(err);
@@ -63,13 +62,15 @@ var service = {
                                             defer.reject('praise err');
                                         });
                                     }
-                                    var state = {
+                                    connection.query('insert into order_state set ?', {
                                         order_id: review.order_id,
-                                        state_name: '已评价',
+                                        state_name: orderState.appraise,
                                         created_time: new Date()
-                                    };
-                                    connection.commit(function() {
-                                        defer.resolve();
+                                    }, function(err, result) {
+
+                                        connection.commit(function() {
+                                            defer.resolve();
+                                        });
                                     });
                                 });
                             });
@@ -78,13 +79,39 @@ var service = {
                 });
             return defer.promise;
         } else {
+            //todo
+            var defer = q.defer();
             pool
                 .getConnection()
                 .then(function(connection) {
                     connection.beginTransaction(function(err) {
-
+                        if (err) {
+                            defer.reject(err);
+                        }
+                        connection.query('insert into reviews set ?', review, function(err, result) {
+                            if (err) {
+                                connection.rollback(function(err) {
+                                    defer.reject(err);
+                                })
+                            }
+                            connection.query('insert into order_state set ?', {
+                                order_id: review.order_id,
+                                state_name: orderState.appraise,
+                                created_time: new Date()
+                            }, function(err, result) {
+                                if (err) {
+                                    connection.roolback(function(err) {
+                                        defer.reject(err);
+                                    });
+                                }
+                                connection.commit(function() {
+                                    defer.resolve();
+                                });
+                            });
+                        });
                     });
-                })
+                });
+            return defer.promise;
         }
     }
 };
