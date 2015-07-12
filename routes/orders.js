@@ -485,10 +485,11 @@ router.post('/:id/reviews', function(req, res, next) {
                     status: 'fail',
                     message: 'already review'
                 });
+            } else {
+                res.json({
+                    status: 'success'
+                });
             }
-            res.json({
-                status: 'success'
-            });
         })
         .fail(function() {
             res.json({

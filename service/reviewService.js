@@ -3,6 +3,7 @@
 var pool = require('../utils/pool');
 var orderState = require('../orderState');
 var q = require('q');
+var _ = require('lodash');
 
 var service = {
     findOne: function() {
@@ -20,117 +21,81 @@ var service = {
         return pool.query(sql, [id]);
     },
     save: function(review) {
-        //if user give good praise
         var defer = q.defer();
-        if (review.level == 1) {
-            pool.getConnection()
-                .then(function(connection) {
-                    connection.beginTransaction(function(err) {
+
+        pool.getConnection()
+            .then(function(connection) {
+                connection.beginTransaction(function(err) {
+                    if (err) {
+                        console.log(err);
+                        defer.reject(err);
+                    }
+                    console.log('transaction begin');
+
+                    insertReview();
+
+                    function insertReview() {
+                        console.log('insert review');
+                        rollback(err);
+                        var sql = 'insert into reviews set ?';
+                        connection.query(sql, review, insertStates);
+                    };
+
+                    function insertStates(err, result) {
+                        console.log('insert state');
+                        rollback(err);
+                        var sql = 'insert into order_state set ?';
+                        var state = {
+                            order_id: review.order_id,
+                            state_name: orderState.appraise,
+                            created_time: new Date()
+                        };
+                        connection.query(sql, state, updateOrderState);
+                    };
+
+                    function updateOrderState(err, result) {
+                        console.log('update state');
+                        rollback(err);
+                        var sql = 'update orders set current_state=? where id=?';
+                        if (review.level == 1) {
+                            connection.query(sql, [orderState.appraise, review.order_id], findOrderById);
+                        } else {
+                            connection.query(sql, [orderState.appraise, review.order_id], done);
+                        }
+                    }
+
+                    function findOrderById(err, result) {
+                        console.log('find by id');
+                        rollback(err);
+                        var sql = 'select consignee from orders where id=4';
+                        connection.query(sql, [review.order_id], updateUserDetails_Praise);
+                    };
+
+                    function updateUserDetails_Praise(err, result) {
+                        console.log('update praise');
+                        rollback(err);
+                        var sql = 'update usr_detail set praise=praise+1 where id=?';
+                        connection.query(sql, [result[0].consignee], done);
+                    };
+
+                    function done() {
+                        rollback(err);
+                        connection.commit(function() {
+                            defer.resolve();
+                        });
+                    }
+
+                    function rollback(err) {
                         if (err) {
                             console.log(err);
-                            defer.reject(err);
-                        }
-                        console.log('transaction begin');
-                        //insert into reviews
-                        var sql = 'insert into reviews set ?';
-                        connection.query(sql, review, function(err, result) {
-                            if (err) {
-                                connection.rollback(function() {
-                                    console.log(err);
-                                    defer.reject('insert err');
-                                });
-                            }
-                            var findById = 'select consignee from orders where id=?';
-                            //if success select which consignee
-                            connection.query(findById, [review.order_id], function(err, result) {
-                                console.log('find by consignee');
-                                if (err) {
-                                    console.log(err);
-                                    connection.rollback(function() {
-                                        defer.reject('find err');
-                                    });
-                                }
-                                var consigneeId = result[0].consignee;
-                                var praise = 'update usr_detail set praise=praise+1 where id=?';
-                                //if success update usr_detail praise=praise+1
-                                connection.query(praise, [consigneeId], function(err, result) {
-                                    if (err) {
-                                        console.log(err);
-                                        connection.rollback(function() {
-                                            defer.reject('praise err');
-                                        });
-                                    }
-                                    connection.query('insert into order_state set ?', {
-                                        order_id: review.order_id,
-                                        state_name: orderState.appraise,
-                                        created_time: new Date()
-                                    }, function(err, result) {
-                                        if (err) {
-                                            console.log(err);
-                                            connection.rollback(function() {
-                                                defer.reject('praise err');
-                                            });
-                                        }
-                                        var sql = 'update orders set current_state=? where id=?';
-                                        connection.query(sql, [orderState.praise, review.order_id], function(err, result) {
-                                            if (err) {
-                                                console.log(err);
-                                                connection.rollback(function() {
-                                                    defer.reject('praise err');
-                                                });
-                                            }
-                                            connection.commit(function() {
-                                                defer.resolve();
-                                            });
-                                        });
-                                    });
-                                });
+                            connection.rollback(function() {
+                                defer.reject(err.message);
                             });
-                        });
-                    });
-                });
-            return defer.promise;
-        } else {
-            //todo
-            pool
-                .getConnection()
-                .then(function(connection) {
-                    connection.beginTransaction(function(err) {
-                        if (err) {
-                            defer.reject(err);
                         }
-                        connection.query('insert into reviews set ?', review, function(err, result) {
-                            if (err) {
-                                connection.rollback(function(err) {
-                                    defer.reject(err);
-                                });
-                            }
-                            connection.query('insert into order_state set ?', {
-                                order_id: review.order_id,
-                                state_name: orderState.appraise,
-                                created_time: new Date()
-                            }, function(err, result) {
-                                if (err) {
-                                    connection.roolback(function(err) {
-                                        defer.reject(err);
-                                    });
-                                }
-                                connection.query('update orders set ?', [], function(err, result) {
-                                    if (err) {
-                                        connection.rollback(function(err) {
-                                            defer.reject(err);
-                                        });
-                                    }
-                                    connection.commit(function() {
-                                        defer.resolve();
-                                    });
-                                });
-                            });
-                        });
-                    });
+                    }
                 });
-            return defer.promise;
-        }
+            });
+        return defer.promise;
     }
 };
 
