@@ -15,9 +15,9 @@ var pool = mysql.createPool({
 //@object the cache object
 //@key cache object key
 var service = {
-    query: function(sql, param) {
+    query: function (sql, param) {
         var defer = q.defer();
-        var query = pool.query(sql, param, function(err, rows, fields) {
+        var query = pool.query(sql, param, function (err, rows, fields) {
             if (err) {
                 console.log(err);
                 defer.reject(err);
@@ -28,9 +28,9 @@ var service = {
         console.log(query.sql);
         return defer.promise;
     },
-    insert: function(sql, param) {
+    insert: function (sql, param) {
         var defer = q.defer();
-        var query = pool.query(sql, param, function(err, result) {
+        var query = pool.query(sql, param, function (err, result) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -40,9 +40,9 @@ var service = {
         console.log(query.sql);
         return defer.promise;
     },
-    update: function(sql, param) {
+    update: function (sql, param) {
         var defer = q.defer();
-        var query = pool.query(sql, param, function(err, result) {
+        var query = pool.query(sql, param, function (err, result) {
             if (err) {
                 defer.reject(err);
             } else {
@@ -52,13 +52,13 @@ var service = {
         console.log(query.sql);
         return defer.promise;
     },
-    batchInsert: function(sql, param) {
-        pool.query(sql, param, function(err) {
+    batchInsert: function (sql, param) {
+        pool.query(sql, param, function (err) {
             if (err)
                 console.log(err);
         });
     },
-    buildSql: function(sql, option) {
+    buildSql: function (sql, option) {
         for (var i in option) {
             if (option[i]) {
                 var operator = option[i].operator || '=';
@@ -75,9 +75,9 @@ var service = {
         }
         return sql;
     },
-    getConnection: function() {
+    getConnection: function () {
         var defer = q.defer();
-        pool.getConnection(function(err, connection) {
+        pool.getConnection(function (err, connection) {
             if (err)
                 defer.reject(err)
             defer.resolve(connection);
