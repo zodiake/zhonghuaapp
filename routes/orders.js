@@ -55,12 +55,12 @@ router.get('/', function (req, res, next) {
         .findByUsrAndState(user, states, pageable)
         .then(function (data) {
             var flag = data.some(function (d) {
-                return d.current_state == orderState.transport && d.type;
+                return d.current_state === orderState.transport && d.type;
             });
             if (flag) {
                 var remote = [],
                     filtedData = _.chain(data).filter(function (d) {
-                        return d.current_state == orderState.transport && d.type;
+                        return d.current_state === orderState.transport && d.type;
                     }).groupBy(function (d) {
                         return d.type;
                     }).value();
@@ -102,7 +102,7 @@ router.get('/:id', function (req, res, next) {
             var state = [];
             var result = {
                 id: data[0].id,
-                order_id: data[0].order_id,
+                order_number: data[0].order_number,
                 license: data[0].license,
                 consignor: data[0].consignor,
                 consignee: data[0].consignee,
@@ -122,18 +122,18 @@ router.get('/:id', function (req, res, next) {
                         stateName: d.state_name,
                         createTime: d.created_time
                     };
-                    if (d.state_name == orderState.refuse) {
+                    if (d.state_name === orderState.refuse) {
                         s.refuse_reason = reason[d.refuse_reason];
                         s.refuse_desc = d.refuse_desc;
                     }
-                    if (d.state_name == orderState.appraise) {
+                    if (d.state_name === orderState.appraise) {
                         s.image_url = d.img_url;
                     }
                     state.push(s);
                 });
             }
             result.states = state;
-            if (result.currentState == orderState.transport && result.type) {
+            if (result.currentState === orderState.transport && result.type) {
                 return webService.merge(result, result.type, '?order_id=1');
             } else {
                 return result;
@@ -153,7 +153,7 @@ router.get('/:id', function (req, res, next) {
 var userAuthorityVerify = function () {
     return function (req, res, next) {
         var user = req.user;
-        if (user.authority != userAuthority.consignor) {
+        if (user.authority !== userAuthority.consignor) {
             var err = new Error('authority should be consignor');
             return next(err);
         }
@@ -199,7 +199,7 @@ var extractOrder = function () {
 var stateVerify = function () {
     return function (req, res, next) {
         var order = req.order;
-        if (order.current_state != orderState.dispatch && order.current_state != orderState.confirm) {
+        if (order.current_state !== orderState.dispatch && order.current_state !== orderState.confirm) {
             var err = new Error('state should be dispath or confirm');
             return next(err);
         }
@@ -207,7 +207,7 @@ var stateVerify = function () {
     };
 };
 
-//insert dispatch
+//insert order orderstate must be dispatch or confirm
 router.post('/', userAuthorityVerify(), extractOrder(), stateVerify(), function (req, res, next) {
     var order = req.order;
     userService
@@ -324,19 +324,22 @@ function confirmStateVerify(req, res, next) {
 function refuseStateConfirm(req, res, next) {
     var id = req.params.id,
         state = req.params.state;
-    orderService
-        .findOne(id)
-        .then(function (data) {
-            if (data[0].current_state !== orderState.confirm) {
-                var err = new Error('only confirm order can be canceled');
-                return next(err);
-            }
-            next();
-        });
+    if (state === 'refuse') {
+        orderService
+            .findOne(id)
+            .then(function (data) {
+                if (data[0].current_state !== orderState.confirm) {
+                    var err = new Error('only confirm order can be canceled');
+                    return next(err);
+                }
+                next();
+            });
+    }
+    next();
 }
 
 //update state
-router.put('/:id/state', confirmStateVerify, refuseStateConfirm, fileMulter, function (req, res, next) {
+router.put('/:id/state', fileMulter, confirmStateVerify, refuseStateConfirm, function (req, res, next) {
     var state = req.body.state,
         id = req.params.id,
         user = req.user,
@@ -346,9 +349,12 @@ router.put('/:id/state', confirmStateVerify, refuseStateConfirm, fileMulter, fun
             created_time: new Date()
         };
 
-    if (state === orderState.confirm) {
-        var file = req.files.file;
-        s.img_url = file.path;
+    //如果需要将状态修改为已送达
+    if (state === orderState.arrive) {
+        if (req.files.file) {
+            var file = req.files.file;
+            s.img_url = file.path;
+        }
     } else if (state === orderState.refuse) {
         var desc = req.body.desc,
             reason = req.body.reason;
@@ -362,15 +368,7 @@ router.put('/:id/state', confirmStateVerify, refuseStateConfirm, fileMulter, fun
             state: state
         }, user)
         .then(function (data) {
-            if (data.changedRows > 0) {
-                return orderStateService.save(s);
-            } else {
-                res.json({
-                    status: 'fail',
-                    message: 'no order updated'
-                });
-                return;
-            }
+            return orderStateService.save(s);
         })
         .then(function (data) {
             res.json({
@@ -433,7 +431,33 @@ router.get('/:id/geo', function (req, res, next) {
         });
 });
 
-router.post('/:id/reviews', function (req, res, next) {
+function verifyConsignor(req, res, next) {
+    var user = req.user;
+
+    if (user.authority !== userAuthority.consignor) {
+        var err = new Error('no authority to review');
+        next(err);
+    }
+
+    orderService
+        .countByUsrIdAndId(user, req.params.id)
+        .then(function (data) {
+            if (data[0].countnum > 0) {
+                next();
+            } else {
+                var err = new Error('no order to review');
+                next(err);
+            }
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
+}
+
+router.post('/:id/reviews', verifyConsignor, function (req, res, next) {
     var orderId = req.params.id,
         desc = req.body.desc,
         level = req.body.level,

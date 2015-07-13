@@ -47,7 +47,7 @@ create table common_consignee(
 
 create table orders(
     id int auto_increment,
-    order_id varchar(20),
+    order_number varchar(20),
     license varchar(15),
     consignor int,
     consignee int,
@@ -81,15 +81,15 @@ create table order_gis(
 )CHARACTER SET utf8;
 
 create table order_state(
-    id int auto_increment,
-    order_id int,
+    order_state_id bigint auto_increment,
+    order_id char(10),
     state_name varchar(10),
-    img_url varchar(50),
+    img_url char(51),
     refuse_reason char(1) ,
     refuse_desc varchar(200),
     created_time timestamp,
     primary key(id),
-    foreign key(order_id) references orders(id),
+    foreign key(order_id) references orders(id)
 )CHARACTER SET utf8;
 
 create table reviews(
@@ -144,6 +144,7 @@ insert into usr(id,name,password,authority,activate) values(4,'mary','202cb962ac
 /*test user detail*/    
 insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company_name3) values(1,'tomeii','f','company1','company2','company3');
 insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company_name3) values(2,'peter lei','m','company1','company2','company3');
+insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company_name3) values(3,'mary lei','f','company1','company2','company3');
 
 /*test category*/
 insert into cargoo_name(id,name,activate) values(1,'firstcategory1',1);
