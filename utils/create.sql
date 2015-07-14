@@ -73,7 +73,7 @@ create table orders(
 create table order_gis(
     id bigint auto_increment,
     order_id int,
-    LONGITUDE varchar(11),
+    longitude varchar(11),
     latitude varchar(11),
     created_time timestamp,
     primary key(id),
@@ -82,23 +82,23 @@ create table order_gis(
 
 create table order_state(
     order_state_id bigint auto_increment,
-    order_id char(10),
+    order_id int,
     state_name varchar(10),
     img_url char(51),
     refuse_reason char(1) ,
     refuse_desc varchar(200),
     created_time timestamp,
-    primary key(id),
+    primary key(order_state_id),
     foreign key(order_id) references orders(id)
 )CHARACTER SET utf8;
 
 create table reviews(
-    id int auto_increment,
+    reviews_id int auto_increment,
     consignor int,
-    DESCRIPTION varchar(200),
+    description varchar(200),
     order_id int,
     level smallint,
-    primary key(id),
+    primary key(reviews_id),
     foreign key(consignor) references usr(id),
     foreign key(order_id) references orders(id)
 )CHARACTER SET utf8;
@@ -142,8 +142,7 @@ insert into usr(id,name,password,authority,activate) values(3,'admin','202cb962a
 insert into usr(id,name,password,authority,activate) values(4,'mary','202cb962ac59075b964b07152d234b70','ROLE_CONSIGNEE',1);
 
 /*test user detail*/    
-insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company_name3) values(1,'tomeii','f','company1','company2','company3');
-insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company_name3) values(2,'peter lei','m','company1','company2','company3');
+insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company_name3) values(1,'tomeii','f','company1','company2','company3'); insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company_name3) values(2,'peter lei','m','company1','company2','company3');
 insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company_name3) values(3,'mary lei','f','company1','company2','company3');
 
 /*test category*/
@@ -155,10 +154,10 @@ insert into cargoo_name(id,name,parent_id,activate) values(5,'secondCategory3',4
 insert into cargoo_name(id,name,parent_id,activate) values(6,'secondCategory4',4,1);
 
 /*test orders*/
-insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_id,category) values(1,'沪A-123456',2,1,'tom','haha',2,'待分配','aabbcc','1');
-insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_id,category) values(2,'沪A-123456',2,1,'tom','haha',2,'待确认','aabbcc','1');
-insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_id,category) values(3,'沪A-123456',2,1,'tom','haha',5,'运送中','aabbcc','4');
-insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_id,category) values(4,'沪A-123456',2,1,'tom','haha',5,'已送达','aabbcc','4');
+insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_number,category) values(1,'沪A-123456',2,1,'tom','haha',2,'待分配','aabbcc','1');
+insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_number,category) values(2,'沪A-123456',2,1,'tom','haha',2,'待确认','aabbcc','1');
+insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_number,category) values(3,'沪A-123456',2,1,'tom','haha',5,'运送中','aabbcc','4');
+insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_number,category) values(4,'沪A-123456',2,1,'tom','haha',5,'已送达','aabbcc','4');
 
 /*test orders state*/    
 insert into order_state(order_id,state_name,created_time) values(1,'待分配','2013-1-1 12:13:14');
@@ -166,4 +165,4 @@ insert into order_state(order_id,state_name,created_time) values(1,'待确认','
 insert into order_state(order_id,state_name,created_time) values(1,'运送中','2013-1-1 12:13:14');
 insert into order_state(order_id,state_name,created_time) values(1,'已送达','2013-1-1 12:13:14');
 
-CREATE INDEX order_id_index ON orders(order_id);
+CREATE INDEX order_id_index ON orders(order_number);

@@ -126,12 +126,14 @@ router.get('/:id', function (req, res, next) {
                         s.refuse_reason = reason[d.refuse_reason];
                         s.refuse_desc = d.refuse_desc;
                     }
-                    if (d.state_name === orderState.appraise) {
+                    if (d.state_name === orderState.arrive) {
                         s.image_url = d.img_url;
                     }
                     state.push(s);
                 });
             }
+            result.level = data[0].level;
+            result.review_content = data[0].review_content;
             result.states = state;
             if (result.currentState === orderState.transport && result.type) {
                 return webService.merge(result, result.type, '?order_id=1');
@@ -295,7 +297,7 @@ function confirmStateVerify(req, res, next) {
 
     //if state is null throw err
     if (!orderState[state]) {
-        var err = new Error('state can not be empty');
+        var err = new Error('请填写状态');
         return next(err);
     }
     //consignee can only have one transport order
@@ -307,7 +309,7 @@ function confirmStateVerify(req, res, next) {
             })
             .then(function (data) {
                 if (data[0].countNum > 0) {
-                    var err = new Error('already having a transport order');
+                    var err = new Error('请先完成上一个运单');
                     return next(err);
                 } else {
                     next();
@@ -324,13 +326,24 @@ function confirmStateVerify(req, res, next) {
 function refuseStateConfirm(req, res, next) {
     var id = req.params.id,
         state = req.params.state;
-    if (state === 'refuse') {
+    //only confirm state order can be refuse
+    //only confirm or dispatch state order can be closed
+    if (state === 'refuse' || state === 'closed') {
         orderService
             .findOne(id)
             .then(function (data) {
-                if (data[0].current_state !== orderState.confirm) {
-                    var err = new Error('only confirm order can be canceled');
-                    return next(err);
+                var current_state = data[0].current_state;
+                if (state === 'refuse') {
+                    if (current_state !== orderState.confirm) {
+                        var err = new Error('待确认状态订单才能拒绝');
+                        return next(err);
+                    }
+                }
+                if (state === 'closed') {
+                    if (current_state !== orderState.confirm || current_state !== orderState.dispatch) {
+                        var err = new Error('待分配待确认状态订单才能关闭');
+                        return next(err);
+                    }
                 }
                 next();
             });
@@ -435,7 +448,7 @@ function verifyConsignor(req, res, next) {
     var user = req.user;
 
     if (user.authority !== userAuthority.consignor) {
-        var err = new Error('no authority to review');
+        var err = new Error('没有权限');
         next(err);
     }
 
@@ -445,7 +458,7 @@ function verifyConsignor(req, res, next) {
             if (data[0].countnum > 0) {
                 next();
             } else {
-                var err = new Error('no order to review');
+                var err = new Error('该订单已被评价');
                 next(err);
             }
         })
@@ -483,7 +496,7 @@ router.post('/:id/reviews', verifyConsignor, function (req, res, next) {
             if (data === -1) {
                 res.json({
                     status: 'fail',
-                    message: 'already review'
+                    message: '一个订单智能评价一次'
                 });
             } else {
                 res.json({
@@ -494,7 +507,7 @@ router.post('/:id/reviews', verifyConsignor, function (req, res, next) {
         .fail(function () {
             res.json({
                 status: 'fail',
-                message: 'insert into review fail'
+                message: '插入失败'
             });
         })
         .catch(function (err) {

@@ -22,7 +22,8 @@
     "q": "^1.4.1",
     "request": "^2.58.0",
     "serve-favicon": "~2.2.1",
-    "squel": "^4.0.0"
+    "squel": "^4.0.0",
+    "winston": "^1.0.1"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
