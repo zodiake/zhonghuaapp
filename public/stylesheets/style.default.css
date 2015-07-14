@@ -4024,3 +4024,19 @@ body.rtl .formError .formErrorArrow {
 .cargooAdd_d .ml30 {
     padding-left: 0;
 }
+
+.tab-rows span {
+    display: block;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-rows span:nth-child(3) {
+    border: none;
+}
+
+select {
+    width: 150px;
+    height: 30px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
