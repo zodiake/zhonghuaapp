@@ -202,8 +202,14 @@ var stateVerify = function () {
     return function (req, res, next) {
         var order = req.order;
         if (order.current_state !== orderState.dispatch && order.current_state !== orderState.confirm) {
-            var err = new Error('state should be dispath or confirm');
+            var err = new Error('状态应为待分配或带确认');
             return next(err);
+        }
+        if (order.current_state === orderState.confirm) {
+            if (!order.license || !order.mobile) {
+                var err = new Error('请输入车牌，手机号');
+                return next(err);
+            }
         }
         next();
     };

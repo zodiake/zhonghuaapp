@@ -12,7 +12,7 @@ router.use(e_jwt({
     secret: config.key
 }));
 
-router.post('/csv/upload', function(req, res, next) {
+router.post('/csv/upload', function (req, res, next) {
     var filePath = req.files.path;
 
 });
