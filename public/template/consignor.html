@@ -2,7 +2,7 @@
     <div class="panel-body">
         <form ng-submit="search()" class="form-inline" name="searchForm">
             <div class="form-group">
-                <select style="width:150px;height:30px;border-radius:3px;border:1px solid #ccc" name="activate" ng-model="option.activate">
+                <select name="activate" ng-model="option.activate">
                     <option value="">全部状态</option>
                     <option value="0">停用</option>
                     <option value="1">使用中</option>
@@ -14,7 +14,7 @@
             <input class="btn btn-primary btn-xs" type="submit" value="搜索" />
         </form>
     </div>
-    <table class="table table-bordered">
+    <table class="table table-bordered tab-rows">
         <thead>
             <tr>
                 <th>序号</th>
@@ -38,6 +38,21 @@
                 <td>{{item.company_name}}</td>
                 <td>{{item.activate}}</td>
                 <td>{{item.created_time}}</td>
+                <td><a class="text-info">解冻</a></td>
+            </tr>
+            <tr>
+                <td>2222</td>
+                <td>435345</td>
+                <td>dsssssss</td>
+                <td>fsdff</td>
+                <td>fffffffg</td>
+                <td>
+                    <span>one</span>
+                    <span>two</span>
+                    <span>three</span>
+                </td>
+                <td>rt5trrrrrrrr</td>
+                <td>rrrr</td>
                 <td><a class="text-info">解冻</a></td>
             </tr>
         </tbody>
