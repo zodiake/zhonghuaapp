@@ -37,6 +37,9 @@ router.use(function (req, res, next) {
 
 var usrCall = function (role) {
     return function (req, res, next) {
+        req.io.sockets.emit('hi', {
+            hello: 'world'
+        });
         var pageable = {
             page: req.query.page - 1 || 0,
             size: req.query.size || 15
