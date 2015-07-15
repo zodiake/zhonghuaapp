@@ -14,16 +14,26 @@ var multer = require('multer');
 
 var user_mobile = {};
 
-var cryptoPwd = function(password) {
+var cryptoPwd = function (password) {
     return crypto.createHash('md5').update(password).digest('hex');
 };
 
 /* GET users listing. */
-router.get('/', function(req, res) {
+router.get('/', function (req, res, next) {
+    var mobile = req.query.mobile;
     userService
-        .findOne(1)
-        .then(function(data) {
-            res.json(data);
+        .findByName(mobile)
+        .then(function (data) {
+            res.json({
+                status: 'success',
+                data: data[0]
+            });
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
         });
 });
 
@@ -43,11 +53,11 @@ function getRandomInt(min, max) {
 }
 
 //获取验证码
-router.get('/captcha', function(req, res) {
+router.get('/captcha', function (req, res) {
     var mobile = req.query.mobile;
     userService
         .countByMobile(mobile)
-        .then(function(data) {
+        .then(function (data) {
             if (data[0].usrCount === 0) {
                 //todo send short message
                 user_mobile[mobile] = 1111; //getRandomInt(1000, 9999);
@@ -64,7 +74,7 @@ router.get('/captcha', function(req, res) {
 });
 
 //注册
-router.post('/signup', function(req, res, next) {
+router.post('/signup', function (req, res, next) {
     var name = req.body.name,
         password = req.body.password,
         captcha = req.body.captcha,
@@ -89,13 +99,13 @@ router.post('/signup', function(req, res, next) {
         name: name,
         password: cryptoPwd(password),
         authority: type
-    }).then(function(result) {
+    }).then(function (result) {
         return userDetailService
             .save({
                 id: result,
                 created_Time: new Date()
             })
-            .then(function(data) {
+            .then(function (data) {
                 delete user_mobile[name];
                 var token = jwt.sign({
                     id: result,
@@ -107,19 +117,19 @@ router.post('/signup', function(req, res, next) {
                     data: token
                 });
             });
-    }).catch(function(err) {
+    }).catch(function (err) {
         return next(err);
     });
 });
 
 //登入
-router.post('/login', function(req, res, next) {
+router.post('/login', function (req, res, next) {
     var name = req.body.name,
         password = req.body.password;
     console.log(cryptoPwd(password));
     userService
         .findByName(name)
-        .then(function(data) {
+        .then(function (data) {
             if (data.length === 0) {
                 res.json({
                     status: 'fail',
@@ -142,7 +152,7 @@ router.post('/login', function(req, res, next) {
             }
             return userDetailService
                 .findOne(data[0].id)
-                .then(function(detail) {
+                .then(function (detail) {
                     var usr = data[0];
                     var token = jwt.sign({
                         id: usr.id,
@@ -156,7 +166,7 @@ router.post('/login', function(req, res, next) {
                     });
                 });
         })
-        .catch(function(err) {
+        .catch(function (err) {
             return next(err);
         });
 });
@@ -164,7 +174,7 @@ router.post('/login', function(req, res, next) {
 //修改密码
 router.post('/changePwd',
     verify,
-    function(req, res, next) {
+    function (req, res, next) {
         var oldPwd = req.body.oldPwd,
             newPwd = req.body.newPwd,
             usrId = req.user.id;
@@ -172,7 +182,7 @@ router.post('/changePwd',
 
         userService
             .findOne(usrId)
-            .then(function(data) {
+            .then(function (data) {
                 if (data.password == oldPwd) {
                     return userService.updatePwd({
                         id: usrId,
@@ -182,7 +192,7 @@ router.post('/changePwd',
                     return 'fail';
                 }
             })
-            .then(function(data) {
+            .then(function (data) {
                 if (data == 'fail')
                     res.json({
                         status: 'fail',
@@ -193,31 +203,31 @@ router.post('/changePwd',
                         status: 'success'
                     });
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 return next(err);
             });
     });
 
 router.get('/detail',
     verify,
-    function(req, res, next) {
+    function (req, res, next) {
         var id = req.user.id;
         userDetailService
             .findOne(id)
-            .then(function(data) {
+            .then(function (data) {
                 res.json({
                     status: 'success',
                     data: data[0]
                 });
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 return next(err);
             });
     });
 
 router.post('/detail',
     verify,
-    function(req, res, next) {
+    function (req, res, next) {
         var usr = req.user,
             name = req.body.name,
             gender = genderType[req.body.gender],
@@ -235,11 +245,11 @@ router.post('/detail',
                 company_name2: company_name2,
                 company_name3: company_name3
             })
-            .then(function(data) {
+            .then(function (data) {
                 res.json({
                     status: 'success'
                 });
-            }).catch(function(err) {
+            }).catch(function (err) {
                 return next(err);
             });
 

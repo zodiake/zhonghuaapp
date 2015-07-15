@@ -7,7 +7,6 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var multer = require('multer');
 
 /*--------------custom routes------------*/
 var routes = require('./routes/index');
@@ -17,6 +16,7 @@ var suggestions = require('./routes/suggestion');
 var vehicle = require('./routes/vehicle');
 var admin = require('./routes/admin');
 var category = require('./routes/category');
+var commonConsignee = require('./routes/commonConsignee');
 
 /*---------------amqp---------------------*/
 var queue = require('./service/amqpService');
@@ -44,6 +44,7 @@ app.use('/suggestions', suggestions);
 app.use('/vehicle', vehicle);
 app.use('/admin', admin);
 app.use('/category', category);
+app.use('/commonConsignee', commonConsignee);
 
 //just test remote web service should deleted from productd
 if (app.get('env') === 'development') {
@@ -52,7 +53,7 @@ if (app.get('env') === 'development') {
 }
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
@@ -63,7 +64,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
+    app.use(function (err, req, res, next) {
         if (err.name === 'UnauthorizedError') {
             res.json({
                 status: 'fail',
@@ -81,7 +82,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.json({
             status: 'fail',

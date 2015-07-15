@@ -3,68 +3,74 @@
 var pool = require('../utils/pool');
 var _ = require('lodash');
 var userAuthority = require('../userAuthority');
+var orderState = require('../orderState');
 var squel = require('squel');
 var q = require('q');
 
 var service = {
-    findOne: function(id) {
+    findOne: function (id) {
         var sql = 'select * from orders where id=?';
         return pool.query(sql, [id]);
     },
-    findOneAndState: function(usr, id) {
+    findOneAndState: function (usr, id) {
         var sql;
-        if (usr.authority == userAuthority.consignee)
-            sql = 'select * from orders left join order_state on order_state.order_id=orders.id where orders.id=? and orders.consignee=? order by order_state.created_time';
-        if (usr.authority == userAuthority.consignor)
-            sql = 'select * from orders left join order_state on order_state.order_id=orders.id where orders.id=? and orders.consignor=? order by order_state.created_time';
+        if (usr.authority === userAuthority.consignee) {
+            sql = 'select * from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id where orders.id=? and orders.consignee=? order by order_state.created_time desc';
+        }
+        if (usr.authority === userAuthority.consignor) {
+            sql = 'select * from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id where orders.id=? and orders.consignor=? order by order_state.created_time desc';
+        }
         return pool.query(sql, [id, usr.id]);
     },
-    convertArrayToString: function(data) {
-        var array = data.map(function(d) {
+    convertArrayToString: function (data) {
+        var array = data.map(function (d) {
             return d.id;
         });
         return 'id=[' + array.join(',') + ']';
     },
-    findByUsrAndState: function(user, state, page) {
-        var sql = squel.select().from('orders');
-        var filter = squel.expr();
+    findByUsrAndState: function (user, state, page) {
+        var sql = squel.select().from('orders'),
+            stateFilter = squel.expr(),
+            userFilter = squel.expr();
         if (state.length > 0) {
-            state.forEach(function(d) {
-                filter.or("current_state='" + d + "'");
+            state.forEach(function (d) {
+                stateFilter.or("current_state='" + d + "'");
             });
         }
-        if (user.authority == userAuthority.consignor) {
-            filter.and("consignor='" + user.id + "'");
-        } else if (user.authority == userAuthority.consignee) {
-            filter.and("consignee='" + user.id + "'");
+        if (user.authority === userAuthority.consignor) {
+            userFilter.and("consignor='" + user.id + "'");
+        } else if (user.authority === userAuthority.consignee) {
+            userFilter.and("consignee='" + user.id + "'");
+            userFilter.and("current_state!='" + orderState.dispatch + "'");
         }
 
-        sql.where(filter);
+        sql.where(stateFilter);
+        sql.where(userFilter);
         sql.limit(page.size).offset(page.page * page.size);
         console.log(sql.toString());
         return pool.query(sql.toString(), []);
     },
     /*findOne by consignee or consignor */
-    findByConsigneeAndId: function(userId, id) {
+    findByConsigneeAndId: function (userId, id) {
         var sql = 'select * from orders where consignee=? and id=?';
         return pool.query(sql, [userId, id]);
     },
-    findByConsignorAndId: function(userId, id) {
+    findByConsignorAndId: function (userId, id) {
         var sql = 'select * from orders where consignor=? and id=?';
         return pool.query(sql, [userId, id]);
     },
-    findByUsrIdAndId: function(user, orderId) {
-        if (user.authority == userAuthority.consignee)
+    findByUsrIdAndId: function (user, orderId) {
+        if (user.authority === userAuthority.consignee) {
             return this.findByConsignorAndId(user.id, orderId);
-        else
-            return this.findByConsignorAndId(user.id, orderId);
+        }
+        return this.findByConsignorAndId(user.id, orderId);
     },
-    countByUsrIdAndId: function(user, orderId) {
-        var consigneeSql = 'select count(*) as countnum from orders where id=? and consignee=?';
-        var consignorSql = 'select count(*) as countnum from orders where id=? and consignor=?';
-        if (user.authority == userAuthority.consignee) {
+    countByUsrIdAndId: function (user, orderId) {
+        var consigneeSql = 'select count(*) as countnum from orders where id=? and consignee=?',
+            consignorSql = 'select count(*) as countnum from orders where id=? and consignor=?';
+        if (user.authority === userAuthority.consignee) {
             return pool.query(consigneeSql, [orderId, user.id]);
-        } else if (user.authority == userAuthority.consignor) {
+        } else if (user.authority === userAuthority.consignor) {
             return pool.query(consignorSql, [orderId, user.id]);
         } else {
             var defer = q.defer();
@@ -73,11 +79,11 @@ var service = {
         }
 
     },
-    findByOrderId: function(orderId) {
+    findByOrderId: function (orderId) {
         var sql = 'select * from orders join usr on orders.consignee=usr.id where order_id=?';
         return pool.query(sql, [orderId]);
     },
-    $$buildOptionSql: function(page, option, count) {
+    $$buildOptionSql: function (page, option, count) {
         var limit = page.size;
         var offset = (page.page - 1) * limit;
         var sql;
@@ -98,37 +104,40 @@ var service = {
         sql.offset(offset).limit(limit);
         return sql;
     },
-    findByOption: function(page, option) {
+    findByOption: function (page, option) {
         return pool.query(this.$$buildOptionSql(page, option, false).toString(), []);
     },
-    countByOption: function(page, option) {
+    countByOption: function (page, option) {
         return pool.query(this.$$buildOptionSql(page, option, true).toString(), []);
     },
-    countByStateAndConsignee: function(order) {
+    countByStateAndConsignee: function (order) {
         var sql = 'select count(*) as countNum from orders where current_state=? and consignee=?';
         return pool.query(sql, [order.state, order.consignee]);
     },
-    save: function(order) {
+    save: function (order) {
         var sql = 'insert into orders set ?';
         return pool.insert(sql, order);
     },
-    updateStateByIdAndUser: function(order, user) {
+    updateStateByIdAndUser: function (order, user) {
         var sql;
-        if (user.authority == userAuthority.consignor) {
+        if (user.authority === userAuthority.consignor) {
             sql = 'update orders set current_state=? where id=? and consignor=?';
-        } else if (user.authority == userAuthority.consignee) {
+        } else if (user.authority === userAuthority.consignee) {
             sql = 'update orders set current_state=? where id=? and consignee=?';
         }
+        console.log('state:',order.state);
+        console.log('orderId:',order.id);
+        console.log('userId:',user.id);
         return pool.query(sql, [order.state, order.id, user.id]);
     },
-    update: function(order, id) {
+    update: function (order, id) {
         var sql = 'update orders set ? where id=?';
         return pool.query(sql, [order, id]);
     },
-    merge: function(webData, data) {
-        return _.map(data, function(d) {
-            _.each(webData, function(wd) {
-                if (d.id == wd.id && wd.status == 'success') {
+    merge: function (webData, data) {
+        return _.map(data, function (d) {
+            _.each(webData, function (wd) {
+                if (d.id === wd.id && wd.status === 'success') {
                     d.sub = wd.state;
                     d.vehicle = wd.vehicle;
                     return;

@@ -6,26 +6,25 @@ var q = require('q');
 var _ = require('lodash');
 
 var service = {
-    findOne: function() {
+    findOne: function () {
 
     },
-    findAll: function() {
+    findAll: function () {
 
     },
-    findByOrder: function(id) {
+    findByOrder: function (id) {
         var sql = 'select * from reviews where order_id=?';
         return pool.query(sql, [id]);
     },
-    countByOrder: function(id) {
+    countByOrder: function (id) {
         var sql = 'select count(*) as countNum from reviews where order_id=?';
         return pool.query(sql, [id]);
     },
-    save: function(review) {
+    save: function (review) {
         var defer = q.defer();
-
         pool.getConnection()
-            .then(function(connection) {
-                connection.beginTransaction(function(err) {
+            .then(function (connection) {
+                connection.beginTransaction(function (err) {
                     if (err) {
                         console.log(err);
                         defer.reject(err);
@@ -39,7 +38,7 @@ var service = {
                         rollback(err);
                         var sql = 'insert into reviews set ?';
                         connection.query(sql, review, insertStates);
-                    };
+                    }
 
                     function insertStates(err, result) {
                         console.log('insert state');
@@ -51,7 +50,7 @@ var service = {
                             created_time: new Date()
                         };
                         connection.query(sql, state, updateOrderState);
-                    };
+                    }
 
                     function updateOrderState(err, result) {
                         console.log('update state');
@@ -67,20 +66,21 @@ var service = {
                     function findOrderById(err, result) {
                         console.log('find by id');
                         rollback(err);
-                        var sql = 'select consignee from orders where id=4';
+                        var sql = 'select consignee from orders where id=?';
                         connection.query(sql, [review.order_id], updateUserDetails_Praise);
-                    };
+                    }
 
                     function updateUserDetails_Praise(err, result) {
                         console.log('update praise');
                         rollback(err);
                         var sql = 'update usr_detail set praise=praise+1 where id=?';
+                        console.log('id:', result[0].consignee);
                         connection.query(sql, [result[0].consignee], done);
-                    };
+                    }
 
                     function done() {
                         rollback(err);
-                        connection.commit(function() {
+                        connection.commit(function () {
                             defer.resolve();
                         });
                     }
@@ -88,7 +88,7 @@ var service = {
                     function rollback(err) {
                         if (err) {
                             console.log(err);
-                            connection.rollback(function() {
+                            connection.rollback(function () {
                                 defer.reject(err.message);
                             });
                         }
