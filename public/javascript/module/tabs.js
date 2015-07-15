@@ -1,6 +1,6 @@
 var tabs = angular.module('Tabs', []);
 
-tabs.controller('TabsController', ['$scope', function($scope) {
+tabs.controller('TabsController', ['$scope', function ($scope) {
     $scope.tabData = [{
         heading: '货主管理',
         route: 'tabs.consignor'
@@ -10,6 +10,9 @@ tabs.controller('TabsController', ['$scope', function($scope) {
     }, {
         heading: '运单管理',
         route: 'tabs.order',
+    }, {
+        heading: '运单import',
+        route: 'tabs.importOrder',
     }, {
         heading: '货物管理',
         route: 'tabs.cargoo',

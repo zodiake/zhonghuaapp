@@ -9,7 +9,6 @@ var config = require('../config');
 var csv = require('csv');
 var fs = require('fs');
 var join = require('path').join;
-var pool = require('../utils/pool');
 var multer = require('multer');
 var q = require('q');
 
@@ -71,64 +70,86 @@ router.get('/csvtest', function (req, res, next) {
     var path = join(__dirname, '../csv/1.csv');
 
     var parser = csv.parse();
+
+    var fail = [];
+
     parser.on('error', function (err) {
         console.log(err.message);
+        console.log(parser.count);
     });
 
     var extract = csv.transform(function (data) {
-        var result = {
-            mobile: data[0],
-            licence: data[1],
-            consignee_name: data[2],
-            category: data[3],
-            cargoo_name: data[4],
-            origin: data[5],
-            destination: data[6],
-            etd: data[7],
-            quantity: data[8]
-        };
-        console.log('extract:', result);
-        return result;
+        if (parser.count > 1) {
+            var result = {
+                mobile: data[0],
+                licence: data[1],
+                consignee_name: data[2],
+                category: data[3],
+                cargoo_name: data[4],
+                origin: data[5],
+                destination: data[6],
+                etd: data[7],
+                quantity: data[8]
+            };
+            return result;
+        }
+        return null;
     });
 
     var validate = csv.transform(function (data) {
-        /*
-         if (data.mobile && data.mobile.length !== 11) {
-         console.log(parser.count);
-         return null;
-         }
-         */
-        if (data.mobile === null || data.licence === null) {
-            console.log(parser.count);
-            return null;
+        if (data) {
+            /*
+             if (data.mobile && data.mobile.length !== 11) {
+             console.log(parser.count);
+             return null;
+             }
+             */
+            if (data.mobile === null || data.licence === null) {
+                fail.push({
+                    row: parser.count,
+                    data: data
+                });
+                return null;
+            }
+            return data;
         }
-        console.log('validate:', data);
-        return data;
+        return null;
     });
 
     var findConsignee = csv.transform(function (data) {
-        console.log('final init data', data);
-        userService
-            .findByName(data.mobile)
-            .then(function (result) {
-                if (result.length > 0) {
-                    data.consignee = result[0].id;
-                } else {
-                    console.log(parser.count);
-                }
-                return data;
-            })
-            .then(function (data) {
-                if (data.consignee) {
-                    //todo insert into order
-                    console.log('final', data);
-                }
-            });
+        if (data) {
+            userService
+                .findByName(data.mobile)
+                .then(function (result) {
+                    if (result.length > 0) {
+                        data.consignee = result[0].id;
+                    }
+                    return data;
+                })
+                .then(function (data) {
+                    if (data.consignee) {
+                        //todo insert into order
+                    } else {
+                        var defer = q.defer();
+                        defer.resolve(data);
+                        fail.push(defer.promise);
+                    }
+                })
+                .fail(function (err) {
+                    fail.push({
+                        row: parser.count
+                    });
+                })
+                .catch(function (err) {
+                    fail.push({
+                        row: parser.count
+                    });
+                });
+        }
     });
 
     fs.createReadStream(path).pipe(parser).pipe(extract).pipe(validate).pipe(findConsignee);
 
-    res.json('ok');
 });
 
 router.post('/csv/upload', fileMulter, function (req, res) {
@@ -168,14 +189,13 @@ router.post('/csv/upload', fileMulter, function (req, res) {
         });
 
         var findConsignee = csv.transform(function (data) {
-            console.log('final init data', data);
             userService
                 .findByName(data.mobile)
                 .then(function (data) {
                     if (data.length > 0) {
                         data.consignee = data[0].id;
                     } else {
-                        console.log(parser.count);
+
                     }
                     return data;
                 })
@@ -185,7 +205,6 @@ router.post('/csv/upload', fileMulter, function (req, res) {
                         console.log('final', data);
                     }
                 });
-
         });
 
         fs.createReadStream(path).pipe(extract).pipe(validate).pipe(findConsignee);

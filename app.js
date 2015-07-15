@@ -7,6 +7,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var socketio = require('socket.io');
 
 /*--------------custom routes------------*/
 var routes = require('./routes/index');
@@ -21,7 +22,8 @@ var commonConsignee = require('./routes/commonConsignee');
 /*---------------amqp---------------------*/
 var queue = require('./service/amqpService');
 
-var app = express();
+var app = express(),
+    sio = socketio(5000);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -42,6 +44,10 @@ app.use('/users', users);
 app.use('/orders', orders);
 app.use('/suggestions', suggestions);
 app.use('/vehicle', vehicle);
+app.use('/admin', function (req, res, next) {
+    req.io = sio;
+    next();
+});
 app.use('/admin', admin);
 app.use('/category', category);
 app.use('/commonConsignee', commonConsignee);
@@ -96,4 +102,5 @@ app.use(function (err, req, res, next) {
     }
 });
 
-module.exports = app;
+module.exports.express = app;
+module.exports.sio = sio;

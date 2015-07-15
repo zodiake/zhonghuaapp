@@ -4,7 +4,8 @@
  * Module dependencies.
  */
 
-var app = require('../app');
+var app = require('../app').express;
+var sio = require('../app').sio;
 var debug = require('debug')('zhonghuaApp:server');
 var http = require('http');
 
@@ -20,7 +21,11 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+sio.listen(server);
 
+sio.on('connection',function(){
+  console.log('success');
+});
 /**
  * Listen on provided port, on all network interfaces.
  */

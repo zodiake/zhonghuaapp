@@ -1,4 +1,5 @@
 var app = angular.module('app', [
+    'btford.socket-io',
     'angular-jwt',
     'ui.router',
     'ui.bootstrap',
@@ -13,15 +14,16 @@ var app = angular.module('app', [
     'Recommand',
     'User',
     'OrderReport',
-    'Message'
+    'Message',
+    'Import'
 ]);
 
 app.config(['$stateProvider',
     '$urlRouterProvider',
     'jwtInterceptorProvider',
     '$httpProvider',
-    function($stateProvider, $urlRouterProvider, jwtInterceptorProvider, $httpProvider) {
-        jwtInterceptorProvider.tokenGetter = ['$window', function($window) {
+    function ($stateProvider, $urlRouterProvider, jwtInterceptorProvider, $httpProvider) {
+        jwtInterceptorProvider.tokenGetter = ['$window', function ($window) {
             return window.localStorage['user']
         }];
 
@@ -50,6 +52,11 @@ app.config(['$stateProvider',
                 url: '/order',
                 templateUrl: '/template/order.html',
                 controller: 'OrderController'
+            })
+            .state('tabs.importOrder', {
+                url: '/import',
+                templateUrl: '/template/order.html',
+                controller: 'ImportController'
             })
             .state('tabs.orderDetail', {
                 url: '/orderDetail/:id',
