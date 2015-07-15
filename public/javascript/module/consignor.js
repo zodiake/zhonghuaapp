@@ -31,7 +31,6 @@ consignor.controller('ConsignorController', ['$scope',
 
                 });
         }
-
         init();
 
         $scope.search = function() {
