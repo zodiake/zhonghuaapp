@@ -3,17 +3,20 @@
 var express = require('express');
 var router = express.Router();
 var e_jwt = require('express-jwt');
-var userAuthority = require('../userAuthority');
-var orderState = require('../orderState');
-var config = require('../config');
 var csv = require('csv');
-var fs = require('fs');
-var join = require('path').join;
 var multer = require('multer');
 var q = require('q');
 
+var fs = require('fs');
+var join = require('path').join;
+
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
+var pool = require('../utils/pool');
+
+var userAuthority = require('../userAuthority');
+var orderState = require('../orderState');
+var config = require('../config');
 
 router.use(e_jwt({
     secret: config.key
@@ -253,7 +256,7 @@ router.get('/orders', function (req, res, next) {
             res.json({
                 status: 'success',
                 data: {
-                    totol: result[1][0].countNum,
+                    total: result[1][0].countNum,
                     data: result[0]
                 }
             });
@@ -266,7 +269,7 @@ router.get('/orders', function (req, res, next) {
 router.get('/orders/:id', function (req, res, next) {
     var orderId = req.params.id;
     orderService
-        .findByOrderId(orderId)
+        .findOne(orderId)
         .then(function (data) {
             res.json({
                 status: 'success',
@@ -276,6 +279,24 @@ router.get('/orders/:id', function (req, res, next) {
         .catch(function (err) {
             return next(err);
         });
+});
+
+router.get('/csv', function (req, res, next) {
+    var stringfier = csv.stringify({
+        rowDelimiter: 'windows',
+        columns: ['age', 'name'],
+        header: true
+    });
+    var transformer = csv.transform(function (data) {
+        console.log(data);
+        return {
+            age: data.id,
+            name: data.consignee
+        };
+    });
+
+    res.attachment('test.csv');
+    pool.stream('select id,consignee from orders').pipe(transformer).pipe(stringfier).pipe(res);
 });
 
 module.exports = router;

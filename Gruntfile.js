@@ -1,15 +1,15 @@
 var path = require('path');
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     grunt.initConfig({
         express: {
             options: {
                 port: 3000,
-                hostname: '*'
+                hostname: 'localhost'
             },
             livereload: {
                 options: {
-                    server: path.resolve('./bin/www'),
+                    server: path.resolve('./app.js'),
                     livereload: true,
                     serverreload: true,
                     bases: [path.resolve('./public')]

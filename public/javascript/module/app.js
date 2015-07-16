@@ -15,7 +15,8 @@ var app = angular.module('app', [
     'User',
     'OrderReport',
     'Message',
-    'Import'
+    'Import',
+    'baiduMap'
 ]);
 
 app.config(['$stateProvider',

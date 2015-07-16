@@ -75,6 +75,11 @@ var service = {
         }
         return sql;
     },
+    stream: function (sql) {
+        return pool.query(sql).stream({
+            highWaterMark: 5
+        });
+    },
     getConnection: function () {
         var defer = q.defer();
         pool.getConnection(function (err, connection) {

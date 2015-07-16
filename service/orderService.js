@@ -99,9 +99,10 @@ var service = {
             sql.where('created_time <' + option.end_time.value);
         }
         delete option.end_time;
-        sql.join('usr', null, 'usr.id=orders.consignor');
         sql = pool.buildSql(sql, option);
-        sql.offset(offset).limit(limit);
+        if (!count) {
+            sql.offset(offset).limit(limit);
+        }
         return sql;
     },
     findByOption: function (page, option) {
@@ -125,9 +126,9 @@ var service = {
         } else if (user.authority === userAuthority.consignee) {
             sql = 'update orders set current_state=? where id=? and consignee=?';
         }
-        console.log('state:',order.state);
-        console.log('orderId:',order.id);
-        console.log('userId:',user.id);
+        console.log('state:', order.state);
+        console.log('orderId:', order.id);
+        console.log('userId:', user.id);
         return pool.query(sql, [order.state, order.id, user.id]);
     },
     update: function (order, id) {
