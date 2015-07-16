@@ -37,9 +37,6 @@ router.use(function (req, res, next) {
 
 var usrCall = function (role) {
     return function (req, res, next) {
-        req.io.sockets.emit('hi', {
-            hello: 'world'
-        });
         var pageable = {
             page: req.query.page - 1 || 0,
             size: req.query.size || 15
@@ -72,13 +69,19 @@ router.get('/consignee', usrCall(userAuthority.consignee));
 router.get('/csvtest', function (req, res, next) {
     var path = join(__dirname, '../csv/1.csv');
 
+    var nsp = req.io.of('/upload');
+
     var parser = csv.parse();
 
-    var fail = [];
+    var total;
 
     parser.on('error', function (err) {
         console.log(err.message);
         console.log(parser.count);
+    });
+
+    parser.on('finish', function () {
+        total = parser.count;
     });
 
     var extract = csv.transform(function (data) {
@@ -94,6 +97,7 @@ router.get('/csvtest', function (req, res, next) {
                 etd: data[7],
                 quantity: data[8]
             };
+            result.row = parser.count;
             return result;
         }
         return null;
@@ -108,10 +112,6 @@ router.get('/csvtest', function (req, res, next) {
              }
              */
             if (data.mobile === null || data.licence === null) {
-                fail.push({
-                    row: parser.count,
-                    data: data
-                });
                 return null;
             }
             return data;
@@ -130,29 +130,29 @@ router.get('/csvtest', function (req, res, next) {
                     return data;
                 })
                 .then(function (data) {
+                    if (total && data.row == total) {
+                        nsp.to(req.user.name).emit('finish', {
+                            rows: parser.count
+                        });
+                    }
                     if (data.consignee) {
                         //todo insert into order
                     } else {
-                        var defer = q.defer();
-                        defer.resolve(data);
-                        fail.push(defer.promise);
+                        nsp.to(req.user.name).emit('hi', data);
                     }
                 })
-                .fail(function (err) {
-                    fail.push({
-                        row: parser.count
-                    });
-                })
-                .catch(function (err) {
-                    fail.push({
-                        row: parser.count
-                    });
-                });
+                .fail(function (err) {})
+                .catch(function (err) {});
         }
     });
 
-    fs.createReadStream(path).pipe(parser).pipe(extract).pipe(validate).pipe(findConsignee);
 
+    nsp.on('connection', function (socket) {
+        socket.join(req.user.name);
+        fs.createReadStream(path).pipe(parser).pipe(extract).pipe(validate).pipe(findConsignee);
+    });
+
+    res.json('ok');
 });
 
 router.post('/csv/upload', fileMulter, function (req, res) {

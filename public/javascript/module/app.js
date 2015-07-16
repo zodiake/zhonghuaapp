@@ -55,7 +55,7 @@ app.config(['$stateProvider',
             })
             .state('tabs.importOrder', {
                 url: '/import',
-                templateUrl: '/template/order.html',
+                templateUrl: '/template/import.html',
                 controller: 'ImportController'
             })
             .state('tabs.orderDetail', {
