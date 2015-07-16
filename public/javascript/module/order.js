@@ -1,17 +1,17 @@
 var order = angular.module('Order', []);
 
-order.service('OrderService', ['$http', function($http) {
-    this.findAll = function(option) {
+order.service('OrderService', ['$http', function ($http) {
+    this.findAll = function (option) {
         return $http.get('/admin/orders', {
             params: option
         });
     };
-    this.findByOrderId = function(orderId) {
+    this.findByOrderId = function (orderId) {
         return $http.get('/admin/orders/' + orderId);
     }
 }]);
 
-order.controller('OrderController', ['$scope', 'OrderService', function($scope, OrderService) {
+order.controller('OrderController', ['$scope', 'OrderService', function ($scope, OrderService) {
     $scope.currentPage = 1;
     $scope.size = 15;
 
@@ -20,22 +20,22 @@ order.controller('OrderController', ['$scope', 'OrderService', function($scope, 
     function init(option) {
         OrderService
             .findAll(option)
-            .then(function(data) {
+            .then(function (data) {
                 if (data.data.status == 'success') {
-                    console.log(data);
                     $scope.items = data.data.data.data;
                     $scope.total = data.data.data.total;
+                    console.log($scope.total);
                 } else {
 
                 }
-            }).catch(function(err) {
+            }).catch(function (err) {
 
             });
     }
 
     init();
 
-    $scope.search = function() {
+    $scope.search = function () {
         init({
             page: $scope.currentPage,
             size: $scope.size,
@@ -53,11 +53,11 @@ order.controller('OrderDetailController', [
     '$scope',
     '$stateParams',
     'OrderService',
-    function($scope, $stateParams, OrderService) {
+    function ($scope, $stateParams, OrderService) {
         function init() {
             OrderService
                 .findByOrderId($stateParams.id)
-                .then(function(data) {
+                .then(function (data) {
                     $scope.item = data.data.data;
                     console.log($scope.item);
                 });
@@ -65,3 +65,24 @@ order.controller('OrderDetailController', [
         init();
     }
 ])
+
+order.controller('OrderMapController', ['$scope', function ($scope) {
+    var longitude = 121.506191;
+    var latitude = 31.245554;
+    $scope.mapOptions = {
+        center: {
+            longitude: longitude,
+            latitude: latitude
+        },
+        zoom: 17,
+        markers: [{
+            longitude: longitude,
+            latitude: latitude,
+            icon: 'img/mappiont.png',
+            width: 49,
+            height: 60,
+            title: 'Where',
+            content: 'Put description here'
+        }]
+    };
+}]);

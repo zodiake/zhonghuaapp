@@ -23,7 +23,7 @@ var commonConsignee = require('./routes/commonConsignee');
 var queue = require('./service/amqpService');
 
 var app = express(),
-    sio = socketio(5000);
+    sio = socketio();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

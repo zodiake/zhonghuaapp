@@ -3,17 +3,20 @@
 var express = require('express');
 var router = express.Router();
 var e_jwt = require('express-jwt');
-var userAuthority = require('../userAuthority');
-var orderState = require('../orderState');
-var config = require('../config');
 var csv = require('csv');
-var fs = require('fs');
-var join = require('path').join;
 var multer = require('multer');
 var q = require('q');
 
+var fs = require('fs');
+var join = require('path').join;
+
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
+var pool = require('../utils/pool');
+
+var userAuthority = require('../userAuthority');
+var orderState = require('../orderState');
+var config = require('../config');
 
 router.use(e_jwt({
     secret: config.key
@@ -69,13 +72,19 @@ router.get('/consignee', usrCall(userAuthority.consignee));
 router.get('/csvtest', function (req, res, next) {
     var path = join(__dirname, '../csv/1.csv');
 
+    var nsp = req.io.of('/upload');
+
     var parser = csv.parse();
 
-    var fail = [];
+    var total;
 
     parser.on('error', function (err) {
         console.log(err.message);
         console.log(parser.count);
+    });
+
+    parser.on('finish', function () {
+        total = parser.count;
     });
 
     var extract = csv.transform(function (data) {
@@ -91,6 +100,7 @@ router.get('/csvtest', function (req, res, next) {
                 etd: data[7],
                 quantity: data[8]
             };
+            result.row = parser.count;
             return result;
         }
         return null;
@@ -105,10 +115,6 @@ router.get('/csvtest', function (req, res, next) {
              }
              */
             if (data.mobile === null || data.licence === null) {
-                fail.push({
-                    row: parser.count,
-                    data: data
-                });
                 return null;
             }
             return data;
@@ -127,29 +133,29 @@ router.get('/csvtest', function (req, res, next) {
                     return data;
                 })
                 .then(function (data) {
+                    if (total && data.row == total) {
+                        nsp.to(req.user.name).emit('finish', {
+                            rows: parser.count
+                        });
+                    }
                     if (data.consignee) {
                         //todo insert into order
                     } else {
-                        var defer = q.defer();
-                        defer.resolve(data);
-                        fail.push(defer.promise);
+                        nsp.to(req.user.name).emit('hi', data);
                     }
                 })
-                .fail(function (err) {
-                    fail.push({
-                        row: parser.count
-                    });
-                })
-                .catch(function (err) {
-                    fail.push({
-                        row: parser.count
-                    });
-                });
+                .fail(function (err) {})
+                .catch(function (err) {});
         }
     });
 
-    fs.createReadStream(path).pipe(parser).pipe(extract).pipe(validate).pipe(findConsignee);
 
+    nsp.on('connection', function (socket) {
+        socket.join(req.user.name);
+        fs.createReadStream(path).pipe(parser).pipe(extract).pipe(validate).pipe(findConsignee);
+    });
+
+    res.json('ok');
 });
 
 router.post('/csv/upload', fileMulter, function (req, res) {
@@ -250,7 +256,7 @@ router.get('/orders', function (req, res, next) {
             res.json({
                 status: 'success',
                 data: {
-                    totol: result[1][0].countNum,
+                    total: result[1][0].countNum,
                     data: result[0]
                 }
             });
@@ -263,7 +269,7 @@ router.get('/orders', function (req, res, next) {
 router.get('/orders/:id', function (req, res, next) {
     var orderId = req.params.id;
     orderService
-        .findByOrderId(orderId)
+        .findOne(orderId)
         .then(function (data) {
             res.json({
                 status: 'success',
@@ -273,6 +279,24 @@ router.get('/orders/:id', function (req, res, next) {
         .catch(function (err) {
             return next(err);
         });
+});
+
+router.get('/csv', function (req, res, next) {
+    var stringfier = csv.stringify({
+        rowDelimiter: 'windows',
+        columns: ['age', 'name'],
+        header: true
+    });
+    var transformer = csv.transform(function (data) {
+        console.log(data);
+        return {
+            age: data.id,
+            name: data.consignee
+        };
+    });
+
+    res.attachment('test.csv');
+    pool.stream('select id,consignee from orders').pipe(transformer).pipe(stringfier).pipe(res);
 });
 
 module.exports = router;
