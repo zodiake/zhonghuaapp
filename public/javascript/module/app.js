@@ -54,15 +54,20 @@ app.config(['$stateProvider',
                 templateUrl: '/template/order.html',
                 controller: 'OrderController'
             })
+            .state('tabs.orderDetail', {
+                url: '/order/:id',
+                templateUrl: '/template/orderDetail.html',
+                controller: 'OrderDetailController'
+            })
+            .state('tabs.orderMap', {
+                url: '/order/:id/map',
+                templateUrl: '/template/map.html',
+                controller: 'OrderMapController'
+            })
             .state('tabs.importOrder', {
                 url: '/import',
                 templateUrl: '/template/import.html',
                 controller: 'ImportController'
-            })
-            .state('tabs.orderDetail', {
-                url: '/orderDetail/:id',
-                templateUrl: '/template/orderDetail.html',
-                controller: 'OrderDetailController'
             })
             .state('tabs.scrollImage', {
                 url: '/scrollImage',

@@ -42,7 +42,7 @@
  *  comments: Accounding to 史魁杰's comments, markers' watcher should have set deep watch equal to true, and previous overlaies should be removed
  *
  */
-(function(global, factory) {
+(function (global, factory) {
     'use strict';
 
     if (typeof exports === 'object') {
@@ -53,16 +53,16 @@
         factory(global.angular);
     }
 
-}(window, function(angular) {
+}(window, function (angular) {
     'use strict';
 
-    var checkMandatory = function(prop, desc) {
+    var checkMandatory = function (prop, desc) {
         if (!prop) {
             throw new Error(desc);
         }
     };
 
-    var defaults = function(dest, src) {
+    var defaults = function (dest, src) {
         for (var key in src) {
             if (typeof dest[key] === 'undefined') {
                 // console.log(dest[key])
@@ -71,7 +71,7 @@
         }
     };
 
-    var baiduMapDir = function() {
+    var baiduMapDir = function () {
 
         // Return configured, directive instance
 
@@ -80,7 +80,7 @@
             scope: {
                 'options': '='
             },
-            link: function($scope, element, attrs, ctrl) {
+            link: function ($scope, element, attrs) {
 
                 var defaultOpts = {
                     navCtrl: true,
@@ -103,10 +103,23 @@
 
                 // init map, set central location and zoom level
                 map.centerAndZoom(new BMap.Point(opts.center.longitude, opts.center.latitude), opts.zoom);
-                var zoomControl = new BMap.ZoomControl();
-                map.addControl(zoomControl); //添加缩放控件  
-                var scaleControl = new BMap.ScaleControl();
-                map.addControl(scaleControl); //添加比例尺控件   
+                if (opts.navCtrl) {
+                    // add navigation control
+                    map.addControl(new BMap.NavigationControl());
+                }
+                if (opts.scaleCtrl) {
+                    // add scale control
+                    map.addControl(new BMap.ScaleControl());
+                }
+                if (opts.overviewCtrl) {
+                    //add overview map control
+                    map.addControl(new BMap.OverviewMapControl());
+                }
+                if (opts.enableScrollWheelZoom) {
+                    //enable scroll wheel zoom
+                    map.enableScrollWheelZoom();
+                }
+
 
                 if (!opts.markers) {
                     return;
@@ -115,13 +128,13 @@
 
                 var previousMarkers = [];
 
-                var openInfoWindow = function(infoWin) {
-                    return function() {
+                var openInfoWindow = function (infoWin) {
+                    return function () {
                         this.openInfoWindow(infoWin);
                     };
                 };
 
-                var mark = function() {
+                var mark = function () {
 
                     var i = 0;
 
@@ -160,7 +173,7 @@
 
                 mark();
 
-                $scope.$watch('options.center', function(newValue, oldValue) {
+                $scope.$watch('options.center', function (newValue, oldValue) {
 
                     opts = $scope.options;
                     map.centerAndZoom(new BMap.Point(opts.center.longitude, opts.center.latitude), opts.zoom);
@@ -168,7 +181,7 @@
 
                 }, true);
 
-                $scope.$watch('options.markers', function(newValue, oldValue) {
+                $scope.$watch('options.markers', function (newValue, oldValue) {
                     mark();
                 }, true);
 
