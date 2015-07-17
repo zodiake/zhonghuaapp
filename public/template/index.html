@@ -26,6 +26,7 @@
     <script type="text/javascript" src="/javascript/module/user.js"></script>
     <script type="text/javascript" src="/javascript/module/orderReport.js"></script>
     <script type="text/javascript" src="/javascript/module/message.js"></script>
+    <script type="text/javascript" src="/javascript/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="/javascript/module/import.js"></script>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=4GRNYuPBzgP3GNrwUqekO9p0"></script>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.default.css">
@@ -34,40 +35,17 @@
         <script src="/js/html5shiv.js"></script>
         <script src="/js/respond.min.js"></script>
         <![endif]-->
-    <style type="text/css">
-    label {
-        width: 60px;
-        display: inline-block;
-        text-align: right;
-        margin-right: 20px;
-    }
-    
-    .panel {
-        border-color: #ccc;
-    }
-    
-    footer div {
-        position: fixed;
-        bottom: 0;
-        line-height: 60px;
-        color: #fff;
-    }
-    </style>
 </head>
 
 <body ng-app="app">
     <header>
-        <div class="headerwrapper">
-            <div class="header-left">
-                <a href="#" class="logo">
-                    中石化管理系统
-                </a>
-            </div>
-        </div>
+        <a href="#" class="logo">
+            中石化管理系统
+        </a>
     </header>
-    <div ui-view></div>
-    <footer>
-        <div class="text-center headerwrapper">
+    <div ui-view class="box"></div>
+    <footer class="footerwrapper">
+        <div class="text-center">
             © 1998 - 2015 ZSH Inc. All Rights Reserved
         </div>
     </footer>
