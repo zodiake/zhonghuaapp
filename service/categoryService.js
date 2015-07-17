@@ -48,6 +48,20 @@ var service = {
             });
         }
     }
+    findByName: function (name) {
+        var sql = 'select * from cargoo_name where name=? and activate=1';
+        var defer = q.defer();
+        var self = this;
+        if (this.cache[name]) {
+            defer.resolve(this.cache[name]);
+            return defer.promise;
+        } else {
+            return pool.query(sql, [name]).then(function (data) {
+                self.cache[name] = data;
+                return data;
+            });
+        }
+    }
 };
 
 module.exports = service;

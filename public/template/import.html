@@ -30,30 +30,24 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>运单号</th>
+                <th>lines</th>
                 <th>司机手机号</th>
                 <th>司机姓名</th>
                 <th>货主手机</th>
-                <th>公司名称</th>
                 <th>货物名称</th>
                 <th>货物数量/吨</th>
-                <th>状态</th>
-                <th>生成日期</th>
-                <th>操作</th>
+                <th>reason</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in fails">
-                <td><a href="#/tabs/orderDetail/{{item.id}}">{{item.row}}</a></td>
+                <td>{{item.row}}</td>
                 <td>{{item.mobile}}</td>
                 <td>{{item.consignee_name}}</td>
                 <td>{{item.name}}</td>
-                <td>{{item.company_name}}</td>
                 <td>{{item.cargoo_name}}</td>
                 <td>{{item.quantity}}</td>
-                <td>{{item.current_state}}</td>
-                <td>2015-05-20</td>
-                <td><a class="text-info">解冻</a>|<a class="text-info">恢复</a></td>
+                <td>{{item.message}}</td>
             </tr>
         </tbody>
     </table>

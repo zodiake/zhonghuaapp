@@ -101,7 +101,7 @@ router.get('/csvtest', function (req, res, next) {
                 origin: data[5],
                 destination: data[6],
                 etd: data[7],
-                quantity: data[8]
+                quantity: Number(data[8])
             };
             result.row = parser.count;
             return result;
@@ -110,16 +110,50 @@ router.get('/csvtest', function (req, res, next) {
     });
 
     var validate = csv.transform(function (data) {
-        if (data) {
+        function socketEmitFail(data, message) {
+            data.message = message;
+            nsp.to(req.user.name).emit('fail', data);
+            return null;
+        }
+
+        function lengthValidate(data) {
             /*
-             if (data.mobile && data.mobile.length !== 11) {
-             console.log(parser.count);
-             return null;
-             }
-             */
-            if (data.mobile === null || data.licence === null) {
-                return null;
+            if (data.mobile.length != 11) {
+                socketEmitFail(data, 'mobile shoule 11');
             }
+            */
+            if (data.licence.length > 7) {
+                socketEmitFail(data, 'licence less than 11');
+            }
+            if (data.origin.length > 50) {
+                socketEmitFail(data, 'origin less then 10');
+            }
+            if (data.destination.length > 50) {
+                socketEmitFail(data, 'destination less then 10');
+            }
+            if (_.isNaN(data.quantity)) {
+                socketEmitFail(data, 'quantity should be number');
+            }
+        }
+
+        function requiredValidate(data) {
+            if (!data.licence) {
+                socketEmitFail(data, 'licence can not be null');
+            }
+            if (!data.mobile) {
+                socketEmitFail(data, 'mobile can not be null');
+            }
+            if (data.category && !data.cargoo_name) {
+                socketEmitFail(data, 'set category should set cargoo_name');
+            }
+            if (data.cargoo_name && !data.category) {
+                socketEmitFail(data, 'set cargoo_name should set category');
+            }
+        }
+
+        if (data) {
+            requiredValidate(data);
+            lengthValidate(data);
             return data;
         }
         return null;
@@ -144,11 +178,18 @@ router.get('/csvtest', function (req, res, next) {
                     if (data.consignee) {
                         //todo insert into order
                     } else {
-                        nsp.to(req.user.name).emit('hi', data);
+                        data.message = 'can not find consignee';
+                        nsp.to(req.user.name).emit('fail', data);
                     }
                 })
-                .fail(function (err) {})
-                .catch(function (err) {});
+                .fail(function (err) {
+                    data.message = err.message;
+                    nsp.to(req.user.name).emit('fail', data);
+                })
+                .catch(function (err) {
+                    data.message = err.message;
+                    nsp.to(req.user.name).emit('fail', data);
+                });
         }
     });
 
@@ -161,70 +202,7 @@ router.get('/csvtest', function (req, res, next) {
     res.json('ok');
 });
 
-router.post('/csv/upload', fileMulter, function (req, res) {
-    if (req.files && req.files.file.mimetype === 'text/csv') {
-        //var path = join(__dirname, '..', req.files.file.path);
-        var path = join(__dirname, '../csv/1.csv');
-
-        var parser = csv.parse();
-        parser.on('error', function (err) {
-            console.log(err.message);
-        });
-        var extract = csv.transform(function (data) {
-            var result = {
-                mobile: data[0],
-                licence: data[1],
-                consignee_name: data[2],
-                category: data[3],
-                cargoo_name: data[4],
-                origin: data[5],
-                destination: data[6],
-                etd: data[7],
-                quantity: data[8]
-            };
-            return result;
-        });
-
-        var validate = csv.transform(function (data) {
-            if (data.mobile && data.mobile.length !== 11) {
-                console.log(parser.count);
-                return null;
-            }
-            if (data.mobile === null || data.licence === null) {
-                console.log(parser.count);
-                return null;
-            }
-            return data;
-        });
-
-        var findConsignee = csv.transform(function (data) {
-            userService
-                .findByName(data.mobile)
-                .then(function (data) {
-                    if (data.length > 0) {
-                        data.consignee = data[0].id;
-                    } else {
-
-                    }
-                    return data;
-                })
-                .then(function (data) {
-                    if (data.consignee) {
-                        //todo insert into order
-                        console.log('final', data);
-                    }
-                });
-        });
-
-        fs.createReadStream(path).pipe(extract).pipe(validate).pipe(findConsignee);
-
-        res.json('ok');
-    } else {
-        res.json({
-            data: 'csv file please'
-        });
-    }
-});
+router.post('/csv/upload', fileMulter, function (req, res) {});
 
 router.get('/orders', function (req, res, next) {
     var page = req.query.page || 1,
