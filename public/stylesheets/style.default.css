@@ -30,15 +30,22 @@ html,body,section.ng-scope{
     height: 100%;
 }
 div.box{
-    height: 80%;
+    height: 88%;
+}
+header{
+    padding:15px;
+}
+header,footer{
+    height: 6%;
+    background-color: #428BCA; 
+}
+header a{
+    color: #fff;
 }
 .footerwrapper{
-    position: fixed;
     width: 100%;
-    bottom: 0;
     line-height: 60px;
     color:#fff;
-    background-color: #428BCA;
 }
 .headerwrapper{
     background-color: #428BCA;
