@@ -11,12 +11,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>汽油</td>
-                            <td><a class="text-info">删除</a></td>
-                        </tr>
-                        <tr>
-                            <td>汽油</td>
+                        <tr ng-repeat="item in fuel">
+                            <td>{{item.name}}</td>
                             <td><a class="text-info">删除</a></td>
                         </tr>
                     </tbody>
@@ -31,12 +27,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>汽油</td>
-                            <td><a class="text-info">删除</a></td>
-                        </tr>
-                        <tr>
-                            <td>汽油</td>
+                        <tr ng-repeat="item in oil">
+                            <td>{{item.name}}</td>
                             <td><a class="text-info">删除</a></td>
                         </tr>
                     </tbody>
@@ -51,11 +43,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>汽油</td>
-                            <td><a class="text-info">删除</a></td>
-                        </tr>
-                        <tr>
+                        <tr ng-repeat="item in chemistry">
                             <td>汽油</td>
                             <td><a class="text-info">删除</a></td>
                         </tr>
@@ -71,7 +59,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr ng-repeat="item in others">
                             <td>其他</td>
                             <td><a class="text-info">删除</a></td>
                         </tr>

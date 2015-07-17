@@ -5,7 +5,7 @@ var q = require('q');
 
 var service = {
     cache: {},
-    findByParent: function(parentId) {
+    findByParent: function (parentId) {
         var defer = q.defer();
         var sql;
         var self = this;
@@ -15,7 +15,7 @@ var service = {
                 defer.resolve(this.cache.first);
                 return defer.promise;
             } else {
-                return pool.query(sql, []).then(function(data) {
+                return pool.query(sql, []).then(function (data) {
                     self.cache.first = data;
                     return data;
                 });
@@ -26,7 +26,7 @@ var service = {
                 defer.resolve(this.cache[parentId]);
                 return defer.promise;
             } else {
-                return pool.query(sql, [parentId]).then(function(data) {
+                return pool.query(sql, [parentId]).then(function (data) {
                     self.cache[parentId] = data;
                     return data;
                 });
@@ -34,7 +34,7 @@ var service = {
 
         }
     },
-    findAll: function() {
+    findAll: function () {
         var sql = 'select * from cargoo_name where activate=1';
         var defer = q.defer();
         var self = this;
@@ -42,7 +42,7 @@ var service = {
             defer.resolve(this.cache.all);
             return defer.promise;
         } else {
-            return pool.query(sql, []).then(function(data) {
+            return pool.query(sql, []).then(function (data) {
                 self.cache.all = data;
                 return data;
             });

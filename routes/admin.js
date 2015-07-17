@@ -6,6 +6,7 @@ var e_jwt = require('express-jwt');
 var csv = require('csv');
 var multer = require('multer');
 var q = require('q');
+var _ = require('lodash');
 
 var fs = require('fs');
 var join = require('path').join;
@@ -13,6 +14,8 @@ var join = require('path').join;
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
 var pool = require('../utils/pool');
+var categoryService = require('../service/categoryService');
+var suggestionService = require('../service/suggestService');
 
 var userAuthority = require('../userAuthority');
 var orderState = require('../orderState');
@@ -297,6 +300,52 @@ router.get('/csv', function (req, res, next) {
 
     res.attachment('test.csv');
     pool.stream('select id,consignee from orders').pipe(transformer).pipe(stringfier).pipe(res);
+});
+
+router.get('/category', function (req, res, next) {
+    categoryService
+        .findAll()
+        .then(function (data) {
+            var result = _.groupBy(data, function (a) {
+                return a.parent_id;
+            });
+            res.json({
+                status: 'success',
+                data: result
+            });
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
+});
+
+router.get('/suggestion', function (req, res, next) {
+    var option = {
+        beginTime: req.query.beginTime,
+        endTime: req.query.endTime,
+        state: req.query.state,
+        page: req.query.page - 1 || 0,
+        size: req.query.size || 15
+    };
+    q.all([suggestionService.search(option, true), suggestionService.search(option)])
+        .then(function (result) {
+            res.json({
+                status: 'success',
+                data: {
+                    totol: result[0][0].countNum,
+                    data: result[1]
+                }
+            });
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
 });
 
 module.exports = router;

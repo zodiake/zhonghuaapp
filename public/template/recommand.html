@@ -2,16 +2,16 @@
     <div class="panel-body">
         <form class="form-inline" ng-submit="search()">
             <div class="form-group">
-                <select name="state">
-                    <option value="">全部状态</option>
-                    <option value="">停用</option>
-                    <option value="">使用中</option>
+                <select name="state" ng-model="option.state">
+                    <option value="">全部</option>
+                    <option value="0">未读</option>
+                    <option value="1">已读</option>
                 </select>
             </div>
             <div class="form-group">
                 反馈建议生成
-                <input class="form-control" name="beginTime" placeholder="开始时间" type="date"> ~
-                <input class="form-control" name="endTime" placeholder="结束时间" type="date">
+                <input class="form-control" name="beginTime" ng-model="option.beginTime" placeholder="开始时间" type="date"> ~
+                <input class="form-control" name="endTime" ng-model="option.endTime" placeholder="结束时间" type="date">
             </div>
             <input class="btn btn-primary btn-xs" type="submit" value="查询"></input>
         </form>
@@ -29,12 +29,12 @@
             <tr ng-repeat="item in items">
                 <td><a href="#/tabs/recommandDetail">{{item.recommand_id}}</a></td>
                 <td>{{item.con}}</td>
-                <td>{{item.status}}</td>
-                <td>{{item.date}}</td>
+                <td>{{item.read_state}}</td>
+                <td>{{item.created_time}}</td>
             </tr>
         </tbody>
     </table>
     <div class="panel-footer">
-        <pagination total-items="total" items-per-page="15" max-size="7" ng-model="currentPage" ng-change="pageChanged()"></pagination>
+        <pagination total-items="total" items-per-page="15" max-size="7" ng-model="currentPage" ng-change="search()"></pagination>
     </div>
 </div>

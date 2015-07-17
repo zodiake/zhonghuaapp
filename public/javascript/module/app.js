@@ -25,7 +25,7 @@ app.config(['$stateProvider',
     '$httpProvider',
     function ($stateProvider, $urlRouterProvider, jwtInterceptorProvider, $httpProvider) {
         jwtInterceptorProvider.tokenGetter = ['$window', function ($window) {
-            return window.localStorage['user']
+            return window.localStorage.user;
         }];
 
         $httpProvider.interceptors.push('jwtInterceptor');

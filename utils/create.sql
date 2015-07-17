@@ -107,6 +107,7 @@ create table suggestion(
     id int auto_increment,
     description varchar(200),
     created_time timestamp,
+    consignor char(11),
     primary key(id)
 )CHARACTER SET utf8;
 
@@ -146,12 +147,14 @@ insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company
 insert into usr_detail(id,detail_name,gender,company_name1,company_name2,company_name3) values(3,'mary lei','f','company1','company2','company3');
 
 /*test category*/
-insert into cargoo_name(id,name,activate) values(1,'firstcategory1',1);
-insert into cargoo_name(id,name,parent_id,activate) values(2,'secondCategory1',1,1);
-insert into cargoo_name(id,name,parent_id,activate) values(3,'secondCategory2',1,1);
-insert into cargoo_name(id,name,activate) values(4,'firstcategory2',1);
-insert into cargoo_name(id,name,parent_id,activate) values(5,'secondCategory3',4,1);
-insert into cargoo_name(id,name,parent_id,activate) values(6,'secondCategory4',4,1);
+insert into cargoo_name(id,name,activate) values(1,'汽油',1);
+insert into cargoo_name(id,name,activate) values(2,'菜油',1);
+insert into cargoo_name(id,name,activate) values(3,'化工品',1);
+insert into cargoo_name(id,name,activate) values(4,'其他',1);
+insert into cargoo_name(id,name,parent_id,activate) values(5,'secondCategory1',1,1);
+insert into cargoo_name(id,name,parent_id,activate) values(6,'secondCategory2',2,1);
+insert into cargoo_name(id,name,parent_id,activate) values(7,'secondCategory3',3,1);
+insert into cargoo_name(id,name,parent_id,activate) values(8,'secondCategory4',4,1);
 
 /*test orders*/
 insert into orders(id,license,consignor,consignee,consignee_name,company_name,cargoo_name,current_state,order_number,category) values(1,'沪A-123456',2,1,'tom','haha',2,'待分配','aabbcc','1');
