@@ -170,6 +170,10 @@ router.get('/csvtest', function (req, res, next) {
                     return data;
                 })
                 .then(function (data) {
+                    if (data.category) {
+
+                    }
+
                     if (total && data.row == total) {
                         nsp.to(req.user.name).emit('finish', {
                             rows: parser.count

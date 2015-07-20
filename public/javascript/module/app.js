@@ -16,7 +16,8 @@ var app = angular.module('app', [
     'OrderReport',
     'Message',
     'Import',
-    'baiduMap'
+    'baiduMap',
+    'ngFileUpload'
 ]);
 
 app.config(['$stateProvider',

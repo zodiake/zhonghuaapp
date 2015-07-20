@@ -47,7 +47,7 @@ var service = {
                 return data;
             });
         }
-    }
+    },
     findByName: function (name) {
         var sql = 'select * from cargoo_name where name=? and activate=1';
         var defer = q.defer();
