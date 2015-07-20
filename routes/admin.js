@@ -162,30 +162,75 @@ router.get('/csvtest', function (req, res, next) {
     });
 
     var findConsignee = csv.transform(function (data) {
+
+        function convertConsignee(result) {
+            if (result.length > 0) {
+                data.consignee = result[0].id;
+                return data;
+            } else {
+                data.message = 'can not find consignee';
+                nsp.to(req.user.name).emit('fail', data);
+                return null;
+            }
+        }
+
+        function convertCategory(result) {
+            if (result) {
+                if (result.category) {
+                    return categoryService
+                        .findByName(result.category)
+                        .then(function (data) {
+                            if (data.length > 0) {
+                                result.category = data.name;
+                                return result;
+                            } else {
+                                result.message = 'can not find catgory';
+                                nsp.to(req.user.name).emit('fail', result);
+                                return null;
+                            }
+                        });
+                } else {
+                    return result;
+                }
+            } else {
+                return null;
+            }
+        }
+
+        function convertCargooName(result) {
+            if (result) {
+                if (result.cargoo_name) {
+                    return categoryService
+                        .findByName(result.cargoo_name)
+                        .then(function (data) {
+                            if (data.length > 0) {
+                                result.cargoo_name = data.name;
+                                return result;
+                            } else {
+                                result.message = 'can not find cargoo_name';
+                                nsp.to(req.user.name).emit('fail', result);
+                                return null;
+                            }
+                        });
+                }
+            } else {
+                return null;
+            }
+        }
+
         if (data) {
             userService
                 .findByName(data.mobile)
-                .then(function (result) {
-                    if (result.length > 0) {
-                        data.consignee = result[0].id;
-                    }
-                    return data;
-                })
+                .then(convertConsignee)
+                .then(convertCategory)
+                .then(convertCargooName)
                 .then(function (data) {
-                    if (data.category) {
-
-                    }
-
-                    if (total && data.row == total) {
-                        nsp.to(req.user.name).emit('finish', {
-                            rows: parser.count
-                        });
-                    }
-                    if (data.consignee) {
-                        //todo insert into order
-                    } else {
-                        data.message = 'can not find consignee';
-                        nsp.to(req.user.name).emit('fail', data);
+                    if (data) {
+                        if (total && data.row == total) {
+                            nsp.to(req.user.name).emit('finish', {
+                                rows: parser.count
+                            });
+                        }
                     }
                 })
                 .fail(function (err) {
@@ -297,7 +342,6 @@ router.get('/csv', function (req, res, next) {
         header: true
     });
     var transformer = csv.transform(function (data) {
-        console.log(data);
         return {
             age: data.id,
             name: data.consignee

@@ -52,12 +52,14 @@ var service = {
         var sql = 'select * from cargoo_name where name=? and activate=1';
         var defer = q.defer();
         var self = this;
-        if (this.cache[name]) {
-            defer.resolve(this.cache[name]);
+        var cacheName = 'name:' + name;
+        if (self.cache[cacheName]) {
+            defer.resolve(self.cache[cacheName]);
             return defer.promise;
         } else {
+            console.log(name);
             return pool.query(sql, [name]).then(function (data) {
-                self.cache[name] = data;
+                self.cache[cacheName] = data;
                 return data;
             });
         }
