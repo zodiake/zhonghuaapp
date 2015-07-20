@@ -18,23 +18,18 @@
                 <th>标题</th>
                 <th>状态</th>
                 <th>最后修改日期</th>
-                <th>操作</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>1</td>
-                <td>1123354564</td>
-                <td>使用中</td>
+                <td>
+                    Image thumbnail: <img style="width:100px;height:100px" ngf-src="files[0]" ngf-accept="'image/*'" ngf-default-src="/uploads/default.jpg">
+                </td>
+                <td>
+                    <input type='file' ng-model="files" ngf-change='upload($files)' ngf-select />
+                </td>
                 <td>2015-05-25</td>
-                <td><a class="text-info">启用</a>|<a class="text-info">删除</a>|<a class="text-info">修改</a></td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>1123354564</td>
-                <td>使用中</td>
-                <td>2015-05-25</td>
-                <td><a class="text-info">启用</a>|<a class="text-info">删除</a>|<a class="text-info">修改</a></td>
             </tr>
         </tbody>
     </table>
