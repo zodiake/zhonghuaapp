@@ -6,11 +6,23 @@ scrollImage.service('ScrollImageService', ['$http', function ($http) {
     };
 }]);
 
+scrollImage.directive('fileUpload', function () {
+    // Runs during compile
+    return {
+        restrict: 'A',
+        link: function ($scope, element, attrs, controller) {
+            var onChangeHandler = $scope.$eval(attrs.fileUpload);
+            element.bind('change', onChangeHandler);
+        }
+    };
+});
+
 scrollImage.controller('ScrollController', [
     '$scope',
-    'Upload',
+    '$window',
     'ScrollImageService',
-    function ($scope, Upload, ScrollImageService) {
+    '$http',
+    function ($scope, $window, ScrollImageService, $http) {
         function init() {
             ScrollImageService
                 .findAll()
@@ -24,27 +36,27 @@ scrollImage.controller('ScrollController', [
 
         init();
 
-        $scope.upload = function (files) {
-            if (files && files.length) {
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    console.log(file.url);
-                    Upload.upload({
-                        url: '/admin/image/upload',
-                        fields: {
-                            'username': $scope.username
-                        },
-                        file: file
-                    }).progress(function (evt) {
-                        var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                        console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-                    }).success(function (data, status, headers, config) {
-                        console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
-                    }).error(function (data, status, headers, config) {
-                        console.log('error status: ' + status);
-                    })
-                }
-            }
+        $scope.upload = function (event) {
+            var file = event.target.files[0];
+            var fd = new FormData();
+            var index = event.target.getAttribute('index');
+
+            var reader = new FileReader();
+
+            fd.append('file', file);
+            fd.append('id', event.target.getAttribute('id'));
+
+            $http.post('/admin/scrollImages', fd, {
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': undefined
+                    },
+                    transformRequest: angular.identity
+                })
+                .success(function (data) {
+                    var str = data.substring(data.indexOf('\/') + 1);
+                    $scope.items[index].image_url = '/' + str;
+                })
         };
     }
 ]);

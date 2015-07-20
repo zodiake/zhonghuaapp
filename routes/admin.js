@@ -29,7 +29,8 @@ router.use(e_jwt({
 var fileMulter = multer({
     dest: './uploads/',
     group: {
-        csv: './csv'
+        csv: './csv',
+        image: './public/uploads'
     }
 });
 
@@ -209,8 +210,9 @@ router.get('/csvtest', function (req, res, next) {
 
 router.post('/csv/upload', fileMulter, function (req, res) {});
 
-router.post('/scrollImages', fileMulter, function (req, res, next) {
-
+router.post('/scrollImages', fileMulter, function (req, res) {
+    var file = req.files.file;
+    res.json(file.path);
 });
 
 router.get('/scrollImages', function (req, res, next) {
