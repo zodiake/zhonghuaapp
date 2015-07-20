@@ -11,7 +11,7 @@
             </div>
         </form>
     </div>
-    <table class="table table-bordered">
+    <table class="table table-bordered files_tab">
         <thead>
             <tr>
                 <th>序号</th>
@@ -24,10 +24,20 @@
             <tr ng-repeat="item in items">
                 <td>{{$index+1}}</td>
                 <td>
+<<<<<<< HEAD
                     Image thumbnail: <img style="width:100px;height:100px" ngf-src="files[0]" ngf-accept="'image/*'" ngf-default-src="{{item.image_url}}">
+=======
+                <img style="width:100px;height:100px" ngf-src="files[0]" ngf-accept="'image/*'" ngf-default-src="/uploads/default.jpg">
+>>>>>>> 098f2e7bcf5043024a21cd7ccdc88d325bffffd6
                 </td>
                 <td>
-                    <input type='file' ng-model="files" ngf-change='upload($files)' ngf-select />
+                    <button id="uploadImg" class="btn btn-success btn-xs">
+                        <input type='file' ng-model="files" ngf-change='upload($files)' ngf-select >
+                        <a href="#">选择文件</a> 
+                    </button>
+                    <button type="button" class="btn btn-warning btn-xs"> 上传</button>
+                    <button type="button" class="btn btn-danger btn-xs">取消</button>
+                </td>
                 </td>
                 <td>2015-05-25</td>
             </tr>

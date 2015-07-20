@@ -6,6 +6,7 @@
 body {
     font-size: 14px;
     color: #636E7B;
+    overflow:hidden;
     background-color: #fff;
     font-family: 'Microsoft Yahei'
 }
@@ -4050,4 +4051,25 @@ select {
     height: 30px;
     border-radius: 3px;
     border: 1px solid #ccc;
+}
+.files_tab #uploadImg{ 
+    font-size:12px; 
+    color: #fff;
+    overflow:hidden;
+    padding:3px 10px;
+    background-color: #5cb85c;
+    border-color:#5cb85c;
+}
+.files_tab #uploadImg a{
+    color:#fff;
+}
+.files_tab input[type=file]{
+    width: 75px;
+    overflow: hidden;
+    position:absolute; 
+    z-index:100; 
+    font-size:60px;
+    opacity:0;
+    filter:alpha(opacity=0); 
+    margin-top:-5px;
 }
