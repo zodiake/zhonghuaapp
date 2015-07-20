@@ -21,10 +21,10 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
+            <tr ng-repeat="item in items">
+                <td>{{$index+1}}</td>
                 <td>
-                    Image thumbnail: <img style="width:100px;height:100px" ngf-src="files[0]" ngf-accept="'image/*'" ngf-default-src="/uploads/default.jpg">
+                    Image thumbnail: <img style="width:100px;height:100px" ngf-src="files[0]" ngf-accept="'image/*'" ngf-default-src="{{item.image_url}}">
                 </td>
                 <td>
                     <input type='file' ng-model="files" ngf-change='upload($files)' ngf-select />

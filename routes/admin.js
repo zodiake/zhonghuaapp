@@ -16,6 +16,7 @@ var userService = require('../service/userService');
 var pool = require('../utils/pool');
 var categoryService = require('../service/categoryService');
 var suggestionService = require('../service/suggestService');
+var scrollImageService = require('../service/scrollImageService');
 
 var userAuthority = require('../userAuthority');
 var orderState = require('../orderState');
@@ -207,6 +208,27 @@ router.get('/csvtest', function (req, res, next) {
 });
 
 router.post('/csv/upload', fileMulter, function (req, res) {});
+
+router.post('/scrollImages', fileMulter, function (req, res, next) {
+
+});
+
+router.get('/scrollImages', function (req, res, next) {
+    scrollImageService
+        .findAll()
+        .then(function (data) {
+            res.json({
+                status: 'success',
+                data: data
+            });
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        })
+});
 
 router.get('/orders', function (req, res, next) {
     var page = req.query.page || 1,
