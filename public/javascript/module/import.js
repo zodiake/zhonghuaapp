@@ -28,12 +28,9 @@ importOrder.controller('ImportController', [
         importService.fakeSocket();
         $scope.fails = [];
         socketio.on('fail', function (data) {
-            console.log('fail');
-            console.log(data);
             $scope.fails.push(data);
         });
         socketio.on('finish', function (data) {
-            console.log('finish');
             console.log(data);
         });
     }

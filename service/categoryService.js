@@ -57,10 +57,13 @@ var service = {
             defer.resolve(self.cache[cacheName]);
             return defer.promise;
         } else {
-            console.log(name);
             return pool.query(sql, [name]).then(function (data) {
-                self.cache[cacheName] = data;
-                return data;
+                if (data.length > 0) {
+                    self.cache[cacheName] = data;
+                    return data[0];
+                } else {
+                    return null;
+                }
             });
         }
     }

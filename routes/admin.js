@@ -84,7 +84,7 @@ router.get('/csvtest', function (req, res, next) {
     var total;
 
     parser.on('error', function (err) {
-        console.log(err.message);
+        console.log('error:', err.message);
         console.log(parser.count);
     });
 
@@ -102,7 +102,7 @@ router.get('/csvtest', function (req, res, next) {
                 cargoo_name: data[4],
                 origin: data[5],
                 destination: data[6],
-                etd: data[7],
+                etd: Date.parse(data[7]),
                 quantity: Number(data[8])
             };
             result.row = parser.count;
@@ -111,13 +111,14 @@ router.get('/csvtest', function (req, res, next) {
         return null;
     });
 
-    var validate = csv.transform(function (data) {
-        function socketEmitFail(data, message) {
-            data.message = message;
-            nsp.to(req.user.name).emit('fail', data);
-            return null;
-        }
+    function socketEmitFail(data, message) {
+        data.message = message;
+        nsp.to(req.user.name).emit('fail', data);
+        data.error = true;
+        return data;
+    }
 
+    var validate = csv.transform(function (data) {
         function lengthValidate(data) {
             /*
             if (data.mobile.length != 11) {
@@ -125,40 +126,46 @@ router.get('/csvtest', function (req, res, next) {
             }
             */
             if (data.licence.length > 7) {
-                socketEmitFail(data, 'licence less than 11');
+                return socketEmitFail(data, 'licence less than 11');
             }
             if (data.origin.length > 50) {
-                socketEmitFail(data, 'origin less then 10');
+                return socketEmitFail(data, 'origin less then 10');
             }
             if (data.destination.length > 50) {
-                socketEmitFail(data, 'destination less then 10');
+                return socketEmitFail(data, 'destination less then 10');
             }
             if (_.isNaN(data.quantity)) {
-                socketEmitFail(data, 'quantity should be number');
+                return socketEmitFail(data, 'quantity should be number');
             }
         }
 
         function requiredValidate(data) {
             if (!data.licence) {
-                socketEmitFail(data, 'licence can not be null');
+                return socketEmitFail(data, 'licence can not be null');
             }
             if (!data.mobile) {
-                socketEmitFail(data, 'mobile can not be null');
+                return socketEmitFail(data, 'mobile can not be null');
             }
             if (data.category && !data.cargoo_name) {
-                socketEmitFail(data, 'set category should set cargoo_name');
+                return socketEmitFail(data, 'set category should set cargoo_name');
             }
             if (data.cargoo_name && !data.category) {
-                socketEmitFail(data, 'set cargoo_name should set category');
+                return socketEmitFail(data, 'set cargoo_name should set category');
+            }
+        }
+
+        function dateValidate(data) {
+            if (_.isNaN(data.etd)) {
+                return socketEmitFail(data, 'set cargoo_name should set category');
             }
         }
 
         if (data) {
+            dateValidate(data);
             requiredValidate(data);
             lengthValidate(data);
             return data;
         }
-        return null;
     });
 
     var findConsignee = csv.transform(function (data) {
@@ -168,53 +175,41 @@ router.get('/csvtest', function (req, res, next) {
                 data.consignee = result[0].id;
                 return data;
             } else {
-                data.message = 'can not find consignee';
-                nsp.to(req.user.name).emit('fail', data);
-                return null;
+                return socketEmitFail(data, 'can not find consignee');
             }
         }
 
         function convertCategory(result) {
-            if (result) {
-                if (result.category) {
-                    return categoryService
-                        .findByName(result.category)
-                        .then(function (data) {
-                            if (data.length > 0) {
-                                result.category = data.name;
-                                return result;
-                            } else {
-                                result.message = 'can not find catgory';
-                                nsp.to(req.user.name).emit('fail', result);
-                                return null;
-                            }
-                        });
-                } else {
-                    return result;
-                }
+            if (!result.error && result.category) {
+                return categoryService
+                    .findByName(result.category)
+                    .then(function (data) {
+                        if (data) {
+                            result.category = data.name;
+                            return result;
+                        } else {
+                            return socketEmitFail(result, 'can not find catgory');
+                        }
+                    });
             } else {
-                return null;
+                return result;
             }
         }
 
         function convertCargooName(result) {
-            if (result) {
-                if (result.cargoo_name) {
-                    return categoryService
-                        .findByName(result.cargoo_name)
-                        .then(function (data) {
-                            if (data.length > 0) {
-                                result.cargoo_name = data.name;
-                                return result;
-                            } else {
-                                result.message = 'can not find cargoo_name';
-                                nsp.to(req.user.name).emit('fail', result);
-                                return null;
-                            }
-                        });
-                }
+            if (!result.error && result.cargoo_name) {
+                return categoryService
+                    .findByName(result.cargoo_name)
+                    .then(function (data) {
+                        if (data.length > 0) {
+                            result.cargoo_name = data.name;
+                            return result;
+                        } else {
+                            return socketEmitFail(data, 'can not find cargoo_name');
+                        }
+                    });
             } else {
-                return null;
+                return result;
             }
         }
 
@@ -225,19 +220,17 @@ router.get('/csvtest', function (req, res, next) {
                 .then(convertCategory)
                 .then(convertCargooName)
                 .then(function (data) {
-                    if (data) {
-                        if (total && data.row == total) {
-                            nsp.to(req.user.name).emit('finish', {
-                                rows: parser.count
-                            });
-                        }
+                    if (total && data.row == total) {
+                        nsp.to(req.user.name).emit('finish', parser.count);
                     }
                 })
                 .fail(function (err) {
+                    console.log('fail', err);
                     data.message = err.message;
                     nsp.to(req.user.name).emit('fail', data);
                 })
                 .catch(function (err) {
+                    console.log('err', err);
                     data.message = err.message;
                     nsp.to(req.user.name).emit('fail', data);
                 });

@@ -46,17 +46,35 @@ scrollImage.controller('ScrollController', [
             fd.append('file', file);
             fd.append('id', event.target.getAttribute('id'));
 
-            $http.post('/admin/scrollImages', fd, {
-                    withCredentials: true,
-                    headers: {
-                        'Content-Type': undefined
-                    },
-                    transformRequest: angular.identity
-                })
-                .success(function (data) {
-                    var str = data.substring(data.indexOf('\/') + 1);
-                    $scope.items[index].image_url = '/' + str;
-                })
+            var img = new Image();
+
+            reader.onload = function () {
+                img.src = reader.result;
+            }
+            reader.readAsDataURL(file);
+
+            img.onload = function () {
+                if (file.size / 1000 > 150) {
+                    alert('img size not match');
+                    return;
+                }
+                if (img.width < 720 || img.height < 366) {
+                    alert('img width height not match')
+                    return;
+                }
+                $http.post('/admin/scrollImages', fd, {
+                        withCredentials: true,
+                        headers: {
+                            'Content-Type': undefined
+                        },
+                        transformRequest: angular.identity
+                    })
+                    .success(function (data) {
+                        var str = data.substring(data.indexOf('\/') + 1);
+                        $scope.items[index].image_url = '/' + str;
+                    });
+            }
+
         };
     }
 ]);
