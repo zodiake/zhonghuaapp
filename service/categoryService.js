@@ -27,8 +27,12 @@ var service = {
                 return defer.promise;
             } else {
                 return pool.query(sql, [parentId]).then(function (data) {
-                    self.cache[parentId] = data;
-                    return data;
+                    if (data.length > 0) {
+                        self.cache[parentId] = data;
+                        return data[0];
+                    } else {
+                        return null;
+                    }
                 });
             }
 
