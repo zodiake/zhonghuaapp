@@ -14,17 +14,17 @@
             <div class="form-group">
                 <label class="col-sm-1 control-label">司机手机号</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control" readonly>
+                    <input type="text" class="form-control" ng-value="item.consignee_name" readonly>
                 </div>
                 <label class="col-sm-1 control-label">司机姓名</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control" readonly>
+                    <input type="text" class="form-control" ng-value="" readonly>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-1 control-label">车牌号</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control" readonly>
+                    <input type="text" class="form-control" ng-value="item.license" readonly>
                 </div>
             </div>
             <div class="form-group">
@@ -60,17 +60,17 @@
             <div class="form-group">
                 <label class="col-sm-1 control-label">始发地</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" ng-model="item.original">
                 </div>
                 <label class="col-sm-1 control-label">目的地</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" ng-model="item.destination">
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-1 control-label">到货时间</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" ng-model="item.etd">
                 </div>
                 <label class="col-sm-1 control-label">数量/吨</label>
                 <div class="col-sm-2">
