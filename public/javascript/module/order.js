@@ -9,6 +9,9 @@ order.service('OrderService', ['$http', function ($http) {
     this.findByOrderId = function (orderId) {
         return $http.get('/admin/orders/' + orderId);
     };
+    this.updateState = function () {
+
+    }
 }]);
 
 order.service('OrderGisService', ['$http', function ($http) {

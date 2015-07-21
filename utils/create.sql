@@ -47,7 +47,7 @@ create table common_consignee(
 
 create table orders(
     id int auto_increment,
-    order_number varchar(20),
+    order_number char(12),
     license varchar(15),
     consignor int,
     consignee int,
@@ -88,6 +88,7 @@ create table order_state(
     refuse_reason char(1) ,
     refuse_desc varchar(200),
     created_time timestamp,
+    updated_by varchar(20),
     primary key(order_state_id),
     foreign key(order_id) references orders(id)
 )CHARACTER SET utf8;

@@ -6,6 +6,7 @@ var e_jwt = require('express-jwt');
 var multer = require('multer');
 var q = require('q');
 var _ = require('lodash');
+var crypto = require('crypto');
 
 var orderService = require('../service/orderService');
 var webService = require('../service/webService');
@@ -218,6 +219,8 @@ var stateVerify = function () {
 //insert order orderstate must be dispatch or confirm
 router.post('/', userAuthorityVerify(), extractOrder(), stateVerify(), function (req, res, next) {
     var order = req.order;
+    order.order_number = crypto.randomBytes(6).toString('hex');
+    console.log(order.order_number);
     userService
         .findByNameAndAuthority(order.mobile, userAuthority.consignee)
         .then(function (data) {
@@ -231,7 +234,8 @@ router.post('/', userAuthorityVerify(), extractOrder(), stateVerify(), function 
                         return orderStateService.save({
                             order_id: resultId,
                             state_name: orderState.created,
-                            created_time: new Date()
+                            created_time: new Date(),
+                            updated_by: req.user.name
                         }).then(function () {
                             return resultId;
                         });
@@ -365,7 +369,8 @@ router.put('/:id/state', fileMulter, confirmStateVerify, refuseStateConfirm, fun
         s = {
             order_id: id,
             state_name: state,
-            created_time: new Date()
+            created_time: new Date(),
+            updated_by: user.name
         };
 
     //如果需要将状态修改为已送达
