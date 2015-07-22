@@ -10,31 +10,51 @@ var service = {
     findByName: function (name) {
         return pool.query('select * from usr where name=?', [name]);
     },
+    findByNameAndActivate: function (name, activate) {
+        return pool.query('select * from usr where name=? and activate=?', [name, activate]);
+    },
     findByNameAndAuthority: function (name, authority) {
         return pool.query('select * from usr where name=? and authority=?', [name, authority]);
     },
     findAll: function (page) {
         return pool.query('select * from usr limit ?,?', [page.page, page.size]);
     },
-    $$search: function (option, pageable, count) {
+    _buildOptionSql: function (option, pageable, ceOrCr, count) {
         var sql, page = pageable.page,
             size = pageable.size;
         if (count) {
             sql = squel.select().field('count(*)', 'countNum').from('usr');
         } else {
-            sql = squel.select().from('usr');
+            sql = squel.select()
+                .field('usr.id', 'id')
+                .field('usr.name', 'name')
+                .field('usr.activate', 'activate')
+                .field('usr_detail.detail_name', 'detail_name')
+                .field('usr_detail.gender', 'gender')
+                .field('usr_detail.identified_number', 'identified_numberdi')
+                .field('usr_detail.company_name1', 'companyName1')
+                .field('usr_detail.company_name2', 'companyName2')
+                .field('usr_detail.company_name3', 'companyName3')
+                .field('usr_detail.created_time', 'created_time')
+                .from('usr');
             sql.offset(page * size).limit(size);
         }
-        sql.join('usr_detail', null, 'usr.id=usr_detail.id');
+        sql.left_join('usr_detail', null, 'usr.id=usr_detail.id');
+        if (ceOrCr) {
+            sql.field('vehicle.license', 'license')
+                .field('vehicle.vehicle_type', 'type')
+                .field('vehicle.vehicle_length', 'length')
+                .field('vehicle.vehicle_weight', 'weight');
+            sql.left_join('vehicle', null, 'vehicle.usr_id=usr.id')
+        }
         pool.buildSql(sql, option);
         return pool.query(sql.toString(), []);
     },
-    findByOption: function (option, page) {
-        console.log(page.page, page.size);
-        return this.$$search(option, page, false);
+    findByOption: function (option, page, ceOrCr) {
+        return this._buildOptionSql(option, page, ceOrCr, false);
     },
-    countByOption: function (option, page) {
-        return this.$$search(option, page, true);
+    countByOption: function (option, page, ceOrCr) {
+        return this._buildOptionSql(option, page, ceOrCr, true);
     },
     countByMobile: function (mobile) {
         return pool.query('select count(*) as usrCount from usr where name=?', [mobile]);
@@ -48,8 +68,12 @@ var service = {
         return pool.insert(sql, usr);
     },
     updatePwd: function (usr) {
-        var sql = 'update usr set ?';
-        return pool.update(sql, usr);
+        var sql = 'update usr set password=? where id=?';
+        return pool.query(sql, [usr.password, usr.id]);
+    },
+    updateState: function (userId, state) {
+        var sql = 'update usr set activate=? where id=?';
+        return pool.query(sql, [state, userId]);
     }
 };
 

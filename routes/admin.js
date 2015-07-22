@@ -13,9 +13,9 @@ var join = require('path').join;
 
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
-var pool = require('../utils/pool');
 var categoryService = require('../service/categoryService');
 var suggestionService = require('../service/suggestService');
+var scrollImageService = require('../service/scrollImageService');
 
 var userAuthority = require('../userAuthority');
 var orderState = require('../orderState');
@@ -28,7 +28,8 @@ router.use(e_jwt({
 var fileMulter = multer({
     dest: './uploads/',
     group: {
-        csv: './csv'
+        csv: './csv',
+        image: './public/uploads'
     }
 });
 
@@ -52,7 +53,8 @@ var usrCall = function (role) {
             activate: req.query.activate,
             authority: role
         };
-        q.all([userService.findByOption(option, pageable), userService.countByOption(option, pageable)])
+        var ceOrCr = role == userAuthority.consignee;
+        q.all([userService.findByOption(option, pageable, ceOrCr), userService.countByOption(option, pageable, ceOrCr)])
             .then(function (result) {
                 res.json({
                     status: 'success',
@@ -72,8 +74,37 @@ router.get('/consignor', usrCall(userAuthority.consignor));
 
 router.get('/consignee', usrCall(userAuthority.consignee));
 
-router.get('/csvtest', function (req, res, next) {
-    var path = join(__dirname, '../csv/1.csv');
+router.put('/user/state', function (req, res, next) {
+    var state = req.body.state,
+        userId = req.body.userId;
+    console.log(state);
+    if (state != 0 && state != 1) {
+        var err = new Error('state not exist');
+        next(err);
+        return;
+    }
+
+    userService
+        .updateState(userId, state)
+        .then(function (data) {
+            res.json({
+                status: 'success'
+            });
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
+});
+
+router.post('/csv', fileMulter, function (req, res) {
+    var file = req.files.file;
+    res.json(file.path);
+});
+
+router.get('/csv', function (req, res, next) {
 
     var nsp = req.io.of('/upload');
 
@@ -82,7 +113,7 @@ router.get('/csvtest', function (req, res, next) {
     var total;
 
     parser.on('error', function (err) {
-        console.log(err.message);
+        console.log('error:', err.message);
         console.log(parser.count);
     });
 
@@ -100,7 +131,7 @@ router.get('/csvtest', function (req, res, next) {
                 cargoo_name: data[4],
                 origin: data[5],
                 destination: data[6],
-                etd: data[7],
+                etd: Date.parse(data[7]),
                 quantity: Number(data[8])
             };
             result.row = parser.count;
@@ -109,13 +140,14 @@ router.get('/csvtest', function (req, res, next) {
         return null;
     });
 
-    var validate = csv.transform(function (data) {
-        function socketEmitFail(data, message) {
-            data.message = message;
-            nsp.to(req.user.name).emit('fail', data);
-            return null;
-        }
+    function socketEmitFail(data, message) {
+        data.message = message;
+        nsp.to(req.user.name).emit('fail', data);
+        data.error = true;
+        return data;
+    }
 
+    var validate = csv.transform(function (data) {
         function lengthValidate(data) {
             /*
             if (data.mobile.length != 11) {
@@ -123,74 +155,111 @@ router.get('/csvtest', function (req, res, next) {
             }
             */
             if (data.licence.length > 7) {
-                socketEmitFail(data, 'licence less than 11');
+                return socketEmitFail(data, 'licence less than 11');
             }
             if (data.origin.length > 50) {
-                socketEmitFail(data, 'origin less then 10');
+                return socketEmitFail(data, 'origin less then 10');
             }
             if (data.destination.length > 50) {
-                socketEmitFail(data, 'destination less then 10');
+                return socketEmitFail(data, 'destination less then 10');
             }
             if (_.isNaN(data.quantity)) {
-                socketEmitFail(data, 'quantity should be number');
+                return socketEmitFail(data, 'quantity should be number');
             }
         }
 
         function requiredValidate(data) {
             if (!data.licence) {
-                socketEmitFail(data, 'licence can not be null');
+                return socketEmitFail(data, 'licence can not be null');
             }
             if (!data.mobile) {
-                socketEmitFail(data, 'mobile can not be null');
+                return socketEmitFail(data, 'mobile can not be null');
             }
             if (data.category && !data.cargoo_name) {
-                socketEmitFail(data, 'set category should set cargoo_name');
+                return socketEmitFail(data, 'set category should set cargoo_name');
             }
             if (data.cargoo_name && !data.category) {
-                socketEmitFail(data, 'set cargoo_name should set category');
+                return socketEmitFail(data, 'set cargoo_name should set category');
+            }
+        }
+
+        function dateValidate(data) {
+            if (_.isNaN(data.etd)) {
+                return socketEmitFail(data, 'set cargoo_name should set category');
             }
         }
 
         if (data) {
+            dateValidate(data);
             requiredValidate(data);
             lengthValidate(data);
             return data;
         }
-        return null;
     });
 
     var findConsignee = csv.transform(function (data) {
+
+        function convertConsignee(result) {
+            if (result.length > 0) {
+                data.consignee = result[0].id;
+                return data;
+            } else {
+                return socketEmitFail(data, 'can not find consignee');
+            }
+        }
+
+        function convertCategory(result) {
+            if (!result.error && result.category) {
+                return categoryService
+                    .findByName(result.category)
+                    .then(function (data) {
+                        if (data) {
+                            result.category = data.name;
+                            return result;
+                        } else {
+                            return socketEmitFail(result, 'can not find catgory');
+                        }
+                    });
+            } else {
+                return result;
+            }
+        }
+
+        function convertCargooName(result) {
+            if (!result.error && result.cargoo_name) {
+                return categoryService
+                    .findByName(result.cargoo_name)
+                    .then(function (data) {
+                        if (data.length > 0) {
+                            result.cargoo_name = data.name;
+                            return result;
+                        } else {
+                            return socketEmitFail(data, 'can not find cargoo_name');
+                        }
+                    });
+            } else {
+                return result;
+            }
+        }
+
         if (data) {
             userService
                 .findByName(data.mobile)
-                .then(function (result) {
-                    if (result.length > 0) {
-                        data.consignee = result[0].id;
-                    }
-                    return data;
-                })
+                .then(convertConsignee)
+                .then(convertCategory)
+                .then(convertCargooName)
                 .then(function (data) {
-                    if (data.category) {
-
-                    }
-
                     if (total && data.row == total) {
-                        nsp.to(req.user.name).emit('finish', {
-                            rows: parser.count
-                        });
-                    }
-                    if (data.consignee) {
-                        //todo insert into order
-                    } else {
-                        data.message = 'can not find consignee';
-                        nsp.to(req.user.name).emit('fail', data);
+                        nsp.to(req.user.name).emit('finish', parser.count);
                     }
                 })
                 .fail(function (err) {
+                    console.log('fail', err);
                     data.message = err.message;
                     nsp.to(req.user.name).emit('fail', data);
                 })
                 .catch(function (err) {
+                    console.log('err', err);
                     data.message = err.message;
                     nsp.to(req.user.name).emit('fail', data);
                 });
@@ -200,13 +269,38 @@ router.get('/csvtest', function (req, res, next) {
 
     nsp.on('connection', function (socket) {
         socket.join(req.user.name);
-        fs.createReadStream(path).pipe(parser).pipe(extract).pipe(validate).pipe(findConsignee);
+        socket.on('begin', function (data) {
+            var path = join(__dirname, '..', data.file);
+            fs.createReadStream(path).pipe(parser).pipe(extract).pipe(validate).pipe(findConsignee);
+        });
     });
 
     res.json('ok');
 });
 
-router.post('/csv/upload', fileMulter, function (req, res) {});
+//router.post('/csv/upload', fileMulter, function (req, res) {});
+
+router.post('/scrollImages', fileMulter, function (req, res) {
+    var file = req.files.file;
+    res.json(file.path);
+});
+
+router.get('/scrollImages', function (req, res, next) {
+    scrollImageService
+        .findAll()
+        .then(function (data) {
+            res.json({
+                status: 'success',
+                data: data
+            });
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
+});
 
 router.get('/orders', function (req, res, next) {
     var page = req.query.page || 1,
@@ -264,24 +358,6 @@ router.get('/orders/:id', function (req, res, next) {
         .catch(function (err) {
             return next(err);
         });
-});
-
-router.get('/csv', function (req, res, next) {
-    var stringfier = csv.stringify({
-        rowDelimiter: 'windows',
-        columns: ['age', 'name'],
-        header: true
-    });
-    var transformer = csv.transform(function (data) {
-        console.log(data);
-        return {
-            age: data.id,
-            name: data.consignee
-        };
-    });
-
-    res.attachment('test.csv');
-    pool.stream('select id,consignee from orders').pipe(transformer).pipe(stringfier).pipe(res);
 });
 
 router.get('/category', function (req, res, next) {

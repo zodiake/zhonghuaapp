@@ -27,8 +27,12 @@ var service = {
                 return defer.promise;
             } else {
                 return pool.query(sql, [parentId]).then(function (data) {
-                    self.cache[parentId] = data;
-                    return data;
+                    if (data.length > 0) {
+                        self.cache[parentId] = data;
+                        return data[0];
+                    } else {
+                        return null;
+                    }
                 });
             }
 
@@ -52,13 +56,18 @@ var service = {
         var sql = 'select * from cargoo_name where name=? and activate=1';
         var defer = q.defer();
         var self = this;
-        if (this.cache[name]) {
-            defer.resolve(this.cache[name]);
+        var cacheName = 'name:' + name;
+        if (self.cache[cacheName]) {
+            defer.resolve(self.cache[cacheName]);
             return defer.promise;
         } else {
             return pool.query(sql, [name]).then(function (data) {
-                self.cache[name] = data;
-                return data;
+                if (data.length > 0) {
+                    self.cache[cacheName] = data;
+                    return data[0];
+                } else {
+                    return null;
+                }
             });
         }
     }

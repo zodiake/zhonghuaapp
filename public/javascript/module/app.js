@@ -1,5 +1,4 @@
 var app = angular.module('app', [
-    'btford.socket-io',
     'angular-jwt',
     'ui.router',
     'ui.bootstrap',
@@ -17,7 +16,9 @@ var app = angular.module('app', [
     'Message',
     'Import',
     'baiduMap',
-    'ngFileUpload'
+    'ngFileUpload',
+    'socketModule',
+    'upload'
 ]);
 
 app.config(['$stateProvider',
@@ -104,11 +105,6 @@ app.config(['$stateProvider',
                 url: '/message',
                 templateUrl: '/template/message.html',
                 controller: 'MessageController'
-            })
-            .state('tabs.orderImport', {
-                url: '/orderImport',
-                templateUrl: '/template/orderImport.html',
-                controller: 'CrderImportController'
             })
             .state('tabs.scrollImageAdd', {
                 url: '/scrollImageAdd',

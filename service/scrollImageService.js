@@ -3,9 +3,9 @@
 var pool = require('../utils/pool');
 
 var service = {
-    save: function (state) {
-        var sql = 'insert into order_state set ?';
-        return pool.query(sql, state);
+    findAll: function () {
+        var sql = 'select * from scroll_image';
+        return pool.query(sql, []);
     }
 };
 

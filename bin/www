@@ -23,8 +23,6 @@ app.set('port', port);
 var server = http.createServer(app);
 sio.listen(server);
 
-var nsp = sio.of('/upload');
-
 /**
  * Listen on provided port, on all network interfaces.
  */
