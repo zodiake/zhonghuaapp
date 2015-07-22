@@ -36,24 +36,24 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>112231</td>
-                <td>12345667899</td>
-                <td>tom</td>
-                <td>男</td>
-                <td>14575682258665489</td>
+            <tr ng-repeat="item in items">
+                <td>{{$index+1}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.detail_name}}</td>
+                <td>{{item.gender| genderFilter}}</td>
+                <td>{{item.identified_number}}</td>
                 <td>
-                    <span>one</span>
-                    <span>two</span>
-                    <span>three</span>
+                    <span>{{item.companyName1 | companyNameFilter}}</span>
+                    <span>{{item.companyName2 | companyNameFilter}}</span>
+                    <span>{{item.companyName3 | companyNameFilter}}</span>
                 </td>
-                <td>沪A2325</td>
-                <td>轿车</td>
-                <td>5</td>
-                <td>20</td>
-                <td>使用中</td>
-                <td>2014-05-20</td>
-                <td><a class="text-info">解冻</a></td>
+                <td>{{item.licence}}</td>
+                <td>{{item.vehicle_type}}</td>
+                <td>{{item.vehicle_lenght}}</td>
+                <td>{{item.vehicle_width}}</td>
+                <td>{{item.activate|activateFilter}}</td>
+                <td>{{item.created_time}}</td>
+                <td><a class="text-info" ng-click="updateState(item)">解冻</a></td>
             </tr>
         </tbody>
     </table>

@@ -33,28 +33,14 @@
                 <td>{{$index+1}}</td>
                 <td>{{item.name}}</td>
                 <td>{{item.detail_name}}</td>
-                <td>{{item.gender==1?'male':'female'}}</td>
+                <td>{{item.gender|genderFilter}}</td>
                 <td>{{item.identified_number}}</td>
-                <td><span>one</span>
-                    <span>two</span>
-                    <span>three</span></td>
+                <td><span>{{item.companyName1|companyNameFilter}}</span>
+                    <span>{{item.companyName2|companyNameFilter}}</span>
+                    <span>{{item.companyName3|companyNameFilter}}</span>
+                </td>
                 <td>{{item.activate}}</td>
                 <td>{{item.created_time}}</td>
-                <td><a class="text-info">解冻</a></td>
-            </tr>
-            <tr>
-                <td>2222</td>
-                <td>435345</td>
-                <td>dsssssss</td>
-                <td>fsdff</td>
-                <td>fffffffg</td>
-                <td>
-                    <span>one</span>
-                    <span>two</span>
-                    <span>three</span>
-                </td>
-                <td>rt5trrrrrrrr</td>
-                <td>rrrr</td>
                 <td><a class="text-info">解冻</a></td>
             </tr>
         </tbody>

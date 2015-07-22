@@ -1,7 +1,7 @@
-var consignee = angular.module('Consignee', []);
+var consignee = angular.module('Consignee', ['filterModel']);
 
-consignee.service('ConsigneeService', ['$http', function($http) {
-    this.findAll = function(option) {
+consignee.service('ConsigneeService', ['$http', function ($http) {
+    this.findAll = function (option) {
         return $http.get('/admin/consignee', {
             params: option
         });
@@ -10,7 +10,7 @@ consignee.service('ConsigneeService', ['$http', function($http) {
 
 consignee.controller('ConsigneeController', ['$scope',
     'ConsigneeService',
-    function($scope, ConsigneeService) {
+    function ($scope, ConsigneeService) {
 
         $scope.option = {};
         $scope.currentPage = 1;
@@ -19,7 +19,7 @@ consignee.controller('ConsigneeController', ['$scope',
         function init(option) {
             ConsigneeService
                 .findAll(option)
-                .success(function(data) {
+                .success(function (data) {
                     console.log(data);
                     if (data.status == 'success') {
                         $scope.items = data.data.data;
@@ -28,14 +28,14 @@ consignee.controller('ConsigneeController', ['$scope',
 
                     }
                 })
-                .error(function(err) {
+                .error(function (err) {
 
                 });
         }
 
         init();
 
-        $scope.search = function() {
+        $scope.search = function () {
             init({
                 page: $scope.currentPage,
                 size: $scope.size,

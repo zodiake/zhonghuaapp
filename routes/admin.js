@@ -53,7 +53,8 @@ var usrCall = function (role) {
             activate: req.query.activate,
             authority: role
         };
-        q.all([userService.findByOption(option, pageable), userService.countByOption(option, pageable)])
+        var ceOrCr = role == userAuthority.consignee;
+        q.all([userService.findByOption(option, pageable, ceOrCr), userService.countByOption(option, pageable, ceOrCr)])
             .then(function (result) {
                 res.json({
                     status: 'success',
@@ -74,12 +75,26 @@ router.get('/consignor', usrCall(userAuthority.consignor));
 router.get('/consignee', usrCall(userAuthority.consignee));
 
 router.put('/user/:state', function (req, res, next) {
-    var state = req.params.state;
+    var state = req.params.state,
+        userId = req.body.user.id;
     if (state != 0 || state != 1) {
         var err = new Error('state not exist');
         next(err);
     }
 
+    userService
+        .updateState(userId, state)
+        .then(function (data) {
+            res.json({
+                status: 'success'
+            });
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
 });
 
 router.post('/csv', fileMulter, function (req, res) {

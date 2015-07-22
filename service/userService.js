@@ -19,7 +19,7 @@ var service = {
     findAll: function (page) {
         return pool.query('select * from usr limit ?,?', [page.page, page.size]);
     },
-    $$search: function (option, pageable, count) {
+    _buildOptionSql: function (option, pageable, ceOrCr, count) {
         var sql, page = pageable.page,
             size = pageable.size;
         if (count) {
@@ -28,16 +28,17 @@ var service = {
             sql = squel.select().from('usr');
             sql.offset(page * size).limit(size);
         }
-        sql.join('usr_detail', null, 'usr.id=usr_detail.id');
+        sql.left_join('usr_detail', null, 'usr.id=usr_detail.id');
+        if (ceOrCr)
+            sql.left_join('vehicle', null, 'vehicle.usr_id=usr.id')
         pool.buildSql(sql, option);
         return pool.query(sql.toString(), []);
     },
-    findByOption: function (option, page) {
-        console.log(page.page, page.size);
-        return this.$$search(option, page, false);
+    findByOption: function (option, page, ceOrCr) {
+        return this._buildOptionSql(option, page, ceOrCr, false);
     },
-    countByOption: function (option, page) {
-        return this.$$search(option, page, true);
+    countByOption: function (option, page, ceOrCr) {
+        return this._buildOptionSql(option, page, ceOrCr, true);
     },
     countByMobile: function (mobile) {
         return pool.query('select count(*) as usrCount from usr where name=?', [mobile]);
@@ -54,9 +55,9 @@ var service = {
         var sql = 'update usr set password=? where id=?';
         return pool.query(sql, [usr.password, usr.id]);
     },
-    updateState: function (user, state) {
+    updateState: function (userId, state) {
         var sql = 'update user set state=? where id=?';
-        return pool.query(sql)
+        return pool.query(sql, [state, userId]);
     }
 };
 
