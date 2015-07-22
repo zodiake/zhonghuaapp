@@ -21,3 +21,9 @@ filterModel.filter('activateFilter', function () {
         return state == '1' ? '使用中' : '冻结';
     }
 });
+
+filterModel.filter('stateButtonFilter', function () {
+    return function (state) {
+        return state == '1' ? '冻结' : '解冻';
+    }
+});

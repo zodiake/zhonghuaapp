@@ -39,9 +39,9 @@
                     <span>{{item.companyName2|companyNameFilter}}</span>
                     <span>{{item.companyName3|companyNameFilter}}</span>
                 </td>
-                <td>{{item.activate}}</td>
+                <td>{{item.activate|activateFilter}}</td>
                 <td>{{item.created_time}}</td>
-                <td><a class="text-info">解冻</a></td>
+                <td><a class="text-info">{{item.activate|stateButtonFilter}}</a></td>
             </tr>
         </tbody>
     </table>

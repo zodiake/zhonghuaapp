@@ -25,12 +25,28 @@ var service = {
         if (count) {
             sql = squel.select().field('count(*)', 'countNum').from('usr');
         } else {
-            sql = squel.select().from('usr');
+            sql = squel.select()
+                .field('usr.id', 'id')
+                .field('usr.name', 'name')
+                .field('usr.activate', 'activate')
+                .field('usr_detail.detail_name', 'detail_name')
+                .field('usr_detail.gender', 'gender')
+                .field('usr_detail.identified_number', 'identified_numberdi')
+                .field('usr_detail.company_name1', 'companyName1')
+                .field('usr_detail.company_name2', 'companyName2')
+                .field('usr_detail.company_name3', 'companyName3')
+                .field('usr_detail.created_time', 'created_time')
+                .from('usr');
             sql.offset(page * size).limit(size);
         }
         sql.left_join('usr_detail', null, 'usr.id=usr_detail.id');
-        if (ceOrCr)
+        if (ceOrCr) {
+            sql.field('vehicle.license', 'license')
+                .field('vehicle.vehicle_type', 'type')
+                .field('vehicle.vehicle_length', 'length')
+                .field('vehicle.vehicle_weight', 'weight');
             sql.left_join('vehicle', null, 'vehicle.usr_id=usr.id')
+        }
         pool.buildSql(sql, option);
         return pool.query(sql.toString(), []);
     },
@@ -56,7 +72,7 @@ var service = {
         return pool.query(sql, [usr.password, usr.id]);
     },
     updateState: function (userId, state) {
-        var sql = 'update user set state=? where id=?';
+        var sql = 'update usr set activate=? where id=?';
         return pool.query(sql, [state, userId]);
     }
 };

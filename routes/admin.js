@@ -74,12 +74,14 @@ router.get('/consignor', usrCall(userAuthority.consignor));
 
 router.get('/consignee', usrCall(userAuthority.consignee));
 
-router.put('/user/:state', function (req, res, next) {
-    var state = req.params.state,
-        userId = req.body.user.id;
-    if (state != 0 || state != 1) {
+router.put('/user/state', function (req, res, next) {
+    var state = req.body.state,
+        userId = req.body.userId;
+    console.log(state);
+    if (state != 0 && state != 1) {
         var err = new Error('state not exist');
         next(err);
+        return;
     }
 
     userService

@@ -5,12 +5,20 @@ consignee.service('ConsigneeService', ['$http', function ($http) {
         return $http.get('/admin/consignee', {
             params: option
         });
-    }
+    };
+    this.updateState = function (item) {
+        var state = item.activate == 1 ? 0 : 1;
+        return $http.put('/admin/user/state', {
+            userId: item.id,
+            state: state
+        });
+    };
 }]);
 
 consignee.controller('ConsigneeController', ['$scope',
     'ConsigneeService',
-    function ($scope, ConsigneeService) {
+    '$modal',
+    function ($scope, ConsigneeService, $modal) {
 
         $scope.option = {};
         $scope.currentPage = 1;
@@ -43,5 +51,42 @@ consignee.controller('ConsigneeController', ['$scope',
                 activate: $scope.option.activate
             });
         };
+
+        $scope.changeState = function (item) {
+            var modalInstance = $modal.open({
+                animation: $scope.animationsEnabled,
+                templateUrl: 'myModalContent.html',
+                controller: 'ModalInstanceCtrl',
+                resolve: {
+                    item: function () {
+                        return item;
+                    }
+                }
+            });
+        };
     }
 ]);
+
+consignee.controller('ModalInstanceCtrl', [
+    '$scope',
+    '$modalInstance',
+    'item',
+    'ConsigneeService',
+    function ($scope, $modalInstance, item, ConsigneeService) {
+        $scope.item = item;
+        $scope.ok = function () {
+            ConsigneeService
+                .updateState(item)
+                .success(function (data) {
+                    if (data.status == 'success') {
+                        item.activate = item.activate == 1 ? 0 : 1;
+                    }
+                    $modalInstance.close();
+                })
+        }
+
+        $scope.cancel = function () {
+            $modalInstance.dismiss();
+        }
+    }
+])
