@@ -10,7 +10,6 @@ var user_type = require('../userAuthority');
 var userDetailService = require('../service/userDetailService');
 var genderType = require('../gender');
 var crypto = require('crypto');
-var multer = require('multer');
 
 var user_mobile = {};
 
@@ -35,13 +34,6 @@ router.get('/', function (req, res, next) {
         .catch(function (err) {
             next(err);
         });
-});
-
-var fileMulter = multer({
-    dest: './uploads/',
-    group: {
-        image: './public/uploads'
-    }
 });
 
 var verify = e_jwt({
@@ -126,27 +118,26 @@ router.post('/signup', function (req, res, next) {
 router.post('/login', function (req, res, next) {
     var name = req.body.name,
         password = req.body.password;
-    console.log(cryptoPwd(password));
     userService
         .findByName(name)
         .then(function (data) {
             if (data.length === 0) {
                 res.json({
                     status: 'fail',
-                    message: 'user not exist'
+                    message: '用户不存在'
                 });
                 return;
             } else if (data[0].password != cryptoPwd(password)) {
                 //to do password encode
                 res.json({
                     status: 'fail',
-                    message: 'password error'
+                    message: '密码错误'
                 });
                 return;
             } else if (data[0].activate === 0) {
                 res.json({
                     status: 'fail',
-                    message: 'user is frozen'
+                    message: '用户被冻结'
                 });
                 return;
             }
@@ -178,15 +169,14 @@ router.post('/changePwd',
         var oldPwd = req.body.oldPwd,
             newPwd = req.body.newPwd,
             usrId = req.user.id;
-        //todo encrypt password
 
         userService
             .findOne(usrId)
             .then(function (data) {
-                if (data.password == oldPwd) {
+                if (data[0] && data[0].password == cryptoPwd(oldPwd)) {
                     return userService.updatePwd({
                         id: usrId,
-                        password: newPwd
+                        password: cryptoPwd(newPwd)
                     });
                 } else {
                     return 'fail';

@@ -10,6 +10,9 @@ var service = {
     findByName: function (name) {
         return pool.query('select * from usr where name=?', [name]);
     },
+    findByNameAndActivate: function (name, activate) {
+        return pool.query('select * from usr where name=? and activate=?', [name, activate]);
+    },
     findByNameAndAuthority: function (name, authority) {
         return pool.query('select * from usr where name=? and authority=?', [name, authority]);
     },
@@ -48,8 +51,12 @@ var service = {
         return pool.insert(sql, usr);
     },
     updatePwd: function (usr) {
-        var sql = 'update usr set ?';
-        return pool.update(sql, usr);
+        var sql = 'update usr set password=? where id=?';
+        return pool.query(sql, [usr.password, usr.id]);
+    },
+    updateState: function (user, state) {
+        var sql = 'update user set state=? where id=?';
+        return pool.query(sql)
     }
 };
 

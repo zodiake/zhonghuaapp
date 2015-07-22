@@ -13,7 +13,6 @@ var join = require('path').join;
 
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
-var pool = require('../utils/pool');
 var categoryService = require('../service/categoryService');
 var suggestionService = require('../service/suggestService');
 var scrollImageService = require('../service/scrollImageService');
@@ -73,6 +72,15 @@ var usrCall = function (role) {
 router.get('/consignor', usrCall(userAuthority.consignor));
 
 router.get('/consignee', usrCall(userAuthority.consignee));
+
+router.put('/user/:state', function (req, res, next) {
+    var state = req.params.state;
+    if (state != 0 || state != 1) {
+        var err = new Error('state not exist');
+        next(err);
+    }
+
+});
 
 router.post('/csv', fileMulter, function (req, res) {
     var file = req.files.file;
@@ -274,7 +282,7 @@ router.get('/scrollImages', function (req, res, next) {
         })
         .catch(function (err) {
             next(err);
-        })
+        });
 });
 
 router.get('/orders', function (req, res, next) {
