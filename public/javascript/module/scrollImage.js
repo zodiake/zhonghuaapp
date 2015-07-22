@@ -6,17 +6,6 @@ scrollImage.service('ScrollImageService', ['$http', function ($http) {
     };
 }]);
 
-scrollImage.directive('fileUpload', function () {
-    // Runs during compile
-    return {
-        restrict: 'A',
-        link: function ($scope, element, attrs, controller) {
-            var onChangeHandler = $scope.$eval(attrs.fileUpload);
-            element.bind('change', onChangeHandler);
-        }
-    };
-});
-
 scrollImage.controller('ScrollController', [
     '$scope',
     '$window',
@@ -74,7 +63,6 @@ scrollImage.controller('ScrollController', [
                         $scope.items[index].image_url = '/' + str;
                     });
             }
-
         };
     }
 ]);

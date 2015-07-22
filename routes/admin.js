@@ -74,8 +74,12 @@ router.get('/consignor', usrCall(userAuthority.consignor));
 
 router.get('/consignee', usrCall(userAuthority.consignee));
 
-router.get('/csvtest', function (req, res, next) {
-    var path = join(__dirname, '../csv/1.csv');
+router.post('/csv', fileMulter, function (req, res) {
+    var file = req.files.file;
+    res.json(file.path);
+});
+
+router.get('/csv', function (req, res, next) {
 
     var nsp = req.io.of('/upload');
 
@@ -240,13 +244,16 @@ router.get('/csvtest', function (req, res, next) {
 
     nsp.on('connection', function (socket) {
         socket.join(req.user.name);
-        fs.createReadStream(path).pipe(parser).pipe(extract).pipe(validate).pipe(findConsignee);
+        socket.on('begin', function (data) {
+            var path = join(__dirname, '..', data.file);
+            fs.createReadStream(path).pipe(parser).pipe(extract).pipe(validate).pipe(findConsignee);
+        });
     });
 
     res.json('ok');
 });
 
-router.post('/csv/upload', fileMulter, function (req, res) {});
+//router.post('/csv/upload', fileMulter, function (req, res) {});
 
 router.post('/scrollImages', fileMulter, function (req, res) {
     var file = req.files.file;
@@ -326,23 +333,6 @@ router.get('/orders/:id', function (req, res, next) {
         .catch(function (err) {
             return next(err);
         });
-});
-
-router.get('/csv', function (req, res, next) {
-    var stringfier = csv.stringify({
-        rowDelimiter: 'windows',
-        columns: ['age', 'name'],
-        header: true
-    });
-    var transformer = csv.transform(function (data) {
-        return {
-            age: data.id,
-            name: data.consignee
-        };
-    });
-
-    res.attachment('test.csv');
-    pool.stream('select id,consignee from orders').pipe(transformer).pipe(stringfier).pipe(res);
 });
 
 router.get('/category', function (req, res, next) {

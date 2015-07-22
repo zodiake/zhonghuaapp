@@ -1,8 +1,8 @@
 <div class="contentpanel">
     <div class="panel-body">
         <form class="form-inline" name="searchForm" ng-submit="search()">
-            <a class="btn btn-success btn-sm" href="#/tabs/orderImport">导入</a>
-            <a class="btn btn-success btn-sm" href="">导出运单</a>
+            <input class="btn btn-success btn-sm" type="file" file-upload="upload">导入</a>
+            <a class="btn btn-success btn-sm" ng-click="beginImport()">begin</a>
             <div class="form-group">
                 <select name="state" ng-model="option.state">
                     <option value="">全部状态</option>
