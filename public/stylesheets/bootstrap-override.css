@@ -795,14 +795,14 @@ h4, .h4 {
    border-right: 0;
 }
 
-.tab-content {
+/*.tab-content {
    padding: 15px;
    -moz-border-radius: 0 0 3px 3px;
    -webkit-border-radius: 0 0 3px 3px;
    border-radius: 0 0 3px 3px;
    border: 1px solid #ddd;
    border-top: 0;
-}
+}*/
 
 .tab-pane address:last-child {
    margin-bottom: 0;

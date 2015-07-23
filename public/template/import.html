@@ -1,8 +1,11 @@
 <div class="contentpanel">
     <div class="panel-body">
-        <form class="form-inline" name="searchForm" ng-submit="search()">
-            <input class="btn btn-success btn-sm" type="file" file-upload="upload">导入</a>
-            <a class="btn btn-success btn-sm" ng-click="beginImport()">begin</a>
+        <form class="form-inline files_tab" name="searchForm" ng-submit="search()">
+            <button id="uploadImg" class="btn btn-success btn-xs padd">
+                <input class="btn btn-success btn-sm" type="file" file-upload="upload">
+                <a href="#">选择文件</a>
+            </button>
+            <a class="btn btn-success btn-sm" ng-click="beginImport()">导入</a>
             <div class="form-group">
                 <select name="state" ng-model="option.state">
                     <option value="">全部状态</option>
@@ -30,7 +33,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>lines</th>
+                <th>运单号</th>
                 <th>司机手机号</th>
                 <th>司机姓名</th>
                 <th>货主手机</th>

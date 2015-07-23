@@ -1154,13 +1154,13 @@ textarea {
 }
 
 a {
-    color: #428bca;
+    color: #636E7B;
     text-decoration: none
 }
 
 a:hover,
 a:focus {
-    color: #2a6496;
+    color: #636E7B;
     text-decoration: underline
 }
 
@@ -4119,7 +4119,6 @@ tbody.collapse.in {
     display: table;
     border-collapse: separate
 }
-
 .input-group[class*=col-] {
     float: none;
     padding-right: 0;
@@ -7381,3 +7380,4 @@ button.close {
         display: none!important
     }
 }
+
