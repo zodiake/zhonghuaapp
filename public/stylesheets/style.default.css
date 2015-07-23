@@ -180,6 +180,9 @@ header a{
     position: absolute;
     top: 30%;
 }
+header a:hover{
+    color: #fff;
+}
 header .pull-right{
     position: absolute;
     right: 50px;
