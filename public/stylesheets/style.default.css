@@ -147,6 +147,9 @@ select {
 .files_tab #uploadImg a{
     color:#fff;
 }
+.files_tab #uploadImg.padd{
+    padding:5px 10px;
+}
 .files_tab input[type=file]{
     width: 75px;
     overflow: hidden;
@@ -166,6 +169,7 @@ div.box{
 }
 header{
     padding:15px;
+    position: relative;
 }
 header,footer{
     height: 6%;
@@ -173,11 +177,27 @@ header,footer{
 }
 header a{
     color: #fff;
+    position: absolute;
+    top: 30%;
+}
+header .pull-right{
+    position: absolute;
+    right: 50px;
+    top: 28%;
+}
+header .pull-right a{
+    position: relative;
+    top: 30%;
 }
 .footerwrapper{
     width: 100%;
-    line-height: 60px;
     color:#fff;
+    position: relative;
+}
+.footerwrapper .text-center{
+    position: absolute;
+    top:30%;
+    left: 42%;
 }
 .headerwrapper{
     background-color: #428BCA;
@@ -399,10 +419,7 @@ body.signin {
 .noborder {
     border: 0;
 }
-body[dir='rtl'] .formError .formErrorArrow,
-body.rtl .formError .formErrorArrow {
-    margin: -2px 13px 0 0;
-}
+
 .table > thead > tr > th,
 .table > tbody > tr > th,
 .table > tfoot > tr > th,
@@ -422,10 +439,6 @@ body.rtl .formError .formErrorArrow {
 
 #signin h5 + .form-group {
     overflow: hidden
-}
-
-.nav-justified > li > a {
-    margin-bottom: 0!important
 }
 
 .panel-heading > .panel-btns {
