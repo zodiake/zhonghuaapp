@@ -1,12 +1,18 @@
+/*jslint node: true */
+'use strict';
 var express = require('express');
 var router = express.Router();
 var amqp = require('amqp');
+var soap = require('soap');
+var crypto = require('crypto');
+var shasum = crypto.createHash('sha1');
+var url = 'http://112.33.1.13/jaxws/smsServiceEndpoint/sendSms?wsdl';
 
 var connection = amqp.createConnection({
-    url: "amqp://guest:guest@localhost:5672/zhonghua"
+    url: 'amqp://guest:guest@localhost:5672/zhonghua'
 });
 
-router.get('/', function(req, res) {
+router.get('/', function (req, res) {
     res.status(200).json([{
         id: 1,
         status: 'success',
@@ -40,15 +46,25 @@ router.get('/', function(req, res) {
     }]);
 });
 
-router.get('/:id', function(req, res) {
-    res.json({
-        order_id: '1',
-        waiting: '4',
-        status: true
+router.get('/sms', function (req, res) {
+    var args = {
+        mobiles: '13611738422',
+        content: 'hahaha',
+        sign: '7AanSLKs',
+        addSerial: ''
+    };
+    soap.createClient(url, function (err, client) {
+        //shasum.update('123');
+        //var pwd = shasum.digest('hex');
+        client.setSecurity(new soap.WSSecurity('wstest', '40BD001563085FC35165329EA1FF5C5ECBDBBEEF', 'PasswordDigest'));
+        client.sendSms(args, function (err, result) {
+            console.log(result);
+        });
     });
+    res.json('ok');
 });
 
-router.get('/amqp', function(req, res) {
+router.get('/amqp', function (req, res) {
     var exchange = connection.exchange('test-exchange', {
         autoDelete: false,
     });

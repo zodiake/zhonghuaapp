@@ -38,7 +38,6 @@ function validateConsignee(req, res, next) {
     userService
         .countByIdAndAuthority(consignee, userAuthority.consignee)
         .then(function (data) {
-            console.log(data);
             if (data[0].countNum > 0) {
                 next();
             } else {

@@ -16,6 +16,7 @@ var positionService = require('../service/positionService');
 var orderStateService = require('../service/orderStateService');
 
 var orderState = require('../orderState');
+var orderCode = require('../orderCode');
 var reason = require('../reason');
 var userAuthority = require('../userAuthority');
 var config = require('../config');
@@ -55,6 +56,13 @@ router.get('/', function (req, res, next) {
     orderService
         .findByUsrAndState(user, states, pageable)
         .then(function (data) {
+            //data should have millions & state code
+            data.forEach(function (d) {
+                d.current_state_code = orderCode[d.current_state];
+                d.millions = Date.parse(d.created_time);
+            });
+
+            //data retrived should send to webservice to retrive more state
             var flag = data.some(function (d) {
                 return d.current_state === orderState.transport && d.type;
             });
@@ -117,6 +125,8 @@ router.get('/:id', function (req, res, next) {
                 createdTime: data[0].created_time,
                 type: data[0].type
             };
+            result.current_state_code = orderCode[data[0].current_state];
+            result.millions = Date.parse(data[0].created_time);
             if (data.length > 0) {
                 data.forEach(function (d) {
                     var s = {
@@ -136,6 +146,7 @@ router.get('/:id', function (req, res, next) {
             result.level = data[0].level;
             result.review_content = data[0].review_content;
             result.states = state;
+
             if (result.currentState === orderState.transport && result.type) {
                 return webService.merge(result, result.type, '?order_id=1');
             } else {
@@ -220,7 +231,6 @@ var stateVerify = function () {
 router.post('/', userAuthorityVerify(), extractOrder(), stateVerify(), function (req, res, next) {
     var order = req.order;
     order.order_number = crypto.randomBytes(6).toString('hex');
-    console.log(order.order_number);
     userService
         .findByNameAndAuthority(order.mobile, userAuthority.consignee)
         .then(function (data) {

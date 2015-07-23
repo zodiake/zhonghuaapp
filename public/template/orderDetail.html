@@ -1,6 +1,6 @@
 <div class="contentpanel">
     <div class="panel-body order-d">
-        <form class="form-horizontal form-bordered">
+        <form class="form-horizontal form-bordered" ng-submit="update()">
             <div class="form-group">
                 <label class="col-sm-1 control-label">运单号</label>
                 <div class="col-sm-2">
@@ -18,7 +18,7 @@
                 </div>
                 <label class="col-sm-1 control-label">司机姓名</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control" ng-value="" readonly>
+                    <input type="text" class="form-control" ng-value="item.consigneeName" readonly>
                 </div>
             </div>
             <div class="form-group">
@@ -30,30 +30,24 @@
             <div class="form-group">
                 <label class="col-sm-1 control-label">货主手机号</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" ng-model="item.consignor_name">
                 </div>
                 <label class="col-sm-1 control-label">公司名称</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" ng-model="item.company_name">
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-1 control-label">货物分类</label>
                 <div class="col-sm-2">
-                    <select>
-                        <option>汽油</option>
-                        <option>菜油</option>
-                        <option>化工品</option>
-                        <option>其他</option>
+                    <select ng-options="category.id as category.name for category in categories" ng-model="item.category" ng-change="changeState(item.category)">
+                        <option value="">--choose--</option>
                     </select>
                 </div>
                 <label class="col-sm-1 control-label">货物名称</label>
                 <div class="col-sm-2">
-                    <select>
-                        <option>汽油</option>
-                        <option>菜油</option>
-                        <option>化工品</option>
-                        <option>其他</option>
+                    <select ng-options="name.id as name.name for name in cargooNames" ng-model="item.cargoo_name">
+                        <option value="">--choose--</option>
                     </select>
                 </div>
             </div>
@@ -74,7 +68,7 @@
                 </div>
                 <label class="col-sm-1 control-label">数量/吨</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" ng-model="item.quantity">
                 </div>
             </div>
             <div class="ml100 mt20">

@@ -111,6 +111,10 @@ var service = {
     countByOption: function (page, option) {
         return pool.query(this.$$buildOptionSql(page, option, true).toString(), []);
     },
+    innerJoinUser: function (id) {
+        var sql = 'select orders.id, orders.order_number, orders.license, orders.consignee_name as consigneeName, consignee.name as consignee_name, consignor.name as consignor_name, orders.company_name, orders.category, orders.cargoo_name, orders.origin, orders.destination, orders.etd, orders.quantity,orders.created_time from orders join usr as consignor on orders.consignor=consignor.id join usr as consignee on orders.consignee=consignee.id where orders.id=?';
+        return pool.query(sql, [id]);
+    },
     countByStateAndConsignee: function (order) {
         var sql = 'select count(*) as countNum from orders where current_state=? and consignee=?';
         return pool.query(sql, [order.state, order.consignee]);

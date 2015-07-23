@@ -348,7 +348,7 @@ router.get('/orders', function (req, res, next) {
 router.get('/orders/:id', function (req, res, next) {
     var orderId = req.params.id;
     orderService
-        .findOne(orderId)
+        .innerJoinUser(orderId)
         .then(function (data) {
             res.json({
                 status: 'success',
@@ -358,6 +358,13 @@ router.get('/orders/:id', function (req, res, next) {
         .catch(function (err) {
             return next(err);
         });
+});
+
+router.put('/orders/:id', function (req, res, next) {
+    var orderId = req.params.id;
+
+    orderService
+        .innerJoinUser(orderId)
 });
 
 router.get('/category', function (req, res, next) {

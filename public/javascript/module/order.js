@@ -9,14 +9,28 @@ order.service('OrderService', ['$http', function ($http) {
     this.findByOrderId = function (orderId) {
         return $http.get('/admin/orders/' + orderId);
     };
-    this.updateState = function () {
+    this.updateState = function (item) {
+        return $http.put('/admin/orders/' + item.id, {
+            params: item
+        });
+    }
+}]);
 
+order.service('CategoryService', ['$http', function ($http) {
+    this.findByParent = function (parentId) {
+        if (parentId)
+            return $http.get('/category?id=' + parentId, {
+                cache: true
+            });
+        return $http.get('/category', {
+            cache: true
+        });
     }
 }]);
 
 order.service('OrderGisService', ['$http', function ($http) {
     this.findByOrderId = function (id) {
-        return $http.get('/orders/' + id + '/geo')
+        return $http.get('/orders/' + id + '/geo');
     }
 }]);
 
@@ -33,7 +47,6 @@ order.controller('OrderController', ['$scope', 'OrderService', function ($scope,
                 if (data.data.status == 'success') {
                     $scope.items = data.data.data.data;
                     $scope.total = data.data.data.total;
-                    console.log($scope.total);
                 } else {
 
                 }
@@ -62,17 +75,47 @@ order.controller('OrderDetailController', [
     '$scope',
     '$stateParams',
     'OrderService',
-    function ($scope, $stateParams, OrderService) {
+    'CategoryService',
+    '$q',
+    function ($scope, $stateParams, OrderService, CategoryService, $q) {
         function init() {
-            OrderService
-                .findByOrderId($stateParams.id)
+            var array = [
+                OrderService.findByOrderId($stateParams.id),
+                CategoryService.findByParent()
+            ];
+            $q.all(array)
                 .then(function (data) {
-                    $scope.item = data.data.data;
+                    $scope.item = data[0].data.data;
+                    console.log($scope.item);
+                    $scope.categories = data[1].data.data;
+                    return CategoryService.findByParent($scope.item.category)
+                })
+                .then(function (data) {
+                    $scope.cargooNames = data.data.data;
                 });
         }
         init();
+
+        $scope.changeState = function (category) {
+            CategoryService
+                .findByParent(category)
+                .then(function (data) {
+                    $scope.cargooNames = data.data.data;
+                });
+        };
+
+        $scope.update = function () {
+            CategoryService
+                .update($scope.item)
+                .then(function (date) {
+
+                })
+                .catch(function (err) {
+
+                });
+        }
     }
-])
+]);
 
 order.controller('OrderMapController', [
     '$scope',

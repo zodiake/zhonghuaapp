@@ -11,30 +11,30 @@ router.use(e_jwt({
     secret: config.key
 }));
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     var parent = req.query.id || null;
     service
         .findByParent(parent)
-        .then(function(data) {
+        .then(function (data) {
             res.json({
                 status: 'success',
                 data: data
             });
         })
-        .catch(function(err) {
+        .catch(function (err) {
             return next(err);
         });
 });
 
-router.get('/all', function(req, res, next) {
+router.get('/all', function (req, res, next) {
     service.findAll()
-        .then(function(data) {
+        .then(function (data) {
             res.json({
                 status: 'success',
                 data: data
             });
         })
-        .catch(function(err) {
+        .catch(function (err) {
             return next(err);
         });
 });
