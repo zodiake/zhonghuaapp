@@ -2,6 +2,7 @@
 .metadata
 .gradle
 node_modules/
+.uploads/
 tmp/
 *.tmp
 *.bak
