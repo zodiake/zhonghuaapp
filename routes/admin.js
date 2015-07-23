@@ -361,7 +361,15 @@ router.get('/orders/:id', function (req, res, next) {
 });
 
 router.put('/orders/:id', function (req, res, next) {
-    var orderId = req.params.id;
+    var orderId = req.params.id,
+        consignor = req.body.consignor_name,
+        company_name = req.body.company_name,
+        category = req.body.category,
+        cargoo_name = req.body.cargoo_name,
+        origin = req.body.origin,
+        destination = req.body.destination,
+        etd = req.body.etd,
+        quantity = req.body.quantity;
 
     orderService
         .innerJoinUser(orderId)
