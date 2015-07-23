@@ -6,11 +6,19 @@ consignor.service('ConsignorService', ['$http', function($http) {
             params: option
         });
     }
+    this.updateState = function (item) {
+        var state = item.activate == 1 ? 0 : 1;
+        return $http.put('/admin/user/state', {
+            userId: item.id,
+            state: state
+        });
+    };
 }]);
 
 consignor.controller('ConsignorController', ['$scope',
     'ConsignorService',
-    function($scope, ConsignorService) {
+    '$modal',
+    function($scope, ConsignorService,$modal) {
         $scope.option = {};
         $scope.currentPage = 1;
         $scope.size = 15;
@@ -41,5 +49,39 @@ consignor.controller('ConsignorController', ['$scope',
                 activate: $scope.option.activate
             });
         };
+         $scope.changeState = function (item) {
+            var modalInstance = $modal.open({
+                animation: $scope.animationsEnabled,
+                templateUrl: 'ConsignorModal.html',
+                controller: 'ConsignorModalCtrl',
+                resolve: {
+                    item: function () {
+                        return item;
+                    }
+                }
+            });
+        };
     }
 ]);
+   consignor.controller('ConsignorModalCtrl', [
+    '$scope',
+    '$modalInstance',
+    'item',
+    'ConsignorService',
+    function ($scope, $modalInstance, item, ConsignorService) {
+        $scope.item = item;
+        $scope.ok = function () {
+            ConsignorService
+                .updateState(item)
+                .success(function (data) {
+                    if (data.status == 'success') {
+                        item.activate = item.activate == 1 ? 0 : 1;
+                    }
+                    $modalInstance.close();
+                })
+        }
+        $scope.cancel = function () {
+            $modalInstance.dismiss();
+        }
+    }
+])

@@ -41,11 +41,23 @@
                 </td>
                 <td>{{item.activate|activateFilter}}</td>
                 <td>{{item.created_time}}</td>
-                <td><a class="text-info">{{item.activate|stateButtonFilter}}</a></td>
+                <td><a class="text-info" ng-click="changeState(item)">{{item.activate|stateButtonFilter}}</a></td>
             </tr>
         </tbody>
     </table>
     <div class="panel-footer">
         <pagination total-items="total" items-per-page="15" max-size="7" ng-model="currentPage" ng-change="search()"></pagination>
     </div>
+    <script type="text/ng-template" id="ConsignorModal.html">
+        <div class="modal-header">
+            是否冻结/解冻
+        </div>
+        <div class="modal-body">
+            {{item.name}}
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
 </div>
