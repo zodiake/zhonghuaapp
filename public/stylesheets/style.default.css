@@ -168,7 +168,7 @@ html,body,section.ng-scope{
 div.box{
     height: 88%;
     max-height: 88%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 header{
     padding:15px;
