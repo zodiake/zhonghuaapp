@@ -37,88 +37,88 @@ app.config(['$stateProvider',
         $stateProvider
             .state('login', {
                 url: '/login',
-                templateUrl: '/template/login.html',
+                templateUrl: '/login.html',
                 controller: 'LoginController'
             })
             .state('tabs', {
                 url: '/tabs',
-                templateUrl: '/template/tabs.html',
+                templateUrl: '/admin/tabs.html',
                 abstract: true,
                 controller: 'TabsController'
             })
             .state('tabs.consignor', {
                 url: '/consignor',
-                templateUrl: '/template/consignor.html',
+                templateUrl: '/admin/consignor.html',
                 controller: 'ConsignorController'
             })
             .state('tabs.order', {
                 url: '/order',
-                templateUrl: '/template/order.html',
+                templateUrl: '/admin/order.html',
                 controller: 'OrderController'
             })
             .state('tabs.orderDetail', {
                 url: '/order/:id',
-                templateUrl: '/template/orderDetail.html',
+                templateUrl: '/admin/orderDetail.html',
                 controller: 'OrderDetailController'
             })
             .state('tabs.orderMap', {
                 url: '/order/:id/map',
-                templateUrl: '/template/map.html',
+                templateUrl: '/admin/map.html',
                 controller: 'OrderMapController'
             })
             .state('tabs.importOrder', {
                 url: '/import',
-                templateUrl: '/template/import.html',
+                templateUrl: '/admin/import.html',
                 controller: 'ImportController'
             })
             .state('tabs.scrollImage', {
                 url: '/scrollImage',
-                templateUrl: '/template/scrollImage.html',
+                templateUrl: '/admin/scrollImage.html',
                 controller: 'ScrollController'
             })
             .state('tabs.cargoo', {
                 url: '/cargoo',
-                templateUrl: '/template/cargoo.html',
+                templateUrl: '/admin/cargoo.html',
                 controller: 'CargooController'
             })
             .state('tabs.consignee', {
                 url: '/consignee',
-                templateUrl: '/template/consignee.html',
+                templateUrl: '/admin/consignee.html',
                 controller: 'ConsigneeController'
             })
             .state('tabs.recommand', {
                 url: '/recommand',
-                templateUrl: '/template/recommand.html',
+                templateUrl: '/admin/recommand.html',
                 controller: 'RecommandController'
             })
             .state('tabs.user', {
                 url: '/user',
-                templateUrl: '/template/user.html',
+                templateUrl: '/admin/user.html',
                 controller: 'UserController'
             })
             .state('tabs.orderReport', {
                 url: '/orderReport',
-                templateUrl: '/template/orderReport.html',
+                templateUrl: '/admin/orderReport.html',
                 controller: 'OrderReportController'
             })
             .state('tabs.message', {
                 url: '/message',
-                templateUrl: '/template/message.html',
+                templateUrl: '/admin/message.html',
                 controller: 'MessageController'
             })
             .state('tabs.scrollImageAdd', {
                 url: '/scrollImageAdd',
-                templateUrl: '/template/scrollImageAdd.html',
+                templateUrl: '/admin/scrollImageAdd.html',
                 controller: 'ScrollImageAddController'
             })
             .state('tabs.cargooAdd', {
                 url: '/cargooAdd',
-                templateUrl: '/template/cargooAdd.html',
+                templateUrl: '/admin/cargooAdd.html',
                 controller: 'CargooAddController'
             })
             .state('tabs.recommandDetail', {
                 url: '/recommandDetail',
-                templateUrl: '/template/recommandDetail.html',
+                templateUrl: '/admin/recommandDetail.html',
                 controller: 'recommandDetailController'
             });
     }

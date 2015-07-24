@@ -440,4 +440,27 @@ router.get('/suggestion', function (req, res, next) {
         });
 });
 
+function render(path) {
+    router.get('/' + path + '.html', function (req, res) {
+        res.render(path);
+    });
+}
+
+render('tabs');
+render('consignor');
+render('order');
+render('orderDetail');
+render('map');
+render('import');
+render('scrollImage');
+render('cargoo');
+render('consignee');
+render('recommand');
+render('user');
+render('orderReport');
+render('message');
+render('scrollImageAdd');
+render('cargooAdd');
+render('recommandDetail');
+
 module.exports = router;
