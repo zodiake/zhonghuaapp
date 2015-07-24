@@ -9,11 +9,9 @@ order.service('OrderService', ['$http', function ($http) {
     this.findByOrderId = function (orderId) {
         return $http.get('/admin/orders/' + orderId);
     };
-    this.updateState = function (item) {
-        return $http.put('/admin/orders/' + item.id, {
-            params: item
-        });
-    }
+    this.update = function (item) {
+        return $http.put('/admin/orders/' + item.id, item);
+    };
 }]);
 
 order.service('CategoryService', ['$http', function ($http) {
@@ -105,10 +103,10 @@ order.controller('OrderDetailController', [
         };
 
         $scope.update = function () {
-            CategoryService
+            OrderService
                 .update($scope.item)
-                .then(function (date) {
-
+                .then(function (data) {
+                    console.log(data);
                 })
                 .catch(function (err) {
 

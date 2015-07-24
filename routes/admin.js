@@ -362,7 +362,6 @@ router.get('/orders/:id', function (req, res, next) {
 
 router.put('/orders/:id', function (req, res, next) {
     var orderId = req.params.id,
-        consignor = req.body.consignor_name,
         company_name = req.body.company_name,
         category = req.body.category,
         cargoo_name = req.body.cargoo_name,
@@ -370,9 +369,29 @@ router.put('/orders/:id', function (req, res, next) {
         destination = req.body.destination,
         etd = req.body.etd,
         quantity = req.body.quantity;
+    var order = {
+        category: category,
+        cargoo_name: cargoo_name,
+        origin: origin,
+        destination: destination,
+        etd: etd,
+        quantity: quantity
+    };
+    console.log(order);
 
     orderService
-        .innerJoinUser(orderId)
+        .update(order, orderId)
+        .then(function (data) {
+            res.json({
+                status: 'success',
+            })
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        })
 });
 
 router.get('/category', function (req, res, next) {

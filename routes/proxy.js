@@ -56,7 +56,7 @@ router.get('/sms', function (req, res) {
     soap.createClient(url, function (err, client) {
         //shasum.update('123');
         //var pwd = shasum.digest('hex');
-        client.setSecurity(new soap.WSSecurity('光谷信息/wstest', '40BD001563085FC35165329EA1FF5C5ECBDBBEEF', 'PasswordDigest'));
+        client.setSecurity(new soap.WSSecurity('ggxx/wstest', '40BD001563085FC35165329EA1FF5C5ECBDBBEEF', 'PasswordDigest'));
         client.sendSms(args, function (err, result) {
             console.log(result);
         });
