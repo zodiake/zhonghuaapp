@@ -55,6 +55,11 @@ app.config(['$stateProvider',
                 url: '/tabs',
                 templateUrl: '/admin/tabs.html',
                 abstract: true,
+                resolve: {
+                    tabData: ['TabService', '$q', function (TabService, $q) {
+                        return TabService.findAll();
+                    }]
+                },
                 controller: 'TabsController'
             })
             .state('tabs.consignor', {

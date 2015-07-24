@@ -1,6 +1,7 @@
 /**
  * Created by yagamai on 15-7-14.
  */
+/*jslint node: true */
 'use strict';
 var express = require('express');
 var router = express.Router();
@@ -19,6 +20,24 @@ router.get('/', function (req, res, next) {
     var user = req.user;
     service
         .findByConsignor(user)
+        .then(function (data) {
+            res.json({
+                status: 'success',
+                data: data
+            });
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
+});
+
+router.get('/search', function (req, res, next) {
+    var mobile = req.query.mobile;
+    service
+        .search(mobile)
         .then(function (data) {
             res.json({
                 status: 'success',
