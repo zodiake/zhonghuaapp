@@ -30,6 +30,8 @@ login.controller('LoginController', [
                     .error(function (err) {
 
                     });
+            }else{
+                $scope.loginForm.submitted=true;
             }
         }
     }
