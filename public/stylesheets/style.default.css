@@ -239,7 +239,9 @@ header .pull-right a{
     border-top:none;
     border-bottom: none;
 }
-
+.mainwrapper{
+    height: 100%;
+}
 .leftpanel .profile-left {
     padding: 15px;
     min-height: 90px;
