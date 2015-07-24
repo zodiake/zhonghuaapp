@@ -114,6 +114,44 @@ router.post('/signup', function (req, res, next) {
     });
 });
 
+router.post('/admin/login', function (req, res, next) {
+    var name = req.body.name,
+        password = req.body.password;
+    userService
+        .findByNameAndAuthority(name)
+        .then(function (data) {
+            if (data.length === 0) {
+                res.json({
+                    status: 'fail',
+                    message: '用户不存在'
+                });
+                return;
+            } else if (data[0].password != cryptoPwd(password)) {
+                //to do password encode
+                res.json({
+                    status: 'fail',
+                    message: '密码错误'
+                });
+                return;
+            } else if (data[0].activate === 0) {
+                res.json({
+                    status: 'fail',
+                    message: '用户被冻结'
+                });
+                return;
+            }
+            return data;
+        })
+        .then(function (data) {
+            if (data) {
+                res.json({
+                    status: 'success',
+                    authority: data[0].authority
+                });
+            }
+        });
+});
+
 //登入
 router.post('/login', function (req, res, next) {
     var name = req.body.name,

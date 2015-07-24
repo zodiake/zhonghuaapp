@@ -3,7 +3,7 @@ var login = angular.module('Login', []);
 //all login service
 login.service('LoginService', ['$http', function ($http) {
     this.login = function (user) {
-        return $http.post('/users/login', {
+        return $http.post('/admin/users/login', {
             name: user.name,
             password: user.password
         });

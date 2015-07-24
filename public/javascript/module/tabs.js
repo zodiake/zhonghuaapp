@@ -1,5 +1,12 @@
 var tabs = angular.module('Tabs', []);
 
+tabs.controller('ImportTabsController', ['$scope', function ($scope) {
+    $scope.tabDate = [{
+        heading: '运单import',
+        route: 'tabs.importOrder',
+    }];
+}]);
+
 tabs.controller('TabsController', ['$scope', function ($scope) {
     $scope.tabData = [{
         heading: '货主管理',
