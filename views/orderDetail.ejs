@@ -41,20 +41,16 @@
                 <label class="col-sm-1 control-label">货物分类</label>
                 <div class="col-sm-2">
                     <select name="category" ng-options="category.id as category.name for category in categories" ng-model="item.category" ng-change="changeState(item.category)" ng-required="true">
-                        <option value="">--choose--</option>
+                        <option value="">--请选择--</option>
                     </select>
-                </div>
-                <div>
-                    <span ng-show="orderForm.category.$dirty&&orderForm.category.$error.required">请输入货物分类</span>
+                    <span ng-show="orderForm.category.$dirty&&orderForm.category.$error.required" class="error">请输入货物分类</span>
                 </div>
                 <label class="col-sm-1 control-label">货物名称</label>
                 <div class="col-sm-2">
                     <select name="cargoo_name" ng-options="name.id as name.name for name in cargooNames" ng-model="item.cargoo_name" ng-required="true">
-                        <option value="">--choose--</option>
+                        <option value="">--请选择--</option>
                     </select>
-                </div>
-                <div>
-                    <span ng-show="orderForm.cargoo_name.$error.required">请输入货物名称</span>
+                    <span ng-show="orderForm.cargoo_name.$error.required" class="error">请输入货物名称</span>
                 </div>
             </div>
             <div class="form-group">

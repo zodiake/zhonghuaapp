@@ -23,8 +23,9 @@ a:focus {
 a:hover {
     cursor: pointer;
 }
-/********** 3. HEADER STYLES **********/
-/**************************************/
+.error{
+    color:red;
+}
 .user_d dl {
     margin: 0 20px 30px;
     padding: 0;
@@ -174,7 +175,7 @@ header{
     padding:15px;
     position: relative;
 }
-header,footer{
+header,footer{  
     height: 6%;
     background-color: #428BCA; 
 }
