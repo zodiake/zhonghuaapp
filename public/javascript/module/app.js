@@ -40,6 +40,17 @@ app.config(['$stateProvider',
                 templateUrl: '/login.html',
                 controller: 'LoginController'
             })
+            .state('managerTabs', {
+                url: '/managerTabs',
+                templateUrl: '/admin/tabs.html',
+                abstract: true,
+                controller: 'ImportTabsController'
+            })
+            .state('managerTabs.import', {
+                url: '/import',
+                templateUrl: '/admin/import.html',
+                controller: 'ImportController'
+            })
             .state('tabs', {
                 url: '/tabs',
                 templateUrl: '/admin/tabs.html',
