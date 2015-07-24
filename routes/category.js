@@ -16,6 +16,7 @@ router.get('/', function (req, res, next) {
     service
         .findByParent(parent)
         .then(function (data) {
+            console.log('database:', data);
             res.json({
                 status: 'success',
                 data: data

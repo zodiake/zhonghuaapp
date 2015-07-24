@@ -84,7 +84,6 @@ order.controller('OrderDetailController', [
             $q.all(array)
                 .then(function (data) {
                     $scope.item = data[0].data.data;
-                    console.log($scope.item);
                     $scope.categories = data[1].data.data;
                     return CategoryService.findByParent($scope.item.category)
                 })
@@ -103,6 +102,10 @@ order.controller('OrderDetailController', [
         };
 
         $scope.update = function () {
+            if (!$scope.orderForm.$valid) {
+                alert(22);
+                return;
+            }
             OrderService
                 .update($scope.item)
                 .then(function (data) {
@@ -111,7 +114,7 @@ order.controller('OrderDetailController', [
                 .catch(function (err) {
 
                 });
-        }
+        };
     }
 ]);
 
