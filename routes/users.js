@@ -118,14 +118,11 @@ router.post('/admin/login', function (req, res, next) {
     var name = req.body.name,
         password = req.body.password;
     userService
-        .findByNameAndAuthority(name)
+        .findByName(name)
         .then(function (data) {
             if (data.length === 0) {
-                res.json({
-                    status: 'fail',
-                    message: '用户不存在'
-                });
-                return;
+                var err = new Error('用户不存在');
+                return next(err);
             } else if (data[0].password != cryptoPwd(password)) {
                 //to do password encode
                 res.json({
@@ -140,15 +137,16 @@ router.post('/admin/login', function (req, res, next) {
                 });
                 return;
             }
-            return data;
-        })
-        .then(function (data) {
-            if (data) {
-                res.json({
-                    status: 'success',
-                    authority: data[0].authority
-                });
-            }
+            var usr = data[0];
+            var token = jwt.sign({
+                id: usr.id,
+                name: usr.name,
+                authority: usr.authority
+            }, config.key);
+            res.json({
+                status: 'success',
+                token: token,
+            });
         });
 });
 
