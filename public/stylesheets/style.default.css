@@ -444,3 +444,9 @@ label {
     display: block;
     margin-left: 80px;
 }
+.upload-modal{
+    width: 500px;
+    position:fixed;
+    left: 40%;
+    top:40%;
+}
