@@ -124,18 +124,8 @@ router.post('/admin/login', function (req, res, next) {
                 var err = new Error('用户不存在');
                 return next(err);
             } else if (data[0].password != cryptoPwd(password)) {
-                //to do password encode
-                res.json({
-                    status: 'fail',
-                    message: '密码错误'
-                });
-                return;
-            } else if (data[0].activate === 0) {
-                res.json({
-                    status: 'fail',
-                    message: '用户被冻结'
-                });
-                return;
+                var err = new Error('密码错误');
+                return next(err);
             }
             var usr = data[0];
             var token = jwt.sign({
@@ -146,6 +136,7 @@ router.post('/admin/login', function (req, res, next) {
             res.json({
                 status: 'success',
                 token: token,
+                authority: usr.authority
             });
         });
 });

@@ -20,6 +20,8 @@ var scrollImageService = require('../service/scrollImageService');
 var userAuthority = require('../userAuthority');
 var orderState = require('../orderState');
 var config = require('../config');
+var adminTabData = require('../adminTabData');
+var commonTabData = require('../commonTabData');
 
 router.use(e_jwt({
     secret: config.key
@@ -34,7 +36,7 @@ var fileMulter = multer({
 });
 
 router.use(function (req, res, next) {
-    if (req.user.authority !== userAuthority.admin) {
+    if (req.user.authority !== userAuthority.admin && req.user.authority !== userAuthority.common) {
         var err = new Error();
         err.name = 'UnauthorizedError';
         return next(err);
@@ -78,7 +80,7 @@ router.put('/user/state', function (req, res, next) {
     var state = req.body.state,
         userId = req.body.userId;
     console.log(state);
-    if (state != 0 && state != 1) {
+    if (state !== 0 && state !== 1) {
         var err = new Error('state not exist');
         next(err);
         return;
@@ -375,7 +377,8 @@ router.put('/orders/:id', function (req, res, next) {
         origin: origin,
         destination: destination,
         etd: etd,
-        quantity: quantity
+        quantity: quantity,
+        company_name: company_name
     };
     console.log(order);
 
@@ -384,14 +387,14 @@ router.put('/orders/:id', function (req, res, next) {
         .then(function (data) {
             res.json({
                 status: 'success',
-            })
+            });
         })
         .fail(function (err) {
             next(err);
         })
         .catch(function (err) {
             next(err);
-        })
+        });
 });
 
 router.get('/category', function (req, res, next) {
@@ -445,6 +448,16 @@ function render(path) {
         res.render(path);
     });
 }
+
+router.get('/tabData', function (req, res) {
+    var authority = req.user.authority;
+    if (authority == userAuthority.admin) {
+        res.json(adminTabData);
+    } else {
+        res.json(commonTabData);
+    }
+
+});
 
 render('tabs');
 render('consignor');

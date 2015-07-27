@@ -6,6 +6,7 @@ var amqp = require('amqp');
 var soap = require('soap');
 var crypto = require('crypto');
 var shasum = crypto.createHash('sha1');
+shasum.update('123');
 var url = 'http://112.33.1.13/jaxws/smsServiceEndpoint/sendSms?wsdl';
 
 var connection = amqp.createConnection({
@@ -54,11 +55,11 @@ router.get('/sms', function (req, res) {
         addSerial: ''
     };
     soap.createClient(url, function (err, client) {
-        //shasum.update('123');
-        //var pwd = shasum.digest('hex');
-        client.setSecurity(new soap.WSSecurity('ggxx/wstest', '40BD001563085FC35165329EA1FF5C5ECBDBBEEF', 'PasswordDigest'));
+        var pwd = shasum.digest('hex');
+        client.setSecurity(new soap.WSSecurity('ggxx/wstest', pwd, 'PasswordDigest'));
         client.sendSms(args, function (err, result) {
             console.log(result);
+            console.log(client.lastRequest);
         });
     });
     res.json('ok');

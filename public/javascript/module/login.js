@@ -10,6 +10,12 @@ login.service('LoginService', ['$http', function ($http) {
     };
 }]);
 
+login.service('TabService', ['$http', function ($http) {
+    this.findAll = function () {
+        return $http.get('/admin/tabData');
+    }
+}]);
+
 //all login controller
 login.controller('LoginController', [
     '$scope',
@@ -23,12 +29,16 @@ login.controller('LoginController', [
                 LoginService
                     .login($scope.user)
                     .success(function (data) {
-                        $state.go('tabs.consignor');
+                        if (data.authority == 'ROLE_ADMIN') {
+                            $state.go('tabs.consignor');
+                        } else if (data.authority == 'ROLE_COMMON') {
+                            $state.go('tabs.importOrder');
+                        }
                         $window.localStorage.user = data.token;
                         $window.localStorage.userName = $scope.user.name;
                     })
                     .error(function (err) {
-
+                        alert(22);
                     });
             }else{
                 $scope.loginForm.submitted=true;
