@@ -153,11 +153,12 @@ select {
     padding:5px 10px;
 }
 .files_tab input[type=file]{
-    width: 75px;
+    width: 70px;
     overflow: hidden;
     position:absolute; 
+    left: 18px;
     z-index:100; 
-    font-size:60px;
+    font-size:12px;
     opacity:0;
     filter:alpha(opacity=0); 
     margin-top:-5px;

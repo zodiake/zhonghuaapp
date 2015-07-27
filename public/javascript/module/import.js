@@ -50,7 +50,7 @@ importOrder.controller('ImportController', [
                     $scope.file = data;
                     $scope.alerts.push({
                         type: 'success',
-                        msg: 'upload success'
+                        msg: '上传成功'
                     });
                 })
                 .error(function (err) {
