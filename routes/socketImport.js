@@ -153,7 +153,9 @@ function importBegin(nsp, filePath, room) {
                 .then(convertCategory)
                 .then(convertCargooName)
                 .then(function (data) {
-                    if (total && data.row == total) {}
+                    if (total && data.row == total) {
+                        nsp.to(room).emit('finish');
+                    }
                 })
                 .fail(function (err) {
                     console.log('fail', err);
