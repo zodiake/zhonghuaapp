@@ -106,7 +106,7 @@ router.post('/csv', fileMulter, function (req, res) {
     res.json(file.path);
 });
 
-router.get('/csv', function (req, res, next) {
+router.get('/csv', function (req, res) {
 
     var nsp = req.io.of('/upload');
 
@@ -187,7 +187,7 @@ router.get('/csv', function (req, res, next) {
 
         function dateValidate(data) {
             if (_.isNaN(data.etd)) {
-                return socketEmitFail(data, 'set cargoo_name should set category');
+                return socketEmitFail(data, 'no valid data type');
             }
         }
 
@@ -232,7 +232,7 @@ router.get('/csv', function (req, res, next) {
                 return categoryService
                     .findByName(result.cargoo_name)
                     .then(function (data) {
-                        if (data.length > 0) {
+                        if (data) {
                             result.cargoo_name = data.name;
                             return result;
                         } else {
@@ -244,7 +244,7 @@ router.get('/csv', function (req, res, next) {
             }
         }
 
-        if (data) {
+        if (data && !data.error) {
             userService
                 .findByName(data.mobile)
                 .then(convertConsignee)
