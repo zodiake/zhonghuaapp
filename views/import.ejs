@@ -57,7 +57,7 @@
     <div class="panel-footer">
         <pagination total-items="total" items-per-page="15" max-size="7" ng-model="currentPage" ng-change="search()"></pagination>
     </div>
-    <div>
+    <div class="upload-modal">
         <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
     </div>
 </div>
