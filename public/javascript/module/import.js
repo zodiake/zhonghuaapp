@@ -11,11 +11,14 @@ importOrder.controller('ImportController', [
     'socketio',
     'importService',
     '$http',
-    function ($scope, socketio, importService, $http) {
+    '$window',
+    function ($scope, socketio, importService, $http, $window) {
         $scope.fails = [];
         $scope.alerts = [];
 
-        importService.fakeSocket();
+        socketio.emit('join', {
+            room: $window.localStorage.userName
+        });
 
         socketio.on('fail', function (data) {
             $scope.fails.push(data);
@@ -26,18 +29,26 @@ importOrder.controller('ImportController', [
             delete $scope.file;
             $scope.alerts.push({
                 type: 'success',
-                message: 'import finish'
+                msg: 'import finish'
             });
         });
 
         $scope.upload = function (event) {
-            console.log(11);
             var file = event.target.files[0];
             var fd = new FormData();
 
             var reader = new FileReader();
 
             fd.append('file', file);
+            if (file.type != 'text/csv') {
+                $scope.$apply(function () {
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: '请上传csv格式文件'
+                    });
+                })
+                return;
+            }
 
             $http.post('/admin/csv', fd, {
                     withCredentials: true,
@@ -47,14 +58,18 @@ importOrder.controller('ImportController', [
                     transformRequest: angular.identity
                 })
                 .success(function (data) {
-                    $scope.file = data;
+                    $scope.file = data.data;
                     $scope.alerts.push({
                         type: 'success',
                         msg: 'upload success'
                     });
                 })
                 .error(function (err) {
-
+                    var message = err.message || 'server error';
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: message
+                    });
                 });
         };
 
@@ -67,13 +82,13 @@ importOrder.controller('ImportController', [
                 return;
             }
             socketio.emit('begin', {
-                file: $scope.file
+                file: $scope.file,
+                room: $window.localStorage.userName
             });
-        }
+        };
 
         $scope.closeAlert = function (index) {
             $scope.alerts.splice(index, 1);
         };
     }
-
 ]);

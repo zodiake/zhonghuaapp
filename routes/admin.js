@@ -82,8 +82,7 @@ router.put('/user/state', function (req, res, next) {
     console.log(state);
     if (state !== 0 && state !== 1) {
         var err = new Error('state not exist');
-        next(err);
-        return;
+        return next(err);
     }
 
     userService
@@ -94,191 +93,26 @@ router.put('/user/state', function (req, res, next) {
             });
         })
         .fail(function (err) {
-            next(err);
+            return next(err);
         })
         .catch(function (err) {
-            next(err);
+            return next(err);
         });
 });
 
-router.post('/csv', fileMulter, function (req, res) {
+router.post('/csv', fileMulter, function (req, res, next) {
     var file = req.files.file;
-    res.json(file.path);
-});
-
-router.get('/csv', function (req, res) {
-
-    var nsp = req.io.of('/upload');
-
-    var parser = csv.parse();
-
-    var total;
-
-    parser.on('error', function (err) {
-        console.log('error:', err.message);
-        console.log(parser.count);
-    });
-
-    parser.on('finish', function () {
-        total = parser.count;
-    });
-
-    var extract = csv.transform(function (data) {
-        if (parser.count > 1) {
-            var result = {
-                mobile: data[0],
-                licence: data[1],
-                consignee_name: data[2],
-                category: data[3],
-                cargoo_name: data[4],
-                origin: data[5],
-                destination: data[6],
-                etd: Date.parse(data[7]),
-                quantity: Number(data[8])
-            };
-            result.row = parser.count;
-            return result;
-        }
-        return null;
-    });
-
-    function socketEmitFail(data, message) {
-        data.message = message;
-        nsp.to(req.user.name).emit('fail', data);
-        data.error = true;
-        return data;
+    if (file.mimetype != 'text/csv') {
+        var err = new Error('please upload csv file');
+        return next(err);
     }
-
-    var validate = csv.transform(function (data) {
-        function lengthValidate(data) {
-            /*
-            if (data.mobile.length != 11) {
-                socketEmitFail(data, 'mobile shoule 11');
-            }
-            */
-            if (data.licence.length > 7) {
-                return socketEmitFail(data, 'licence less than 11');
-            }
-            if (data.origin.length > 50) {
-                return socketEmitFail(data, 'origin less then 10');
-            }
-            if (data.destination.length > 50) {
-                return socketEmitFail(data, 'destination less then 10');
-            }
-            if (_.isNaN(data.quantity)) {
-                return socketEmitFail(data, 'quantity should be number');
-            }
-        }
-
-        function requiredValidate(data) {
-            if (!data.licence) {
-                return socketEmitFail(data, 'licence can not be null');
-            }
-            if (!data.mobile) {
-                return socketEmitFail(data, 'mobile can not be null');
-            }
-            if (data.category && !data.cargoo_name) {
-                return socketEmitFail(data, 'set category should set cargoo_name');
-            }
-            if (data.cargoo_name && !data.category) {
-                return socketEmitFail(data, 'set cargoo_name should set category');
-            }
-        }
-
-        function dateValidate(data) {
-            if (_.isNaN(data.etd)) {
-                return socketEmitFail(data, 'no valid data type');
-            }
-        }
-
-        if (data) {
-            dateValidate(data);
-            requiredValidate(data);
-            lengthValidate(data);
-            return data;
-        }
+    res.json({
+        status: 'success',
+        data: file.path
     });
-
-    var findConsignee = csv.transform(function (data) {
-
-        function convertConsignee(result) {
-            if (result.length > 0) {
-                data.consignee = result[0].id;
-                return data;
-            } else {
-                return socketEmitFail(data, 'can not find consignee');
-            }
-        }
-
-        function convertCategory(result) {
-            if (!result.error && result.category) {
-                return categoryService
-                    .findByName(result.category)
-                    .then(function (data) {
-                        if (data) {
-                            result.category = data.name;
-                            return result;
-                        } else {
-                            return socketEmitFail(result, 'can not find catgory');
-                        }
-                    });
-            } else {
-                return result;
-            }
-        }
-
-        function convertCargooName(result) {
-            if (!result.error && result.cargoo_name) {
-                return categoryService
-                    .findByName(result.cargoo_name)
-                    .then(function (data) {
-                        if (data) {
-                            result.cargoo_name = data.name;
-                            return result;
-                        } else {
-                            return socketEmitFail(data, 'can not find cargoo_name');
-                        }
-                    });
-            } else {
-                return result;
-            }
-        }
-
-        if (data && !data.error) {
-            userService
-                .findByName(data.mobile)
-                .then(convertConsignee)
-                .then(convertCategory)
-                .then(convertCargooName)
-                .then(function (data) {
-                    if (total && data.row == total) {
-                        nsp.to(req.user.name).emit('finish', parser.count);
-                    }
-                })
-                .fail(function (err) {
-                    console.log('fail', err);
-                    data.message = err.message;
-                    nsp.to(req.user.name).emit('fail', data);
-                })
-                .catch(function (err) {
-                    console.log('err', err);
-                    data.message = err.message;
-                    nsp.to(req.user.name).emit('fail', data);
-                });
-        }
-    });
-
-
-    nsp.on('connection', function (socket) {
-        socket.join(req.user.name);
-        socket.on('begin', function (data) {
-            var path = join(__dirname, '..', data.file);
-            fs.createReadStream(path).pipe(parser).pipe(extract).pipe(validate).pipe(findConsignee);
-        });
-    });
-
-    res.json('ok');
 });
+
+//router.get('/csv', function (req, res) {});
 
 //router.post('/csv/upload', fileMulter, function (req, res) {});
 
@@ -297,10 +131,10 @@ router.get('/scrollImages', function (req, res, next) {
             });
         })
         .fail(function (err) {
-            next(err);
+            return next(err);
         })
         .catch(function (err) {
-            next(err);
+            return next(err);
         });
 });
 
@@ -390,10 +224,10 @@ router.put('/orders/:id', function (req, res, next) {
             });
         })
         .fail(function (err) {
-            next(err);
+            return next(err);
         })
         .catch(function (err) {
-            next(err);
+            return next(err);
         });
 });
 
@@ -410,10 +244,10 @@ router.get('/category', function (req, res, next) {
             });
         })
         .fail(function (err) {
-            next(err);
+            return next(err);
         })
         .catch(function (err) {
-            next(err);
+            return next(err);
         });
 });
 
@@ -436,10 +270,10 @@ router.get('/suggestion', function (req, res, next) {
             });
         })
         .fail(function (err) {
-            next(err);
+            return next(err);
         })
         .catch(function (err) {
-            next(err);
+            return next(err);
         });
 });
 

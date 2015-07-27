@@ -8,6 +8,8 @@ var app = require('../app').express;
 var sio = require('../app').sio;
 var debug = require('debug')('zhonghuaApp:server');
 var http = require('http');
+var socketImport=require('../routes/socketImport');
+var nsp=sio.of('/upload');
 
 /**
  * Get port from environment and store in Express.
@@ -23,6 +25,16 @@ app.set('port', port);
 var server = http.createServer(app);
 sio.listen(server);
 
+nsp.on('connection', function (socket) {
+  socket.on('join',function(data){
+    socket.join(data.room);
+  });
+
+  socket.on('begin',function(data){
+    console.log('begin');
+    socketImport(nsp,data.file,data.room);
+  });
+});
 /**
  * Listen on provided port, on all network interfaces.
  */
