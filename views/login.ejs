@@ -6,12 +6,12 @@
                     <div class="input-group mb15">
                         <label>用户名</label>
                         <input type="text" name="name" ng-model="user.name" ng-required="true"/>
-                        <span ng-show="loginForm.name.$dirty&&loginForm.name.$error.required&&loginForm.submitted" class="error">用户名不能为空</span>
+                        <span ng-show="loginForm.name.$dirty&&loginForm.name.$error.required" class="error">用户名不能为空</span>
                     </div>
                     <div class="input-group mb15">
                         <label>密码</label>
                         <input type="password" name="password" ng-model="user.password" ng-required="true"/>
-                        <span ng-show="loginForm.password.$dirty&&loginForm.password.$error.required&&loginForm.submitted" class="error">密码不能为空</span> 
+                        <span ng-show="loginForm.password.$dirty&&loginForm.password.$error.required" class="error">密码不能为空</span> 
                     </div>
                     <div class="pull-right">
                         <input type="submit" class="btn btn-success" value="登录" />
