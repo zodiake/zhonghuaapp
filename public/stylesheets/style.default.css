@@ -439,3 +439,7 @@ label {
 .input-group.mb15{
     margin-bottom: 15px;
 }
+.logins span.error{
+    display: block;
+    margin-left: 80px;
+}
