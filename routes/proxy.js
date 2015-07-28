@@ -67,12 +67,29 @@ router.get('/sms', function (req, res) {
 });
 
 router.get('/amqp', function (req, res) {
-    var exchange = connection.exchange('test-exchange', {
+    var exchange = connection.exchange('order-exchange', {
         autoDelete: false,
     });
     exchange.publish('order.create', {
         id: 1,
         name: 'tom'
+    }, {
+        contentType: 'application/json'
+    });
+    exchange.publish('order.update', {
+        id: 2,
+        name: 'peter'
+    }, {
+        contentType: 'application/json'
+    });
+    exchange.publish('order.delete', {
+        id: 3
+    }, {
+        contentType: 'application/json'
+    });
+    exchange.publish('orderstate.create', {
+        state: 'aa',
+        type: 8822
     }, {
         contentType: 'application/json'
     });
