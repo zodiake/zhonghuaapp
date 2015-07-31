@@ -7,6 +7,7 @@ var multer = require('multer');
 var q = require('q');
 var _ = require('lodash');
 var crypto = require('crypto');
+var path = require('path');
 
 var orderService = require('../service/orderService');
 var webService = require('../service/webService');
@@ -387,7 +388,7 @@ router.put('/:id/state', fileMulter, confirmStateVerify, refuseStateConfirm, fun
     if (state === orderState.arrive) {
         if (req.files.file) {
             var file = req.files.file;
-            s.img_url = file.path;
+            s.img_url = file.path.split(path.sep).slice(1).join(path.sep);
         }
     } else if (state === orderState.refuse) {
         var desc = req.body.desc,

@@ -23,6 +23,7 @@ create table usr_detail(
     company_name3 varchar(50),
     created_time timestamp,
     praise int default 0,
+    portrait char(52),
     primary key(id),
     foreign key(id) references usr(id)
 )CHARACTER SET utf8;
@@ -85,7 +86,7 @@ create table order_state(
     order_state_id bigint auto_increment,
     order_id int,
     state_name varchar(10),
-    img_url char(51),
+    img_url char(52),
     refuse_reason char(1) ,
     refuse_desc varchar(200),
     created_time timestamp,
