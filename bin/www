@@ -4,12 +4,10 @@
  * Module dependencies.
  */
 
-var app = require('../app').express;
-var sio = require('../app').sio;
+var app = require('../app');
 var debug = require('debug')('zhonghuaApp:server');
 var http = require('http');
 var socketImport=require('../routes/socketImport');
-var nsp=sio.of('/upload');
 
 /**
  * Get port from environment and store in Express.
@@ -23,7 +21,8 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-sio.listen(server);
+var sio = require('socket.io')(server);
+var nsp=sio.of('/upload');
 
 nsp.on('connection', function (socket) {
   socket.on('join',function(data){
@@ -102,3 +101,9 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+exports = module.exports = server;
+// delegates use() function
+exports.use = function() {
+  app.use.apply(app, arguments);
+};

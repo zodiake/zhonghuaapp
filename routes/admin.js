@@ -112,10 +112,7 @@ router.post('/csv', fileMulter, function (req, res, next) {
     });
 });
 
-//router.get('/csv', function (req, res) {});
-
-//router.post('/csv/upload', fileMulter, function (req, res) {});
-
+/*----------------------scrollImage------------------------------------*/
 router.post('/scrollImages', fileMulter, function (req, res) {
     var file = req.files.file;
     res.json(file.path);
@@ -137,7 +134,9 @@ router.get('/scrollImages', function (req, res, next) {
             return next(err);
         });
 });
+/*----------------------end scrollImage-------------------------------*/
 
+/*------------------------------orders-------------------------------*/
 router.get('/orders', function (req, res, next) {
     var page = req.query.page || 1,
         size = req.query.size || 15,
@@ -230,6 +229,25 @@ router.put('/orders/:id', function (req, res, next) {
             return next(err);
         });
 });
+
+router.get('/aggregate/orders', function (req, res) {
+    orderService
+        .aggregate()
+        .then(function (result) {
+            res.json({
+                'all': result[0][0].countNum,
+                'app': result[1][0].countNum,
+                'out': result[2][0].countNum,
+                'dispatch': result[3][0].countNum,
+                'confirm': result[4][0].countNum,
+                'transport': result[5][0].countNum,
+                'arrive': result[6][0].countNum,
+                'appraise': result[7][0].countNum,
+                'refuse': result[8][0].countNum,
+            });
+        });
+});
+/*------------------------end  orders-------------------------------*/
 
 router.get('/category', function (req, res, next) {
     categoryService

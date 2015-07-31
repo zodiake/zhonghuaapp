@@ -123,6 +123,31 @@ var service = {
         var sql = 'insert into orders set ?';
         return pool.insert(sql, order);
     },
+    countAll: function () {
+        var sql = 'select count(*) as countNum from orders';
+        return pool.query(sql, []);
+    },
+    countByAppOrOut: function (appOrOut) {
+        var sql = 'select count(*) as countNum from orders where app_or_out=?';
+        return pool.query(sql, appOrOut);
+    },
+    countByState: function (state) {
+        var sql = 'select count(*) as countNum from orders where current_state=?';
+        return pool.query(sql, [state]);
+    },
+    aggregate: function () {
+        var sqlCountAll = 'select count(*) as countNum from orders';
+        var sqlApp = 'select count(*) as countNum from orders where app_or_out=1';
+        var sqlOut = 'select count(*) as countNum from orders where app_or_out=0';
+        var sqlDispatch = "select count(*) as countNum from orders where current_state='" + orderState.dispatch + "'";
+        var sqlConfirm = "select count(*) as countNum from orders where current_state='" + orderState.confirm + "'";
+        var sqlTransport = "select count(*) as countNum from orders where current_state='" + orderState.transport + "'";
+        var sqlArrive = "select count(*) as countNum from orders where current_state='" + orderState.arrive + "'";
+        var sqlAppraise = "select count(*) as countNum from orders where current_state='" + orderState.appraise + "'";
+        var sqlRefuse = "select count(*) as countNum from orders where current_state='" + orderState.refuse + "'";
+        var array = [sqlCountAll, sqlApp, sqlOut, sqlDispatch, sqlConfirm, sqlTransport, sqlArrive, sqlAppraise, sqlRefuse];
+        return pool.query(array.join(";"), []);
+    },
     updateStateByIdAndUser: function (order, user) {
         var sql;
         if (user.authority === userAuthority.consignor) {

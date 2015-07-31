@@ -63,6 +63,7 @@ create table orders(
     etd timestamp,
     type char(4),
     mobile char(11),
+    app_or_out smallint default 1,
     primary key(id),
     foreign key(consignor) references usr(id),
     foreign key(consignee) references usr(id),

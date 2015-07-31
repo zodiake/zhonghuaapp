@@ -10,7 +10,8 @@ var pool = mysql.createPool({
     password: '1234',
     database: 'zh',
     dateStrings: true,
-    port: '3307'
+    port: '3307',
+    multipleStatements: true
 });
 
 //@object the cache object

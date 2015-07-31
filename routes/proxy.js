@@ -51,16 +51,16 @@ router.get('/sms', function (req, res) {
     var args = {
         mobiles: '13611738422',
         content: 'hahaha',
-        sign: '7AanSLKs',
+        sign: '',
         addSerial: ''
     };
-    soap.createClient(url, function (err, client) {
-        var pwd = shasum.digest('hex');
-        client.setSecurity(new soap.WSSecurity('ggxx/wstest', pwd.toUpperCase(), 'PasswordDigest'));
+    var wsdlOptions = {
+        attributesKey: '$attributes'
+    };
+    soap.createClient(url, wsdlOptions, function (err, client) {
+        //var pwd = shasum.digest('hex');
         client.sendSms(args, function (err, result) {
-            console.log(result);
             console.log(client.lastRequest);
-            console.log(pwd.toUpperCase());
         });
     });
     res.json('ok');

@@ -10,6 +10,15 @@ var user_type = require('../userAuthority');
 var userDetailService = require('../service/userDetailService');
 var genderType = require('../gender');
 var crypto = require('crypto');
+var multer = require('multer');
+var path = require('path');
+
+var fileMulter = multer({
+    dest: './uploads/',
+    group: {
+        image: './public/uploads'
+    }
+});
 
 var user_mobile = {};
 
@@ -53,6 +62,12 @@ router.get('/captcha', function (req, res) {
             if (data[0].usrCount === 0) {
                 //todo send short message
                 user_mobile[mobile] = 1111; //getRandomInt(1000, 9999);
+                if (user_mobile[mobile]) {
+                    //sendsms
+                } else {
+                    user_mobile[mobile] = 1111;
+                    //send new captcha
+                }
                 res.json({
                     status: 'success',
                 });
@@ -271,5 +286,23 @@ router.post('/detail',
             });
 
     });
+
+router.post('/portrait', verify, fileMulter, function (req, res) {
+    var file = req.files.file,
+        userId = req.user.id;
+    var urlPath = file.path.split(path.sep).slice(1).join(path.sep);
+    userDetailService
+        .updatePortrait(urlPath, userId)
+        .then(function (data) {
+            res.json({
+                status: 'success',
+                data: urlPath
+            });
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+    res.json('ok');
+});
 
 module.exports = router;
