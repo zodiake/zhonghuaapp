@@ -50,6 +50,11 @@ router.get('/', function (req, res, next) {
         states = [];
     }
 
+    if (states.length > 2) {
+        var err = new Error('you get too many states');
+        return next(err);
+    }
+
     states = _.map(states, function (s) {
         return orderState[s];
     });

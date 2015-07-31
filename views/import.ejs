@@ -6,28 +6,6 @@
                 <a href="#">选择文件</a>
             </button>
             <a class="btn btn-success btn-sm" ng-click="beginImport()">导入</a>
-            <div class="form-group">
-                <select name="state" ng-model="option.state">
-                    <option value="">全部状态</option>
-                    <option value="dispatch">待分配</option>
-                    <option value="confirm">待确认</option>
-                    <option value="transport">运送中</option>
-                    <option value="arrive">已送达</option>
-                    <option value="appraise">已评价</option>
-                </select>
-            </div>
-            <div class="form-group">
-                运单生成
-                <input class="form-control" name="beginTime" ng-model="option.begin_time" placeholder="开始时间" type="date"> ~
-                <input class="form-control datepicker" name="endTime" ng-model="option.end_time" placeholder="结束时间" type="text">
-            </div>
-            <div class="form-group">
-                <input class="form-control" name="mobile" ng-model="option.mobile" placeholder="请输入您要查找的运单号" type="text">
-            </div>
-            <div class="form-group">
-                <input class="form-control" name="orderId" ng-model="option.orderId" placeholder="请输入您要查找的货主手机号" type="text">
-            </div>
-            <input class="btn btn-primary btn-xs" type="submit" value="搜索"></input>
         </form>
     </div>
     <table class="table table-bordered">
