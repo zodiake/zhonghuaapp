@@ -168,6 +168,12 @@ router.get('/:id', function (req, res, next) {
                     data: 'not found'
                 });
             }
+            if (data.currentState == orderState.dispatch && req.user.authority == userAuthority.consignee) {
+                return res.json({
+                    status: 'success',
+                    data: null
+                });
+            }
             res.json({
                 status: 'success',
                 data: data
@@ -258,7 +264,7 @@ router.post('/', userAuthorityVerify(), extractOrder(), stateVerify(), function 
                 .then(function (resultId) {
                     return orderStateService.save({
                         order_id: resultId,
-                        state_name: orderState[order.current_state],
+                        state_name: order.current_state,
                         created_time: new Date(),
                         updated_by: req.user.name
                     }).then(function () {
