@@ -26,7 +26,6 @@ var service = {
             .then(function (connection) {
                 connection.beginTransaction(function (err) {
                     if (err) {
-                        console.log(err);
                         defer.reject(err);
                     }
                     console.log('transaction begin');
@@ -67,15 +66,21 @@ var service = {
                         console.log('find by id');
                         rollback(err);
                         var sql = 'select consignee from orders where id=?';
-                        connection.query(sql, [review.order_id], updateUserDetails_Praise);
+                        connection.query(sql, [review.order_id], findUserByUserName);
+                    }
+
+                    function findUserByUserName(err, result) {
+                        console.log('find userId by name');
+                        rollback(err);
+                        var sql = 'select id from usr where name=?';
+                        connection.query(sql, [result[0].consignee], updateUserDetails_Praise);
                     }
 
                     function updateUserDetails_Praise(err, result) {
                         console.log('update praise');
                         rollback(err);
                         var sql = 'update usr_detail set praise=praise+1 where id=?';
-                        console.log('id:', result[0].consignee);
-                        connection.query(sql, [result[0].consignee], done);
+                        connection.query(sql, [result[0].id], done);
                     }
 
                     function done() {

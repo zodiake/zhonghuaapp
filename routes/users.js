@@ -159,7 +159,8 @@ router.post('/admin/login', function (req, res, next) {
 //登入
 router.post('/login', function (req, res, next) {
     var name = req.body.name,
-        password = req.body.password;
+        password = req.body.password,
+        authority = req.body.authority;
     userService
         .findByName(name)
         .then(function (data) {
@@ -180,6 +181,12 @@ router.post('/login', function (req, res, next) {
                 res.json({
                     status: 'fail',
                     message: '用户被冻结'
+                });
+                return;
+            } else if (data[0].authority !== user_type[authority]) {
+                res.json({
+                    status: 'fail',
+                    message: '角色错误'
                 });
                 return;
             }
@@ -287,7 +294,7 @@ router.post('/detail',
 
     });
 
-router.post('/portrait', verify, fileMulter, function (req, res) {
+router.post('/portrait', verify, fileMulter, function (req, res, next) {
     var file = req.files.file,
         userId = req.user.id;
     var urlPath = file.path.split(path.sep).slice(1).join(path.sep);
@@ -302,7 +309,6 @@ router.post('/portrait', verify, fileMulter, function (req, res) {
         .catch(function (err) {
             return next(err);
         });
-    res.json('ok');
 });
 
 module.exports = router;

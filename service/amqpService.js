@@ -1,7 +1,10 @@
+/*jslint node: true */
+'use strict';
 var amqp = require('amqp');
+var pool = require('../utils/pool');
 
 var connection = amqp.createConnection({
-    url: "amqp://guest:guest@localhost:5672/zhonghua"
+    url: 'amqp://guest:guest@localhost:5672/zhonghua'
 });
 
 connection.on('ready', function () {
@@ -17,6 +20,18 @@ connection.on('ready', function () {
             q.subscribe(exchange, function (message, headers, deliveryInfo, messageObject) {
                 console.log('Got a message with routing key ' + deliveryInfo.routingKey);
                 console.log('object:', message);
+                var order = {
+                    order_number: message.order_id,
+                    created_time: message.order_time,
+                    license: message.license,
+                    consignee_name: message.driver_name,
+                    destination: message.destination,
+                    etd: message.eta,
+                    quantity: message.quantity,
+                    type: message.type,
+                    origin: message.origin
+                };
+
             });
         });
     /*-----------------orderUpdate queue----------------------------*/

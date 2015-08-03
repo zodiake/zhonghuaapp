@@ -82,6 +82,7 @@ router.get('/', function (req, res, next) {
 
                 for (var i in filtedData) {
                     var query = orderService.convertArrayToString(filtedData[i]);
+                    query = 'cmd=getMulti&order_id=' + query;
                     remote.push(webService.queryFromWeb(i, query));
                 }
                 return q.all(remote).then(function (result) {
@@ -114,6 +115,9 @@ router.get('/:id', function (req, res, next) {
     orderService
         .findOneAndState(req.user, id)
         .then(function (data) {
+            if (data.length === 0) {
+                return null;
+            }
             var state = [];
             var result = {
                 id: data[0].id,
@@ -133,33 +137,37 @@ router.get('/:id', function (req, res, next) {
             };
             result.current_state_code = orderCode[data[0].current_state];
             result.millions = Date.parse(data[0].created_time);
-            if (data.length > 0) {
-                data.forEach(function (d) {
-                    var s = {
-                        stateName: d.state_name,
-                        createTime: d.created_time
-                    };
-                    if (d.state_name === orderState.refuse) {
-                        s.refuse_reason = reason[d.refuse_reason];
-                        s.refuse_desc = d.refuse_desc;
-                    }
-                    if (d.state_name === orderState.arrive) {
-                        s.image_url = d.img_url;
-                    }
-                    state.push(s);
-                });
-            }
+            data.forEach(function (d) {
+                var s = {
+                    stateName: d.state_name,
+                    createTime: d.created_time
+                };
+                if (d.state_name === orderState.refuse) {
+                    s.refuse_reason = reason[d.refuse_reason];
+                    s.refuse_desc = d.refuse_desc;
+                }
+                if (d.state_name === orderState.arrive) {
+                    s.image_url = d.img_url;
+                }
+                state.push(s);
+            });
             result.level = data[0].level;
             result.review_content = data[0].review_content;
             result.states = state;
 
             if (result.currentState === orderState.transport && result.type) {
-                return webService.merge(result, result.type, '?order_id=1');
+                return webService.merge(result, result.type, 'order_id=1');
             } else {
                 return result;
             }
         })
         .then(function (data) {
+            if (!data) {
+                return res.status(404).json({
+                    status: 'fail',
+                    data: 'not found'
+                });
+            }
             res.json({
                 status: 'success',
                 data: data
@@ -198,7 +206,7 @@ var extractOrder = function () {
 
         var order = {
             license: license,
-            mobile: mobile,
+            consignee: mobile,
             consignee_name: consigneeName,
             company_name: companyName,
             category: category,
@@ -209,7 +217,8 @@ var extractOrder = function () {
             quantity: quantity,
             created_time: new Date(),
             current_state: state,
-            consignor: user.id
+            consignor: user.name,
+            mobile: mobile
         };
         req.order = order;
         next();
@@ -219,13 +228,14 @@ var extractOrder = function () {
 var stateVerify = function () {
     return function (req, res, next) {
         var order = req.order;
+        var err;
         if (order.current_state !== orderState.dispatch && order.current_state !== orderState.confirm) {
-            var err = new Error('状态应为待分配或带确认');
+            err = new Error('状态应为待分配或带确认');
             return next(err);
         }
         if (order.current_state === orderState.confirm) {
-            if (!order.license || !order.mobile) {
-                var err = new Error('请输入车牌，手机号');
+            if (!order.license || !order.consignee) {
+                err = new Error('请输入车牌，手机号');
                 return next(err);
             }
         }
@@ -241,36 +251,26 @@ router.post('/', userAuthorityVerify(), extractOrder(), stateVerify(), function 
         .findByNameAndAuthority(order.mobile, userAuthority.consignee)
         .then(function (data) {
             if (data.length === 0) {
-                return null;
-            } else {
-                order.consignee = data[0].id;
-                return orderService
-                    .save(order)
-                    .then(function (resultId) {
-                        return orderStateService.save({
-                            order_id: resultId,
-                            state_name: orderState.created,
-                            created_time: new Date(),
-                            updated_by: req.user.name
-                        }).then(function () {
-                            return resultId;
-                        });
-                    });
+                // send sms
             }
+            return orderService
+                .save(order)
+                .then(function (resultId) {
+                    return orderStateService.save({
+                        order_id: resultId,
+                        state_name: orderState[order.current_state],
+                        created_time: new Date(),
+                        updated_by: req.user.name
+                    }).then(function () {
+                        return resultId;
+                    });
+                });
         })
         .then(function (resultId) {
-            if (!resultId) {
-                res.json({
-                    status: 'fail',
-                    message: 'driver not exist'
-                });
-                return;
-            }
             res.json({
                 status: 'success',
                 data: resultId
             });
-
         })
         .catch(function (err) {
             return next(err);
@@ -281,27 +281,19 @@ router.post('/', userAuthorityVerify(), extractOrder(), stateVerify(), function 
 router.put('/:id', extractOrder(), function (req, res, next) {
     var id = req.params.id;
     var order = req.order;
+    var user = req.user;
     delete order.current_state;
 
-    //determine if driver exist
     userService
         .findByNameAndAuthority(order.mobile, userAuthority.consignee)
         .then(function (data) {
             if (data.length === 0) {
-                return null;
-            } else {
-                order.consignee = data[0].id;
-                return orderService.update(order, id);
+                //send sms
             }
+            order.consignee = order.mobile;
+            return orderService.update(order, id, user);
         })
         .then(function (result) {
-            if (!result) {
-                res.json({
-                    status: 'fail',
-                    message: 'driver not exist'
-                });
-                return;
-            }
             res.json({
                 status: 'success',
                 data: result.changedRows
@@ -326,12 +318,13 @@ function confirmStateVerify(req, res, next) {
         var err = new Error('请填写状态');
         return next(err);
     }
+
     //consignee can only have one transport order
     if (orderState[state] === orderState.transport && user.authority === userAuthority.consignee) {
         orderService
             .countByStateAndConsignee({
                 state: orderState[state],
-                consignee: user.id
+                consignee: user.name
             })
             .then(function (data) {
                 if (data[0].countNum > 0) {
@@ -351,7 +344,8 @@ function confirmStateVerify(req, res, next) {
 
 function refuseStateConfirm(req, res, next) {
     var id = req.params.id,
-        state = req.params.state;
+        state = req.params.state,
+        err;
     //only confirm state order can be refuse
     //only confirm or dispatch state order can be closed
     if (state === 'refuse' || state === 'closed') {
@@ -361,13 +355,13 @@ function refuseStateConfirm(req, res, next) {
                 var current_state = data[0].current_state;
                 if (state === 'refuse') {
                     if (current_state !== orderState.confirm) {
-                        var err = new Error('待确认状态订单才能拒绝');
+                        err = new Error('待确认状态订单才能拒绝');
                         return next(err);
                     }
                 }
                 if (state === 'closed') {
                     if (current_state !== orderState.confirm || current_state !== orderState.dispatch) {
-                        var err = new Error('待分配待确认状态订单才能关闭');
+                        err = new Error('待分配待确认状态订单才能关闭');
                         return next(err);
                     }
                 }
@@ -408,7 +402,12 @@ router.put('/:id/state', fileMulter, confirmStateVerify, refuseStateConfirm, fun
             state: state
         }, user)
         .then(function (data) {
-            return orderStateService.save(s);
+            if (data.changedRows === 0) {
+                var error = new Error('no data updated');
+                return next(error);
+            } else {
+                return orderStateService.save(s);
+            }
         })
         .then(function (data) {
             res.json({
@@ -474,26 +473,28 @@ router.get('/:id/geo', function (req, res, next) {
 function verifyConsignor(req, res, next) {
     var user = req.user;
 
+    //only consignor can review
     if (user.authority !== userAuthority.consignor) {
         var err = new Error('没有权限');
         next(err);
     }
 
-    orderService
-        .countByUsrIdAndId(user, req.params.id)
+    //one order can ongly have one review
+    reviewService
+        .countByOrder(req.params.id)
         .then(function (data) {
-            if (data[0].countnum > 0) {
-                next();
-            } else {
+            if (data[0].countNum > 0) {
                 var err = new Error('该订单已被评价');
-                next(err);
+                return next(err);
+            } else {
+                next();
             }
         })
         .fail(function (err) {
             next(err);
         })
         .catch(function (err) {
-            next(err);
+            next(err)
         });
 }
 
@@ -503,33 +504,18 @@ router.post('/:id/reviews', verifyConsignor, function (req, res, next) {
         level = req.body.level,
         userId = req.user.id;
 
+    var review = {
+        description: desc,
+        order_id: orderId,
+        level: level,
+        consignor_id: userId
+    };
     reviewService
-        .countByOrder(orderId)
+        .save(review)
         .then(function (data) {
-            if (data[0].countNum === 0) {
-                var review = {
-                    description: desc,
-                    order_id: orderId,
-                    level: level,
-                    consignor: userId
-                };
-                return reviewService.save(review);
-            } else {
-                return -1;
-            }
-        })
-        .then(function (data) {
-            //insert success data is the return id
-            if (data === -1) {
-                res.json({
-                    status: 'fail',
-                    message: '一个订单智能评价一次'
-                });
-            } else {
-                res.json({
-                    status: 'success'
-                });
-            }
+            res.json({
+                status: 'success'
+            });
         })
         .fail(function () {
             res.json({

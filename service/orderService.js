@@ -20,13 +20,13 @@ var service = {
         if (usr.authority === userAuthority.consignor) {
             sql = 'select * from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id where orders.id=? and orders.consignor=? order by order_state.created_time desc';
         }
-        return pool.query(sql, [id, usr.id]);
+        return pool.query(sql, [id, usr.name]);
     },
     convertArrayToString: function (data) {
         var array = data.map(function (d) {
             return d.id;
         });
-        return 'id=[' + array.join(',') + ']';
+        return array.join(',');
     },
     findByUsrAndState: function (user, state, page) {
         var sql = squel.select().from('orders'),
@@ -38,16 +38,15 @@ var service = {
             });
         }
         if (user.authority === userAuthority.consignor) {
-            userFilter.and("consignor='" + user.id + "'");
+            userFilter.and("consignor='" + user.name + "'");
         } else if (user.authority === userAuthority.consignee) {
-            userFilter.and("consignee='" + user.id + "'");
+            userFilter.and("consignee='" + user.name + "'");
             userFilter.and("current_state!='" + orderState.dispatch + "'");
         }
 
         sql.where(stateFilter);
         sql.where(userFilter);
         sql.limit(page.size).offset(page.page * page.size);
-        console.log(sql.toString());
         return pool.query(sql.toString(), []);
     },
     /*findOne by consignee or consignor */
@@ -69,9 +68,9 @@ var service = {
         var consigneeSql = 'select count(*) as countnum from orders where id=? and consignee=?',
             consignorSql = 'select count(*) as countnum from orders where id=? and consignor=?';
         if (user.authority === userAuthority.consignee) {
-            return pool.query(consigneeSql, [orderId, user.id]);
+            return pool.query(consigneeSql, [orderId, user.name]);
         } else if (user.authority === userAuthority.consignor) {
-            return pool.query(consignorSql, [orderId, user.id]);
+            return pool.query(consignorSql, [orderId, user.name]);
         } else {
             var defer = q.defer();
             defer.reject();
@@ -155,19 +154,16 @@ var service = {
         } else if (user.authority === userAuthority.consignee) {
             sql = 'update orders set current_state=? where id=? and consignee=?';
         }
-        console.log('state:', order.state);
-        console.log('orderId:', order.id);
-        console.log('userId:', user.id);
-        return pool.query(sql, [order.state, order.id, user.id]);
+        return pool.query(sql, [order.state, order.id, user.name]);
     },
-    update: function (order, id) {
-        var sql = 'update orders set ? where id=?';
-        return pool.query(sql, [order, id]);
+    update: function (order, id, user) {
+        var sql = 'update orders set ? where id=? and consignor=?';
+        return pool.query(sql, [order, id, user.name]);
     },
     merge: function (webData, data) {
         return _.map(data, function (d) {
             _.each(webData, function (wd) {
-                if (d.id === wd.id && wd.status === 'success') {
+                if (wd.status === 'success' && d.order_number === wd.billcode) {
                     d.sub = wd.state;
                     d.vehicle = wd.vehicle;
                     return;
