@@ -204,7 +204,8 @@ router.put('/orders/:id', function (req, res, next) {
         origin = req.body.origin,
         destination = req.body.destination,
         etd = req.body.etd,
-        quantity = req.body.quantity;
+        quantity = req.body.quantity,
+        user = req.user;
     var order = {
         category: category,
         cargoo_name: cargoo_name,
@@ -217,7 +218,7 @@ router.put('/orders/:id', function (req, res, next) {
     console.log(order);
 
     orderService
-        .update(order, orderId)
+        .update(order, orderId, user)
         .then(function (data) {
             res.json({
                 status: 'success',
