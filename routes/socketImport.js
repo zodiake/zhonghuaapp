@@ -35,15 +35,16 @@ function importBegin(nsp, filePath, room) {
     var extract = csv.transform(function (data) {
         if (parser.count > 1) {
             var result = {
-                mobile: data[0],
-                licence: data[1],
-                consignee_name: data[2],
-                category: data[3],
-                cargoo_name: data[4],
-                origin: data[5],
-                destination: data[6],
-                etd: Date.parse(data[7]),
-                quantity: Number(data[8])
+                consignor: data[0],
+                mobile: data[1],
+                licence: data[2],
+                consignee_name: data[3],
+                category: data[4],
+                cargoo_name: data[5],
+                origin: data[6],
+                destination: data[7],
+                etd: Date.parse(data[8]),
+                quantity: Number(data[9])
             };
             result.row = parser.count;
             return result;
@@ -53,11 +54,12 @@ function importBegin(nsp, filePath, room) {
 
     var validate = csv.transform(function (data) {
         function lengthValidate(data) {
-            /*
             if (data.mobile.length != 11) {
                 socketEmitFail(data, 'mobile shoule 11');
             }
-            */
+            if (data.consignor.length != 11) {
+                socketEmitFail(data, 'mobile shoule 11');
+            }
             if (data.licence.length > 7) {
                 return socketEmitFail(data, 'licence less than 11');
             }
@@ -78,6 +80,9 @@ function importBegin(nsp, filePath, room) {
             }
             if (!data.mobile) {
                 return socketEmitFail(data, 'mobile can not be null');
+            }
+            if (!data.consignor) {
+                return socketEmitFail(data, 'consignor can not be null');
             }
             if (data.category && !data.cargoo_name) {
                 return socketEmitFail(data, 'set category should set cargoo_name');

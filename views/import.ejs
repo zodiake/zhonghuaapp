@@ -12,6 +12,7 @@
         <thead>
             <tr>
                 <th>序号</th>
+                <th>货主手机号</th>
                 <th>司机手机号</th>
                 <th>司机姓名</th>
                 <th>货物分类</th>
@@ -25,6 +26,7 @@
         <tbody>
             <tr ng-repeat="item in fails">
                 <td>{{item.row}}</td>
+                <td>{{item.consignor}}</td>
                 <td>{{item.mobile}}</td>
                 <td>{{item.consignee_name}}</td>
                 <td>{{item.category}}</td>
