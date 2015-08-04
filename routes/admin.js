@@ -80,7 +80,6 @@ router.get('/consignee', usrCall(userAuthority.consignee));
 router.put('/user/state', function (req, res, next) {
     var state = req.body.state,
         userId = req.body.userId;
-    console.log(state);
     if (state !== 0 && state !== 1) {
         var err = new Error('state not exist');
         return next(err);
@@ -89,6 +88,30 @@ router.put('/user/state', function (req, res, next) {
     userService
         .updateState(userId, state)
         .then(function (data) {
+            res.json({
+                status: 'success'
+            });
+        })
+        .fail(function (err) {
+            return next(err);
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+});
+
+router.put('/category/state', function (req, res, next) {
+    var state = req.body.state,
+        categoryId = req.body.id;
+    if (state !== 0 && state !== 1) {
+        var err = new Error('state not exist');
+        return next(err);
+    }
+
+    categoryService
+        .updateState(categoryId, state)
+        .then(function (data) {
+            categoryService.clearCache();
             res.json({
                 status: 'success'
             });
@@ -215,7 +238,6 @@ router.put('/orders/:id', function (req, res, next) {
         quantity: quantity,
         company_name: company_name
     };
-    console.log(order);
 
     orderService
         .update(order, orderId, user)
@@ -253,7 +275,7 @@ router.get('/aggregate/orders', function (req, res) {
 
 router.get('/category', function (req, res, next) {
     categoryService
-        .findAll()
+        .findAll(true)
         .then(function (data) {
             var result = _.groupBy(data, function (a) {
                 return a.parent_id;

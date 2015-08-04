@@ -9,7 +9,6 @@ var service = {
     findByParent: function (parentId) {
         var defer = q.defer();
         var sql;
-        var self = this;
         if (parentId === null) {
             sql = 'select * from cargoo_name where parent_id is null and activate=1';
             if (cache.first) {
@@ -41,10 +40,12 @@ var service = {
 
         }
     },
-    findAll: function () {
-        var sql = 'select * from cargoo_name where activate=1';
+    findAll: function (isAdmin) {
+        var sql = 'select * from cargoo_name ';
+        if (!isAdmin) {
+            sql += 'where activate=1';
+        }
         var defer = q.defer();
-        var self = this;
         if (cache.all) {
             defer.resolve(cache.all);
             return defer.promise;
@@ -58,7 +59,6 @@ var service = {
     findByName: function (name) {
         var sql = 'select * from cargoo_name where name=? and activate=1';
         var defer = q.defer();
-        var self = this;
         var cacheName = 'name:' + name;
         if (cache[cacheName]) {
             defer.resolve(cache[cacheName]);
@@ -73,6 +73,13 @@ var service = {
                 }
             });
         }
+    },
+    updateState: function (id, state) {
+        var sql = 'update cargoo_name set activate=? where id=?';
+        return pool.query(sql, [state, id]);
+    },
+    clearCache: function () {
+        cache = {};
     }
 };
 
