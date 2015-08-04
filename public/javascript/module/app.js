@@ -18,7 +18,8 @@ var app = angular.module('app', [
     'baiduMap',
     'ngFileUpload',
     'socketModule',
-    'upload'
+    'upload',
+    'Question'
 ]);
 
 app.config(['$stateProvider',
@@ -136,6 +137,11 @@ app.config(['$stateProvider',
                 url: '/recommandDetail',
                 templateUrl: '/admin/recommandDetail.html',
                 controller: 'recommandDetailController'
+            })
+            .state('tabs.questions', {
+                url: '/questions',
+                templateUrl: '/admin/questions.html',
+                controller: 'QuestionController'
             });
     }
 ]);

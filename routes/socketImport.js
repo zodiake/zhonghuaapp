@@ -103,15 +103,6 @@ function importBegin(nsp, filePath, room) {
 
     var findConsignee = csv.transform(function (data) {
 
-        function convertConsignee(result) {
-            if (result.length > 0) {
-                data.consignee = result[0].id;
-                return data;
-            } else {
-                return socketEmitFail(data, 'can not find consignee');
-            }
-        }
-
         function convertCategory(result) {
             if (!result.error && result.category) {
                 return categoryService
@@ -149,7 +140,6 @@ function importBegin(nsp, filePath, room) {
         if (data && !data.error) {
             userService
                 .findByName(data.mobile)
-                .then(convertConsignee)
                 .then(convertCategory)
                 .then(convertCargooName)
                 .then(function (data) {

@@ -86,10 +86,22 @@ var service = {
         var limit = page.size;
         var offset = (page.page - 1) * limit;
         var sql;
-        if (count)
-            sql = squel.select().field('count(*)', 'countNum').from('orders');
-        else
-            sql = squel.select().from('orders');
+        if (count) {
+            sql = squel.select().field('count(*)', 'countNum').from('orders').join('cargoo_name', '', 'cargoo_name.id=orders.cargoo_name');
+        } else {
+            sql = squel.select()
+                .field('orders.id', 'id')
+                .field('orders.consignee', 'consignee')
+                .field('orders.consignor', 'consignor')
+                .field('orders.order_number', 'order_number')
+                .field('orders.consignee_name', 'consignee_name')
+                .field('orders.company_name', 'company_name')
+                .field('cargoo_name.name', 'cargoo_name')
+                .field('orders.quantity', 'quantity')
+                .field('orders.created_time', 'created_time')
+                .field('orders.current_state', 'current_state')
+                .from('orders').join('cargoo_name', '', 'cargoo_name.id=orders.cargoo_name');
+        }
         if (option.begin_time && option.begin_time.value) {
             sql.where('created_time >' + option.begin_time.value);
         }

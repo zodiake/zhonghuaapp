@@ -128,14 +128,22 @@ create table scroll_image(
     image_url varchar(50),
     image_href varchar(20),
     primary key(id)
-);
+)CHARACTER SET utf8;
 
 create table advertise(
     id int auto_increment,
     title varchar(20),
     content varchar(4000),
     primary key(id)
-);
+)CHARACTER set utf8; 
+
+create table question(
+    id int auto_increment,
+    question varchar(100),
+    answer varchar(1000),
+    activate smallint default 1,
+    primary key(id)
+)CHARACTER set utf8;
 
 /*test usr*/
 insert into usr(id,name,password,authority,activate) values(1,'tom','202cb962ac59075b964b07152d234b70','ROLE_CONSIGNEE',1);

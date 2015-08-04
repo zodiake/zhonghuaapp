@@ -16,6 +16,7 @@ var userService = require('../service/userService');
 var categoryService = require('../service/categoryService');
 var suggestionService = require('../service/suggestService');
 var scrollImageService = require('../service/scrollImageService');
+var questionService = require('../service/questionService');
 
 var userAuthority = require('../userAuthority');
 var orderState = require('../orderState');
@@ -295,12 +296,6 @@ router.get('/suggestion', function (req, res, next) {
         });
 });
 
-function render(path) {
-    router.get('/' + path + '.html', function (req, res) {
-        res.render(path);
-    });
-}
-
 router.get('/tabData', function (req, res) {
     var authority = req.user.authority;
     if (authority == userAuthority.admin) {
@@ -310,6 +305,67 @@ router.get('/tabData', function (req, res) {
     }
 
 });
+
+router.get('/questions', function (req, res, next) {
+    var page = req.params.page || 1,
+        size = req.params.size || 15;
+    questionService
+        .findAll()
+        .then(function (data) {
+
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
+});
+
+router.post('/questions', function (req, res) {
+    var question = req.body.question,
+        answer = req.body.answer;
+    questionService
+        .save({
+            question: question,
+            answer: answer
+        })
+        .then(function (data) {
+
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
+});
+
+router.put('/questions/:id', function (req, res) {
+    var question = req.body.question,
+        answer = req.body.answer,
+        id = req.params.id;
+    questionService
+        .update(id, {
+            question: question,
+            answer: answer
+        })
+        .then(function (data) {
+
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
+});
+
+function render(path) {
+    router.get('/' + path + '.html', function (req, res) {
+        res.render(path);
+    });
+}
 
 render('tabs');
 render('consignor');
@@ -327,5 +383,6 @@ render('message');
 render('scrollImageAdd');
 render('cargooAdd');
 render('recommandDetail');
+render('question');
 
 module.exports = router;

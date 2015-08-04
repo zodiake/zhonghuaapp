@@ -30,6 +30,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
+                <th>序号</th>
                 <th>运单号</th>
                 <th>司机手机号</th>
                 <th>司机姓名</th>
@@ -39,21 +40,20 @@
                 <th>货物数量/吨</th>
                 <th>状态</th>
                 <th>生成日期</th>
-                <th>操作</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in items">
-                <td><a href="#/tabs/order/{{item.id}}">{{item.id}}</a></td>
-                <td>{{item.mobile}}</td>
+                <td><a href="#/tabs/order/{{item.id}}">{{$index+1}}</a></td>
+                <td>{{item.order_number}}</td>
+                <td>{{item.consignee}}</td>
                 <td>{{item.consignee_name}}</td>
-                <td>{{item.name}}</td>
+                <td>{{item.consignor}}</td>
                 <td>{{item.company_name}}</td>
                 <td>{{item.cargoo_name}}</td>
                 <td>{{item.quantity}}</td>
                 <td>{{item.current_state}}</td>
-                <td>2015-05-20</td>
-                <td><a class="text-info">解冻</a>|<a class="text-info">恢复</a></td>
+                <td>{{item.created_time}}</td>
             </tr>
         </tbody>
     </table>
