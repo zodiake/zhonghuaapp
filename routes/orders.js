@@ -437,7 +437,6 @@ router.post('/geo', function (req, res, next) {
         order_id = req.body.orderId,
         created_time = req.body.createdTime;
 
-    console.log(longitude);
     positionService
         .insert({
             longitude: longitude,

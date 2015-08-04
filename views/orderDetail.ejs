@@ -4,7 +4,7 @@
             <div class="form-group">
                 <label class="col-sm-1 control-label">运单号</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control" ng-value="item.order_id" readonly>
+                    <input type="text" class="form-control" ng-value="item.order_number" readonly>
                 </div>
                 <label class="col-sm-1 control-label">生成日期</label>
                 <div class="col-sm-2">
@@ -51,7 +51,7 @@
                     <select name="cargoo_name" ng-options="name.id as name.name for name in cargooNames" ng-model="item.cargoo_name" ng-required="true">
                         <option value="">--请选择--</option>
                     </select>
-                    <span ng-show="orderForm.cargoo_name.$error.required" class="error">请输入货物名称</span>
+                    <span ng-show="orderForm.cargoo_name.$dirty&&orderForm.cargoo_name.$error.required" class="error">请输入货物名称</span>
                 </div>
             </div>
             <div class="form-group">

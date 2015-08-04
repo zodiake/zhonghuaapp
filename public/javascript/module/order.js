@@ -16,10 +16,11 @@ order.service('OrderService', ['$http', function ($http) {
 
 order.service('CategoryService', ['$http', function ($http) {
     this.findByParent = function (parentId) {
-        if (parentId)
-            return $http.get('/category?id=' + parentId, {
-                cache: true
-            });
+        return $http.get('/category?id=' + parentId, {
+            cache: true
+        });
+    }
+    this.findFirst = function () {
         return $http.get('/category', {
             cache: true
         });
@@ -79,11 +80,12 @@ order.controller('OrderDetailController', [
         function init() {
             var array = [
                 OrderService.findByOrderId($stateParams.id),
-                CategoryService.findByParent()
+                CategoryService.findFirst()
             ];
             $q.all(array)
                 .then(function (data) {
                     $scope.item = data[0].data.data;
+                    console.log($scope.item);
                     $scope.categories = data[1].data.data;
                     return CategoryService.findByParent($scope.item.category)
                 })
@@ -131,8 +133,17 @@ order.controller('OrderMapController', [
         OrderGisService
             .findByOrderId($stateParams.id)
             .then(function (data) {
-                $scope.mapOptions.markers = data.data.data;
-                $scope.mapOptions.center = data.data.data[0];
+                if (data.data.data.length > 0) {
+                    $scope.mapOptions.markers = data.data.data;
+                    $scope.mapOptions.center = data.data.data[0];
+                } else {
+                    alert('null');
+                    $scope.mapOptions.markers = [];
+                    $scope.mapOptions.center = {
+                        longitude: 116.404,
+                        latitude: 39.915
+                    };
+                }
             })
     }
 ]);
