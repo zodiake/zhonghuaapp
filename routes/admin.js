@@ -100,30 +100,6 @@ router.put('/user/state', function (req, res, next) {
         });
 });
 
-router.put('/category/state', function (req, res, next) {
-    var state = req.body.state,
-        categoryId = req.body.id;
-    if (state !== 0 && state !== 1) {
-        var err = new Error('state not exist');
-        return next(err);
-    }
-
-    categoryService
-        .updateState(categoryId, state)
-        .then(function (data) {
-            categoryService.clearCache();
-            res.json({
-                status: 'success'
-            });
-        })
-        .fail(function (err) {
-            return next(err);
-        })
-        .catch(function (err) {
-            return next(err);
-        });
-});
-
 router.post('/csv', fileMulter, function (req, res, next) {
     var file = req.files.file;
     if (file.mimetype != 'text/csv') {
@@ -275,7 +251,7 @@ router.get('/aggregate/orders', function (req, res) {
 
 router.get('/category', function (req, res, next) {
     categoryService
-        .findAll(true)
+        .adminFindAll()
         .then(function (data) {
             var result = _.groupBy(data, function (a) {
                 return a.parent_id;
@@ -283,6 +259,30 @@ router.get('/category', function (req, res, next) {
             res.json({
                 status: 'success',
                 data: result
+            });
+        })
+        .fail(function (err) {
+            return next(err);
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+});
+
+router.put('/category/state', function (req, res, next) {
+    var state = req.body.state,
+        categoryId = req.body.id;
+    if (state !== 0 && state !== 1) {
+        var err = new Error('state not exist');
+        return next(err);
+    }
+
+    categoryService
+        .updateState(categoryId, state)
+        .then(function (data) {
+            categoryService.clearCache();
+            res.json({
+                status: 'success'
             });
         })
         .fail(function (err) {

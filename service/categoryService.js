@@ -41,10 +41,7 @@ var service = {
         }
     },
     findAll: function (isAdmin) {
-        var sql = 'select * from cargoo_name ';
-        if (!isAdmin) {
-            sql += 'where activate=1';
-        }
+        var sql = 'select * from cargoo_name where activate=1';
         var defer = q.defer();
         if (cache.all) {
             defer.resolve(cache.all);
@@ -73,6 +70,10 @@ var service = {
                 }
             });
         }
+    },
+    adminFindAll: function () {
+        var sql = 'select * from cargoo_name';
+        return pool.query(sql, []);
     },
     updateState: function (id, state) {
         var sql = 'update cargoo_name set activate=? where id=?';
