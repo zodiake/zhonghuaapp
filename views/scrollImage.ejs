@@ -1,23 +1,12 @@
 <div class="contentpanel">
-    <div class="panel-body">
-        <form class="form-inline">
-            <a class="btn btn-success btn-sm" href="#/tabs/scrollImageAdd">添加</a>
-            <div class="form-group">
-                <select name="state">
-                    <option value="">全部状态</option>
-                    <option value="">停用</option>
-                    <option value="">使用中</option>
-                </select>
-            </div>
-        </form>
-    </div>
     <table class="table table-bordered files_tab">
         <thead>
             <tr>
                 <th>序号</th>
                 <th>标题</th>
-                <th>状态</th>
+                <th>超链接</th>
                 <th>最后修改日期</th>
+                <th>操作</th>
             </tr>
         </thead>
         <tbody>
@@ -27,13 +16,16 @@
                     <img style="width:100px;height:100px" src='{{item.image_url}}' />
                 </td>
                 <td>
+                    <input type="text" ng-model="item.image_href">
+                </td>
+                <td>{{item.updated_time}}</td>
+                <td>
                     <button id="uploadImg" class="btn btn-success btn-xs">
                         <input type='file' file-upload='upload' id='{{item.id}}' index='{{$index}}' />
                         <a href="#">选择文件</a>
                     </button>
+                    <button class="btn btn-success btn-xs">click</button>
                 </td>
-                </td>
-                <td>2015-05-25</td>
             </tr>
         </tbody>
     </table>

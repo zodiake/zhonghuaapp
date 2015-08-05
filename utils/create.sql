@@ -127,6 +127,7 @@ create table scroll_image(
     id int auto_increment,
     image_url varchar(50),
     image_href varchar(20),
+    updated_time timestamp,
     primary key(id)
 )CHARACTER SET utf8;
 
