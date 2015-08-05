@@ -79,6 +79,10 @@ var service = {
         var sql = 'update cargoo_name set activate=? where id=?';
         return pool.query(sql, [state, id]);
     },
+    save: function (category) {
+        var sql = 'insert into cargoo_name set ?';
+        return pool.query(sql, [category]);
+    },
     clearCache: function () {
         cache = {};
     }

@@ -276,6 +276,7 @@ router.get('/aggregate/orders', function (req, res) {
 });
 /*------------------------end  orders-------------------------------*/
 
+/*------------------------category begin----------------------------*/
 router.get('/category', function (req, res, next) {
     categoryService
         .adminFindAll()
@@ -287,6 +288,35 @@ router.get('/category', function (req, res, next) {
                 status: 'success',
                 data: result
             });
+        })
+        .fail(function (err) {
+            return next(err);
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+});
+
+router.post('/category', function (req, res, next) {
+    var parent_id = req.body.category,
+        name = req.body.name;
+
+    categoryService
+        .save({
+            parent_id: parent_id,
+            name: name,
+            activate: 1
+        })
+        .then(function (date) {
+            if (date.insertId) {
+                res.json({
+                    status: 'success'
+                })
+            } else {
+                res.json({
+                    status: 'fail'
+                })
+            }
         })
         .fail(function (err) {
             return next(err);
@@ -319,6 +349,7 @@ router.put('/category/state', function (req, res, next) {
             return next(err);
         });
 });
+/*------------------------end category-------------------------------*/
 
 router.get('/suggestion', function (req, res, next) {
     var option = {

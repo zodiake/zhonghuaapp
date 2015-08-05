@@ -11,6 +11,10 @@ cargoo.service('CargooService', ['$http', function ($http) {
             id: item.id,
             state: state
         });
+    };
+
+    this.save = function (item) {
+        return $http.post('/admin/category', item);
     }
 }]);
 
@@ -43,8 +47,16 @@ cargoo.controller('CargooController', [
     }
 ]);
 
-cargoo.controller('CargooAddController', ['$scope', '$modal', function ($scope, $modal) {
+cargoo.controller('CargooAddController', ['$scope', 'CargooService', function ($scope, CargooService) {
+    $scope.item = {};
 
+    $scope.submit = function () {
+        CargooService
+            .save($scope.item)
+            .then(function (data) {
+                console.log(data);
+            })
+    };
 }]);
 
 cargoo.controller('CargooInstanceCtrl', [
