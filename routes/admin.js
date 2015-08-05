@@ -349,6 +349,54 @@ router.put('/category/state', function (req, res, next) {
             return next(err);
         });
 });
+
+router.get('/category/:id', function (req, res, next) {
+    var id = req.params.id;
+    categoryService
+        .findOne(id)
+        .then(function (data) {
+            res.json({
+                status: 'success',
+                data: data[0]
+            });
+        })
+        .fail(function (err) {
+            return next(err);
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+
+});
+
+router.put('/category/:id', function (req, res, next) {
+    var id = req.params.id,
+        category = req.body.category,
+        name = req.body.name;
+
+    categoryService
+        .update(id, {
+            category: category,
+            name: name
+        })
+        .then(function (data) {
+            if (data.changedRows == 1) {
+                res.json({
+                    status: 'success'
+                });
+            } else {
+                res.json({
+                    status: 'fail'
+                });
+            }
+        })
+        .fail(function (err) {
+            return next(err);
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+});
 /*------------------------end category-------------------------------*/
 
 router.get('/suggestion', function (req, res, next) {
@@ -465,5 +513,6 @@ render('scrollImageAdd');
 render('cargooAdd');
 render('recommandDetail');
 render('question');
+render('cargooDetail');
 
 module.exports = router;

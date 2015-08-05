@@ -13,7 +13,11 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="item in fuel">
-                            <td>{{item.name}}</td>
+                            <td>
+                                <a href="/#/tabs/cargooDetail/{{item.id}}">
+                                    {{item.name}}
+                                </a>
+                            </td>
                             <td>{{item.activate|activateFilter}}</td>
                             <td>
                                 <a class="text-info" ng-click="changeState(item)">{{item.activate|stateButtonFilter}}</a>
@@ -33,7 +37,11 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="item in oil">
-                            <td>{{item.name}}</td>
+                            <td>
+                                <a href="/#/tabs/cargooDetail/{{item.id}}">
+                                    {{item.name}}
+                                </a>
+                            </td>
                             <td>{{item.activate|activateFilter}}</td>
                             <td>
                                 <a class="text-info" ng-click="changeState(item)">{{item.activate|stateButtonFilter}}</a>
@@ -53,7 +61,11 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="item in chemistry">
-                            <td>{{item.name}}</td>
+                            <td>
+                                <a href="/#/tabs/cargooDetail/{{item.id}}">
+                                {{item.name}}
+                                </a>
+                            </td>
                             <td>{{item.activate|activateFilter}}</td>
                             <td>
                                 <a class="text-info" ng-click="changeState(item)">{{item.activate|stateButtonFilter}}</a>
@@ -73,7 +85,11 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="item in others">
-                            <td>{{item.name}}</td>
+                            <td>
+                                <a href="/#/tabs/cargooDetail/{{item.id}}">
+                                {{item.name}}
+                                </a>
+                            </td>
                             <td>{{item.activate|activateFilter}}</td>
                             <td>
                                 <a class="text-info" ng-click="changeState(item)">{{item.activate|stateButtonFilter}}</a>

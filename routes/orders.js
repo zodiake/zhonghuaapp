@@ -284,7 +284,7 @@ router.post('/', userAuthorityVerify(), extractOrder(), stateVerify(), function 
 });
 
 //update
-router.put('/:id', extractOrder(), function (req, res, next) {
+router.post('/:id/edit', extractOrder(), function (req, res, next) {
     var id = req.params.id;
     var order = req.order;
     var user = req.user;
@@ -378,7 +378,7 @@ function refuseStateConfirm(req, res, next) {
 }
 
 //update state
-router.put('/:id/state', fileMulter, confirmStateVerify, refuseStateConfirm, function (req, res, next) {
+router.post('/:id/state', fileMulter, confirmStateVerify, refuseStateConfirm, function (req, res, next) {
     var state = req.body.state,
         id = req.params.id,
         user = req.user,

@@ -1,5 +1,11 @@
 var cargoo = angular.module('Cargoo', []);
 
+function pop($timeout, $scope) {
+    $timeout(function () {
+        $scope.alerts.splice(0, 1);
+    }, 1000);
+}
+
 cargoo.service('CargooService', ['$http', function ($http) {
     this.findAll = function (id) {
         return $http.get('/admin/category');
@@ -13,9 +19,17 @@ cargoo.service('CargooService', ['$http', function ($http) {
         });
     };
 
+    this.update = function (item) {
+        return $http.put('/admin/category/' + item.id, item);
+    }
+
     this.save = function (item) {
         return $http.post('/admin/category', item);
-    }
+    };
+
+    this.findOne = function (id) {
+        return $http.get('/admin/category/' + id);
+    };
 }]);
 
 cargoo.controller('CargooController', [
@@ -47,17 +61,80 @@ cargoo.controller('CargooController', [
     }
 ]);
 
-cargoo.controller('CargooAddController', ['$scope', 'CargooService', function ($scope, CargooService) {
-    $scope.item = {};
+cargoo.controller('CargooDetailController', [
+    '$scope',
+    '$stateParams',
+    'CargooService',
+    '$timeout',
+    function ($scope, $stateParams, CargooService, $timeout) {
+        $scope.alerts = [];
 
-    $scope.submit = function () {
-        CargooService
-            .save($scope.item)
-            .then(function (data) {
-                console.log(data);
-            })
-    };
-}]);
+        function init() {
+            CargooService
+                .findOne($stateParams.id)
+                .success(function (data) {
+                    $scope.item = {
+                        category: data.data.parent_id + '',
+                        name: data.data.name,
+                        id: data.data.id
+                    };
+                })
+                .error(function (err) {
+
+                });
+        }
+
+        init();
+
+        $scope.submit = function () {
+            CargooService
+                .update($scope.item)
+                .success(function (data) {
+                    $scope.alerts.push({
+                        type: 'success',
+                        msg: '更新成功'
+                    });
+                    pop($timeout, $scope);
+                })
+                .error(function (err) {
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: '服务器错误'
+                    });
+                    pop($timeout, $scope);
+                });
+        };
+    }
+]);
+
+cargoo.controller('CargooAddController', [
+    '$scope',
+    'CargooService',
+    '$timeout',
+    function ($scope, CargooService, $timeout) {
+        $scope.item = {};
+        $scope.alerts = [];
+
+        $scope.submit = function () {
+            CargooService
+                .save($scope.item)
+                .success(function (data) {
+                    $scope.alerts.push({
+                        type: 'success',
+                        msg: '添加成功'
+                    });
+                    pop($timeout, $scope);
+                })
+                .error(function (err) {
+                    $scope.alerts.push({
+                        type: 'fail',
+                        msg: '添加失败'
+                    });
+                    pop($timeout, $scope);
+                });
+        };
+    }
+]);
 
 cargoo.controller('CargooInstanceCtrl', [
     '$scope',

@@ -6,6 +6,10 @@ var q = require('q');
 var cache = {};
 
 var service = {
+    findOne: function (id) {
+        var sql = 'select * from cargoo_name where id=?';
+        return pool.query(sql, [id]);
+    },
     findByParent: function (parentId) {
         var defer = q.defer();
         var sql;
@@ -78,6 +82,10 @@ var service = {
     updateState: function (id, state) {
         var sql = 'update cargoo_name set activate=? where id=?';
         return pool.query(sql, [state, id]);
+    },
+    update: function (id, category) {
+        var sql = 'update cargoo_name set name=?,parent_id=? where id=?';
+        return pool.query(sql, [category.name, category.category, id]);
     },
     save: function (category) {
         var sql = 'insert into cargoo_name set ?';

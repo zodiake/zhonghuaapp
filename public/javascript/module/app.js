@@ -98,6 +98,16 @@ app.config(['$stateProvider',
                 templateUrl: '/admin/cargoo.html',
                 controller: 'CargooController'
             })
+            .state('tabs.cargooAdd', {
+                url: '/cargooAdd',
+                templateUrl: '/admin/cargooAdd.html',
+                controller: 'CargooAddController'
+            })
+            .state('tabs.cargooDetail', {
+                url: '/cargooDetail/:id',
+                templateUrl: '/admin/cargooDetail.html',
+                controller: 'CargooDetailController'
+            })
             .state('tabs.consignee', {
                 url: '/consignee',
                 templateUrl: '/admin/consignee.html',
@@ -127,11 +137,6 @@ app.config(['$stateProvider',
                 url: '/scrollImageAdd',
                 templateUrl: '/admin/scrollImageAdd.html',
                 controller: 'ScrollImageAddController'
-            })
-            .state('tabs.cargooAdd', {
-                url: '/cargooAdd',
-                templateUrl: '/admin/cargooAdd.html',
-                controller: 'CargooAddController'
             })
             .state('tabs.recommandDetail', {
                 url: '/recommandDetail',
