@@ -134,6 +134,33 @@ router.get('/scrollImages', function (req, res, next) {
             return next(err);
         });
 });
+
+router.put('/scrollImages/:id', function (req, res, next) {
+    var id = req.params.id,
+        href = req.body.image_href,
+        item = {
+            href: href,
+            updated_time: new Date()
+        };
+
+    scrollImageService
+        .update(id, item)
+        .then(function (data) {
+            if (data.changedRows == 1) {
+                res.json({
+                    status: 'success',
+                    data: item
+                });
+            }
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
+
+});
 /*----------------------end scrollImage-------------------------------*/
 
 /*------------------------------orders-------------------------------*/

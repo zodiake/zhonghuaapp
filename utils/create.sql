@@ -179,6 +179,12 @@ insert into order_state(order_id,state_name,created_time) values(1,'待确认','
 insert into order_state(order_id,state_name,created_time) values(1,'运送中','2013-1-1 12:13:14');
 insert into order_state(order_id,state_name,created_time) values(1,'已送达','2013-1-1 12:13:14');
 
+/*test scrollimage*/
+insert into scroll_image(id,image_url,image_href) values(1,'/uploads/banner.png','');
+insert into scroll_image(id,image_url,image_href) values(2,'/uploads/banner.png','');
+insert into scroll_image(id,image_url,image_href) values(3,'/uploads/banner.png','');
+insert into scroll_image(id,image_url,image_href) values(4,'/uploads/banner.png','');
+
 CREATE INDEX order_id_index ON orders(order_number);
 create index order_consignee_index on orders(consignee);
 create index order_consignor_index on orders(consignor);

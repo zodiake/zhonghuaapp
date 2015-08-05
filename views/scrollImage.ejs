@@ -18,13 +18,13 @@
                 <td>
                     <input type="text" ng-model="item.image_href">
                 </td>
-                <td>{{item.updated_time}}</td>
+                <td>{{item.updated_time|date:'yyyy-MM-dd HH:mm:ss'}}</td>
                 <td>
                     <button id="uploadImg" class="btn btn-success btn-xs">
                         <input type='file' file-upload='upload' id='{{item.id}}' index='{{$index}}' />
                         <a href="#">选择文件</a>
                     </button>
-                    <button class="btn btn-success btn-xs">click</button>
+                    <button class="btn btn-success btn-xs" ng-click="update(item)">click</button>
                 </td>
             </tr>
         </tbody>
