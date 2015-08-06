@@ -77,11 +77,14 @@
                 </div>
             </div>
             <div class="ml100 mt20">
-                <button class="btn btn-primary">确认修改</button>
-                <button class="btn btn-default">撤销运单</button>
+                <button class="btn btn-primary" ng-click="update()">确认修改</button>
+                <button class="btn btn-default" ng-click="close()">撤销运单</button>
                 <a href="#/tabs/order" class="btn btn-default">返回</a>
                 <a href="#/tabs/order/{{item.id}}/map" class="btn btn-default">地图</a>
             </div>
         </form>
     </div>
+</div>
+<div class="upload-modal">
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 </div>

@@ -105,13 +105,23 @@ order.controller('OrderDetailController', [
 
         $scope.update = function () {
             if (!$scope.orderForm.$valid) {
-                alert(22);
                 return;
             }
             OrderService
                 .update($scope.item)
                 .then(function (data) {
-                    console.log(data);
+
+                })
+                .catch(function (err) {
+
+                });
+        };
+
+        $scope.close = function () {
+            OrderService
+                .updateState($scope.item)
+                .then(function () {
+
                 })
                 .catch(function (err) {
 

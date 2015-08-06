@@ -5,10 +5,10 @@ var _ = require('lodash');
 
 var fs = require('fs');
 var join = require('path').join;
+var crypto = require('crypto');
 
 var userService = require('../service/userService');
 var categoryService = require('../service/categoryService');
-
 
 function importBegin(nsp, filePath, room) {
 
@@ -148,6 +148,7 @@ function importBegin(nsp, filePath, room) {
                 .then(convertCategory)
                 .then(convertCargooName)
                 .then(function (data) {
+                    data.order_number = crypto.randomBytes(6).toString('hex');
                     if (total && data.row == total) {
                         nsp.to(room).emit('finish');
                     }
