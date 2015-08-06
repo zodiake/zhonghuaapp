@@ -63,8 +63,8 @@ order.controller('OrderController', ['$scope', 'OrderService', function ($scope,
             state: $scope.option.state,
             begin_time: $scope.option.begin_time,
             end_time: $scope.option.end_time,
-            mobile: $scope.option.mobile,
-            orderId: $scope.option.orderId
+            orderNumber: $scope.option.orderNumber,
+            consignor: $scope.option.consignor
         });
     };
 

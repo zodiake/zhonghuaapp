@@ -3,13 +3,9 @@
 var express = require('express');
 var router = express.Router();
 var e_jwt = require('express-jwt');
-var csv = require('csv');
 var multer = require('multer');
 var q = require('q');
 var _ = require('lodash');
-
-var fs = require('fs');
-var join = require('path').join;
 
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
@@ -167,13 +163,13 @@ router.put('/scrollImages/:id', function (req, res, next) {
 router.get('/orders', function (req, res, next) {
     var page = req.query.page || 1,
         size = req.query.size || 15,
-        mobile = req.query.mobile,
+        consignor = req.query.consignor,
         beginTime = req.query.beginTime,
         endTime = req.query.endTime,
-        orderId = req.query.orderId,
+        orderNumber = req.query.orderNumber,
         state = req.query.state;
     var option = {
-        name: mobile,
+        consignor: consignor,
         begin_time: {
             operator: '>',
             value: beginTime
@@ -182,7 +178,7 @@ router.get('/orders', function (req, res, next) {
             operator: '<',
             value: endTime
         },
-        order_id: orderId
+        order_number: orderNumber
     };
 
     if (state !== undefined && orderState[state] !== undefined) {

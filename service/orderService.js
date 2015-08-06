@@ -100,7 +100,8 @@ var service = {
                 .field('orders.quantity', 'quantity')
                 .field('orders.created_time', 'created_time')
                 .field('orders.current_state', 'current_state')
-                .from('orders').join('cargoo_name', '', 'cargoo_name.id=orders.cargoo_name');
+                .from('orders')
+                .join('cargoo_name', '', 'cargoo_name.id=orders.cargoo_name');
         }
         if (option.begin_time && option.begin_time.value) {
             sql.where('created_time >' + option.begin_time.value);
@@ -123,7 +124,7 @@ var service = {
         return pool.query(this.$$buildOptionSql(page, option, true).toString(), []);
     },
     innerJoinUser: function (id) {
-        var sql = 'select orders.id, orders.order_number, orders.license, orders.consignee_name as consigneeName, consignee.name as consignee_name, consignor.name as consignor_name, orders.company_name, orders.category, orders.cargoo_name, orders.origin, orders.destination, orders.etd, orders.quantity,orders.created_time from orders join usr as consignor on orders.consignor=consignor.name join usr as consignee on orders.consignee=consignee.name where orders.id=?';
+        var sql = 'SELECT orders.id, orders.order_number, orders.license, orders.consignee_name AS consigneeName, orders.consignee, orders.consignor, orders.company_name, orders.category, orders.cargoo_name, orders.origin, orders.destination, orders.etd, orders.quantity, orders.created_time FROM orders WHERE orders.id = ?';
         return pool.query(sql, [id]);
     },
     countByStateAndConsignee: function (order) {
