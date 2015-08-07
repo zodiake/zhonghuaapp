@@ -124,6 +124,8 @@ router.get('/:id', function (req, res, next) {
                 order_number: data[0].order_number,
                 license: data[0].license,
                 consignor: data[0].consignor,
+                consignee_name: data[0].consignee_name,
+                eta: data[0].etd,
                 consignee: data[0].consignee,
                 companyName: data[0].company_name,
                 category: data[0].category,
