@@ -15,6 +15,7 @@ var reviewService = require('../service/reviewService');
 var userService = require('../service/userService');
 var positionService = require('../service/positionService');
 var orderStateService = require('../service/orderStateService');
+var jpush = require('../service/jpush');
 
 var orderState = require('../orderState');
 var orderCode = require('../orderCode');
@@ -350,6 +351,8 @@ function confirmStateVerify(req, res, next) {
     }
 }
 
+function push(req, res) {}
+
 function refuseStateConfirm(req, res, next) {
     var id = req.params.id,
         state = req.params.state,
@@ -412,21 +415,29 @@ router.post('/:id/state', fileMulter, confirmStateVerify, refuseStateConfirm, fu
         .then(function (data) {
             if (data.changedRows === 0) {
                 var error = new Error('no data updated');
-                return next(error);
+                next(error);
             } else {
                 return orderStateService.save(s);
             }
         })
         .then(function (data) {
+            var flag = state === orderState.refuse || state === orderState.confirm || state === orderState.arrive;
+            if (flag) {
+                orderService
+                    .findOne(id)
+                    .then(function (data) {
+                        var order_number = data[0].order_number,
+                            consignor = data[0].consignor;
+                        var message = 'you order_number ' + order_number + ' was' + state + ' on' + new Date();
+                        jpush(consignor, message);
+                    });
+            }
             res.json({
                 status: 'success'
             });
         })
         .fail(function (err) {
-            res.json({
-                status: 'fail',
-                message: 'sql error'
-            });
+            return next(err);
         })
         .catch(function (err) {
             return next(err);

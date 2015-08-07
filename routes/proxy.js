@@ -8,6 +8,7 @@ var crypto = require('crypto');
 var shasum = crypto.createHash('sha1');
 shasum.update('123');
 var url = 'http://112.33.1.13/jaxws/smsServiceEndpoint/sendSms?wsdl';
+var jpush = require('../service/jpush');
 
 var connection = amqp.createConnection({
     url: 'amqp://guest:guest@localhost:5672/zhonghua'
@@ -94,6 +95,10 @@ router.get('/amqp', function (req, res) {
         contentType: 'application/json'
     });
     res.json('ok');
+});
+
+router.get('/push', function (req, res) {
+    jpush();
 });
 
 module.exports = router;
