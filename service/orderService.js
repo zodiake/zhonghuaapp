@@ -173,6 +173,10 @@ var service = {
         var sql = 'update orders set ? where id=? and consignor=?';
         return pool.query(sql, [order, id, user.name]);
     },
+    updateByOrderNumber: function (orderNumber, order) {
+        var sql = 'update orders set ? where order_number=?';
+        return pool.query(sql, [order, orderNumber]);
+    },
     merge: function (webData, data) {
         return _.map(data, function (d) {
             _.each(webData, function (wd) {

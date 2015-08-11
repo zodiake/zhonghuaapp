@@ -59,8 +59,37 @@ connection.on('ready', function () {
     }, function (q) {
         q.bind(exchange, 'order.update');
         q.subscribe(exchange, function (message, headers, deliveryInfo, messageObject) {
-            console.log('Got a message with routing key ' + deliveryInfo.routingKey);
-            console.log('object:', message);
+            var order = {
+                consignor: message.user_mobile,
+                created_time: message.order_time,
+                order_number: message.order_id,
+                license: message.license,
+                consignee_name: message.driver_name,
+                consignee: message.driver_mobile,
+                company_name: message.company_name,
+                cargoo_name: message.cargoo_name,
+                destination: message.destination,
+                origin: message.origin,
+                etd: message.eta,
+                quantity: message.quantity,
+                type: message.type,
+            };
+            categoryService
+                .findByName(order.cargoo_name)
+                .then(function (data) {
+                    order.cargoo_name = data.id;
+                    order.category = data.parent_id;
+                    return order;
+                })
+                .then(function (order) {
+                    orderService.updateByOrderNumber(order.order_number, order);
+                })
+                .fail(function (err) {
+                    console.log(err);
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
         });
     });
     /*-----------------orderDelete queue----------------------------*/
