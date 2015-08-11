@@ -19,6 +19,10 @@ var service = {
     search: function (id) {
         var sql = "SELECT usr.id as id,usr.name AS mobile, usr_detail.detail_name, vehicle.license, usr_detail.praise FROM usr LEFT JOIN vehicle ON vehicle.usr_id = usr.id LEFT JOIN usr_detail ON usr_detail.id = usr.id WHERE usr.authority = 'ROLE_CONSIGNEE' and usr.name=?";
         return pool.query(sql, [id]);
+    },
+    delete: function (consignorId, consigneeId) {
+        var sql = 'delete from common_consignee where consignor_id=? and consignee_id=?';
+        return pool.query(sql, [consignorId, consigneeId]);
     }
 };
 

@@ -85,21 +85,16 @@ router.post('/signup', function (req, res, next) {
     var name = req.body.name,
         password = req.body.password,
         captcha = req.body.captcha,
-        type = user_type[req.body.type];
+        type = user_type[req.body.type],
+        error;
 
     if (!user_mobile[name] || captcha != user_mobile[name]) {
-        res.json({
-            status: 'fail',
-            message: 'captcha not match'
-        });
-        return next();
+        error = new Error('验证码错误');
+        return next(error);
     }
     if (type === undefined) {
-        res.json({
-            status: 'fail',
-            message: 'type can not be null'
-        });
-        return next();
+        error = new Error('type can not be null')
+        return next(error);
     }
 
     userService.save({

@@ -3,7 +3,6 @@
 var q = require('q');
 var request = require('request');
 var factoryType = require('../factoryType');
-var factorySingleType = require('../factorySingleType');
 
 var service = {
     queryFromWeb: function (type, query) {
@@ -26,21 +25,21 @@ var service = {
         });
         return defer.promise;
     },
-    merge: function (data, type, query) {
+    merge: function (data, type, orderId) {
         var defer = q.defer();
         request({
-            url: factorySingleType[type] + '?' + query,
+            url: factoryType[type] + orderId,
             timeout: 5000
         }, function (err, response, body) {
             if (err) {
                 defer.reject(err);
             }
             if (response.statusCode == 200) {
-                var result = JSON.parse(body);
+                var result = JSON.parse(body)[0];
                 if (result.status) {
                     data.states.unshift({
                         stateName: '排队中',
-                        waiting: result.waiting,
+                        waiting: result.Waiting,
                         createTime: new Date()
                     });
                 }

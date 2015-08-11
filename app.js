@@ -17,6 +17,7 @@ var vehicle = require('./routes/vehicle');
 var admin = require('./routes/admin');
 var category = require('./routes/category');
 var commonConsignee = require('./routes/commonConsignee');
+var scrollImage = require('./routes/scrollImage');
 
 /*---------------amqp---------------------*/
 var queue = require('./service/amqpService');
@@ -45,6 +46,7 @@ app.use('/vehicle', vehicle);
 app.use('/admin', admin);
 app.use('/category', category);
 app.use('/commonConsignee', commonConsignee);
+app.use('/scrollImages', scrollImage);
 
 //just test remote web service should deleted from productd
 if (app.get('env') === 'development') {
@@ -71,6 +73,7 @@ if (app.get('env') === 'development') {
                 message: 'invalid request'
             });
         } else {
+            console.log(err);
             res.status(err.status || 500);
             res.render('error', {
                 message: err.message,
@@ -97,6 +100,3 @@ app.use(function (err, req, res, next) {
 });
 
 module.exports = app;
-exports.use = function () {
-    app.use.apply(app, arguments);
-};

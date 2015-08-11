@@ -58,7 +58,7 @@ create table orders(
     cargoo_name int,
     origin varchar(100),
     destination varchar(100),
-    quantity double,
+    quantity double ,
     current_state varchar(10),
     created_time timestamp,
     etd timestamp,

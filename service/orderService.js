@@ -176,9 +176,8 @@ var service = {
     merge: function (webData, data) {
         return _.map(data, function (d) {
             _.each(webData, function (wd) {
-                if (wd.status === 'success' && d.order_number === wd.billcode) {
-                    d.sub = wd.state;
-                    d.vehicle = wd.vehicle;
+                if (wd.Status === true && d.order_number === wd.BillCode) {
+                    d.waiting = wd.Waiting;
                     return;
                 }
             });

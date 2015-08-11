@@ -90,4 +90,22 @@ router.post('/', validateConsignee, function (req, res, next) {
         });
 });
 
+router.delete('/:id', function (req, res, next) {
+    var user = req.user,
+        consignee = req.params.id;
+    service
+        .delete(user.id, consignee)
+        .then(function (data) {
+            res.json({
+                status: 'success'
+            });
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
+});
+
 module.exports = router;

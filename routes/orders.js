@@ -152,14 +152,15 @@ router.get('/:id', function (req, res, next) {
                 if (d.state_name === orderState.arrive) {
                     s.image_url = d.img_url;
                 }
-                state.push(s);
+                if (s.stateName != null && s.createTime != null)
+                    state.push(s);
             });
             result.level = data[0].level;
             result.review_content = data[0].review_content;
             result.states = state;
 
             if (result.currentState === orderState.transport && result.type) {
-                return webService.merge(result, result.type, 'order_id=1');
+                return webService.merge(result, result.type, id);
             } else {
                 return result;
             }
@@ -230,6 +231,14 @@ var extractOrder = function () {
             mobile: mobile
         };
         req.order = order;
+        if (order.etd == '')
+            order.etd = null;
+        if (!order.quantity)
+            order.quantity = null;
+        if (!order.category)
+            order.category = null;
+        if (!order.cargoo_name)
+            order.cargoo_name = null;
         next();
     };
 };
