@@ -12,6 +12,10 @@ var service = {
         var sql = 'select * from orders where id=?';
         return pool.query(sql, [id]);
     },
+    findByOrderNumber: function (id) {
+        var sql = 'select * from orders where order_number=?';
+        return pool.query(sql, [id]);
+    },
     findOneAndState: function (usr, id) {
         var sql;
         if (usr.authority === userAuthority.consignee) {
@@ -176,6 +180,10 @@ var service = {
     updateByOrderNumber: function (orderNumber, order) {
         var sql = 'update orders set ? where order_number=?';
         return pool.query(sql, [order, orderNumber]);
+    },
+    close: function (orderId) {
+        var sql = "update orders set current_state='已关闭' where order_number=?";
+        return pool.query(sql, [orderId]);
     },
     merge: function (webData, data) {
         return _.map(data, function (d) {

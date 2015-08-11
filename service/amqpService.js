@@ -3,6 +3,8 @@
 var amqp = require('amqp');
 var categoryService = require('../service/categoryService');
 var orderService = require('../service/orderService');
+var orderStateService = require('../service/orderStateService');
+var stateType = require('../stateType');
 
 var connection = amqp.createConnection({
     url: 'amqp://guest:guest@localhost:5672/zhonghua'
@@ -98,8 +100,14 @@ connection.on('ready', function () {
     }, function (q) {
         q.bind(exchange, 'order.delete');
         q.subscribe(exchange, function (message, headers, deliveryInfo, messageObject) {
-            console.log('Got a message with routing key ' + deliveryInfo.routingKey);
-            console.log('object:', message);
+            orderService
+                .close(message.order_id)
+                .fail(function (err) {
+                    console.log(err);
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
         });
     });
     /*-----------------orderState queue----------------------------*/
@@ -108,8 +116,23 @@ connection.on('ready', function () {
     }, function (q) {
         q.bind(exchange, 'orderstate.create');
         q.subscribe(exchange, function (message, headers, deliveryInfo, messageObject) {
-            console.log('Got a message with routing key ' + deliveryInfo.routingKey);
-            console.log('object:', message);
+            orderService
+                .findByOrderNumber(message.order_id)
+                .then(function (data) {
+                    message.order_id = data[0].order_number;
+                    var result = {
+                        order_id: data[0].id,
+                        state_name: stateType[message.order_state],
+                        created_time: new Date()
+                    };
+                    return orderStateService.save(result);
+                })
+                .fail(function (err) {
+                    console.log(err);
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
         });
     });
 });
