@@ -71,10 +71,28 @@ var service = {
         var sql = 'update usr set password=? where id=?';
         return pool.query(sql, [usr.password, usr.id]);
     },
+    updatePwdByName: function (usr) {
+        var sql = 'update usr set password=? where name=?';
+        return pool.query(sql, [usr.password, usr.name]);
+    },
     updateState: function (userId, state) {
         var sql = 'update usr set activate=? where id=?';
         return pool.query(sql, [state, userId]);
     }
 };
+
+module.exports = service;
+
+--versionservice
+/*jslint node: true */
+    'use strict';
+var pool = require('../utils/pool');
+
+var service = {
+    findOne: function () {
+        var sql = 'select * from app_version';
+        return pool.query(sql, []);
+    }
+}
 
 module.exports = service;

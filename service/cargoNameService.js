@@ -5,14 +5,14 @@ var q = require('q');
 
 var service = {
     cache: {},
-    findByCategory: function(categoryId) {
+    findByCategory: function (categoryId) {
         var sql = 'select * from cargoo_name where category_id =?';
         var defer = q.defer();
         if (this.cache[categoryId]) {
             defer.resolve(this.cache[categoryId]);
             return defer.promise;
         } else {
-            return pool.query(sql, [categoryId]).then(function(data) {
+            return pool.query(sql, [categoryId]).then(function (data) {
                 this.cache[categoryId] = data;
                 return data;
             });
