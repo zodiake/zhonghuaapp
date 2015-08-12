@@ -21,7 +21,6 @@ var fileMulter = multer({
 });
 
 var user_mobile = {};
-var forget = {};
 
 var cryptoPwd = function (password) {
     return crypto.createHash('md5').update(password).digest('hex');
@@ -55,65 +54,30 @@ function getRandomInt(min, max) {
 }
 
 //获取验证码
-router.get('/captcha', function (req, res, next) {
-    var mobile = req.query.mobile,
-        type = req.query.type;
-
-    if (type == 'signup') {
-        user_mobile[mobile] = 1111; //getRandomInt(1000, 9999);
-        userService
-            .countByMobile(mobile)
-            .then(function (data) {
-                if (data[0].usrCount === 0) {
-                    //todo send short message
-                    //send sms
-                    res.json({
-                        status: 'success',
-                    });
+router.get('/captcha', function (req, res) {
+    var mobile = req.query.mobile;
+    userService
+        .countByMobile(mobile)
+        .then(function (data) {
+            if (data[0].usrCount === 0) {
+                //todo send short message
+                user_mobile[mobile] = 1111; //getRandomInt(1000, 9999);
+                if (user_mobile[mobile]) {
+                    //sendsms
                 } else {
-                    res.json({
-                        status: 'fail',
-                        message: 'user exist'
-                    });
+                    user_mobile[mobile] = 1111;
+                    //send new captcha
                 }
-            });
-    } else if (type == 'forget') {
-        forget[mobile] = 1111;
-        res.json({
-            status: 'success'
-        });
-    } else {
-        var error = new Error('no type');
-        next(error);
-    }
-});
-
-router.post('/forget', function (req, res, next) {
-    var mobile = req.body.mobile,
-        captcha = req.body.captcha,
-        password = req.body.password,
-        error;
-    if (captcha == forget[mobile]) {
-        userService.updatePwd({
-                name: mobile,
-                password: cryptoPwd(password)
-            })
-            .then(function (data) {
-                delete forget[mobile];
                 res.json({
-                    status: 'success'
+                    status: 'success',
                 });
-            })
-            .fail(function (err) {
-                return next(err);
-            })
-            .catch(function (err) {
-                return next(err);
-            });
-    } else {
-        error = new Error('captcha not match');
-        return next(error);
-    }
+            } else {
+                res.json({
+                    status: 'fail',
+                    message: 'user exist'
+                });
+            }
+        });
 });
 
 //注册
@@ -129,7 +93,7 @@ router.post('/signup', function (req, res, next) {
         return next(error);
     }
     if (type === undefined) {
-        error = new Error('type can not be null');
+        error = new Error('type can not be null')
         return next(error);
     }
 
@@ -162,16 +126,15 @@ router.post('/signup', function (req, res, next) {
 
 router.post('/admin/login', function (req, res, next) {
     var name = req.body.name,
-        password = req.body.password,
-        err;
+        password = req.body.password;
     userService
         .findByName(name)
         .then(function (data) {
             if (data.length === 0) {
-                err = new Error('用户不存在');
+                var err = new Error('用户不存在');
                 return next(err);
             } else if (data[0].password != cryptoPwd(password)) {
-                err = new Error('密码错误');
+                var err = new Error('密码错误');
                 return next(err);
             }
             var usr = data[0];
@@ -323,6 +286,7 @@ router.post('/detail',
             }).catch(function (err) {
                 return next(err);
             });
+
     });
 
 router.post('/portrait', verify, fileMulter, function (req, res, next) {
