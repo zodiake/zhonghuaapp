@@ -71,10 +71,6 @@ var service = {
         var sql = 'update usr set password=? where id=?';
         return pool.query(sql, [usr.password, usr.id]);
     },
-    updatePwdByName: function (usr) {
-        var sql = 'update usr set password=? where name=?';
-        return pool.query(sql, [usr.password, usr.name]);
-    },
     updateState: function (userId, state) {
         var sql = 'update usr set activate=? where id=?';
         return pool.query(sql, [state, userId]);
