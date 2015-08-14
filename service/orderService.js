@@ -47,6 +47,7 @@ var service = {
             userFilter.and("consignee='" + user.name + "'");
             userFilter.and("current_state!='" + orderState.dispatch + "'");
         }
+        userFilter.and("current_state!='" + orderState.closed + "'");
 
         sql.where(stateFilter);
         sql.where(userFilter);
@@ -181,6 +182,10 @@ var service = {
         var sql = 'update orders set ? where order_number=?';
         return pool.query(sql, [order, orderNumber]);
     },
+    updateWeightByOrderNumber: function (weight, orderNumber) {
+        var sql = 'update orders set actual_weight=? where order_number=?';
+        return pool.query(sql, [weight, orderNumber]);
+    },
     close: function (orderId) {
         var sql = "update orders set current_state='已关闭' where order_number=?";
         return pool.query(sql, [orderId]);
@@ -190,6 +195,7 @@ var service = {
             _.each(webData, function (wd) {
                 if (wd.Status === true && d.order_number === wd.BillCode) {
                     d.waiting = wd.Waiting;
+                    d.actual_weight = wd.actual_weight;
                     return;
                 }
             });

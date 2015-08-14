@@ -90,7 +90,7 @@ router.post('/', validateConsignee, function (req, res, next) {
         });
 });
 
-router.delete('/:id', function (req, res, next) {
+router.post('/:id/delete', function (req, res, next) {
     var user = req.user,
         consignee = req.params.id;
     service
