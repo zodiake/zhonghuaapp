@@ -94,7 +94,7 @@ router.post('/forget', function (req, res, next) {
         password = req.body.password,
         error;
     if (captcha == forget[mobile]) {
-        userService.updatePwd({
+        userService.updatePwdByName({
                 name: mobile,
                 password: cryptoPwd(password)
             })
