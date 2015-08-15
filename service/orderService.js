@@ -165,6 +165,15 @@ var service = {
         var array = [sqlCountAll, sqlApp, sqlOut, sqlDispatch, sqlConfirm, sqlTransport, sqlArrive, sqlAppraise, sqlRefuse];
         return pool.query(array.join(";"), []);
     },
+    aggregateByUser: function (user) {
+        var dispatchsql = "select count(*) as dispatchCount from orders where current_state='待分配' and consignor='" + user.name + "'";
+        var refusesql = "select count(*) as refuseCount from orders where current_state='已拒绝' and consignor='" + user.name + "'";
+        var confirmsql = "select count(*) as confirmCount from orders where current_state='待确认' and consignor='" + user.name + "'";
+        var transportsql = "select count(*) as transportCount from orders where current_state='运送中' and consignor='" + user.name + "'";
+        var arrivesql = "select count(*) as arriveCount from orders where current_state='已送达' and consignor='" + user.name + "'";
+        var array = [dispatchsql, refusesql, confirmsql, transportsql, arrivesql];
+        return pool.query(array.join(';'), []);
+    },
     updateStateByIdAndUser: function (order, user) {
         var sql;
         if (user.authority === userAuthority.consignor) {

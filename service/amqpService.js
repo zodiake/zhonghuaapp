@@ -125,7 +125,7 @@ connection.on('ready', function () {
                         state_name: stateType[message.order_state],
                         created_time: new Date()
                     };
-                    if (message.actual_weight !== 0) {
+                    if (message.actual_weight && message.actual_weight !== 0) {
                         return orderStateService
                             .save(result)
                             .then(function () {

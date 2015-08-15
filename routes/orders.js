@@ -152,7 +152,7 @@ router.get('/:id', function (req, res, next) {
                 if (d.state_name === orderState.arrive) {
                     s.image_url = d.img_url;
                 }
-                if (s.stateName != null && s.createTime != null)
+                if (s.stateName !== null && s.createTime !== null)
                     state.push(s);
             });
             result.level = data[0].level;
@@ -185,6 +185,24 @@ router.get('/:id', function (req, res, next) {
         })
         .catch(function (err) {
             return next(err);
+        });
+});
+
+router.get('/user/aggregate', function (req, res, next) {
+    var user = req.user;
+    orderService
+        .aggregateByUser(user)
+        .then(function (data) {
+            res.json({
+                status: 'success',
+                data: data
+            });
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
         });
 });
 
@@ -231,7 +249,7 @@ var extractOrder = function () {
             mobile: mobile
         };
         req.order = order;
-        if (order.etd == '')
+        if (order.etd === '')
             order.etd = null;
         if (!order.quantity)
             order.quantity = null;
@@ -359,8 +377,6 @@ function confirmStateVerify(req, res, next) {
         next();
     }
 }
-
-function push(req, res) {}
 
 function refuseStateConfirm(req, res, next) {
     var id = req.params.id,
@@ -521,7 +537,7 @@ function verifyConsignor(req, res, next) {
             next(err);
         })
         .catch(function (err) {
-            next(err)
+            next(err);
         });
 }
 
