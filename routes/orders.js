@@ -152,8 +152,12 @@ router.get('/:id', function (req, res, next) {
                 if (d.state_name === orderState.arrive) {
                     s.image_url = d.img_url;
                 }
-                if (s.stateName !== null && s.createTime !== null)
+                if (d.state_name === orderState.appraise) {
+                    result.description = d.description;
+                }
+                if (s.stateName !== null && s.createTime !== null) {
                     state.push(s);
+                }
             });
             result.level = data[0].level;
             result.review_content = data[0].review_content;
