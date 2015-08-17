@@ -1,19 +1,20 @@
 <div class="contentpanel">
     <div class="panel-body messages_box">
-        <form class="form-horizontal form-bordered">
+        <form class="form-horizontal form-bordered" ng-submit="submit()" name="pushForm">
             <div class="form-group">
                 <label class="col-sm-1 control-label">推送对象：</label>
                 <div class="col-sm-2">
-                    <select>
-                        <option>司机</option>
-                        <option>货主</option>
+                    <select name='type' ng-model="push.type">
+                        <option value='consignee'>司机</option>
+                        <option value='consignor'>货主</option>
                     </select>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-1 control-label">内容：</label>
                 <div class="col-sm-4">
-                    <textarea></textarea>
+                    <textarea ng-model="push.content" name="content" required></textarea>
+                    <span ng-show="pushForm.content.$error.required" class="error">empty</span>
                 </div>
             </div>
             <div class="col-sm-2 text-right">

@@ -14,7 +14,7 @@ var service = {
             if (err) {
                 defer.reject(err);
             }
-            if (response.statusCode == 200) {
+            if (response && response.statusCode == 200) {
                 defer.resolve(JSON.parse(body));
             } else {
                 defer.reject({

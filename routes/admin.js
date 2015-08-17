@@ -13,6 +13,7 @@ var categoryService = require('../service/categoryService');
 var suggestionService = require('../service/suggestService');
 var scrollImageService = require('../service/scrollImageService');
 var questionService = require('../service/questionService');
+var jpush = require('../service/jpush');
 
 var userAuthority = require('../userAuthority');
 var orderState = require('../orderState');
@@ -419,6 +420,20 @@ router.get('/suggestion', function (req, res, next) {
         .catch(function (err) {
             return next(err);
         });
+});
+
+router.post('/jpush', function (req, res, next) {
+    var type = req.body.type,
+        content = req.body.content;
+    jpush(type, content, function (err) {
+        if (err) {
+            var error = new Error('send fail');
+            return next(error);
+        }
+        res.json({
+            status: 'success'
+        });
+    });
 });
 
 router.get('/tabData', function (req, res) {

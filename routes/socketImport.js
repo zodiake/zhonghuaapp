@@ -159,7 +159,6 @@ function importBegin(nsp, filePath, room) {
                     return data;
                 })
                 .then(function (data) {
-                    console.log(data);
                     if (total && data.row == total) {
                         nsp.to(room).emit('finish');
                     }
