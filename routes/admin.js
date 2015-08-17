@@ -308,11 +308,11 @@ router.post('/category', function (req, res, next) {
             if (date.insertId) {
                 res.json({
                     status: 'success'
-                })
+                });
             } else {
                 res.json({
                     status: 'fail'
-                })
+                });
             }
         })
         .fail(function (err) {
@@ -446,6 +446,7 @@ router.get('/tabData', function (req, res) {
 
 });
 
+/*------------------------begin question-------------------------------*/
 router.get('/questions', function (req, res, next) {
     var page = req.params.page || 1,
         size = req.params.size || 15;
@@ -462,7 +463,7 @@ router.get('/questions', function (req, res, next) {
         });
 });
 
-router.post('/questions', function (req, res) {
+router.post('/questions', function (req, res, next) {
     var question = req.body.question,
         answer = req.body.answer;
     questionService
@@ -481,7 +482,7 @@ router.post('/questions', function (req, res) {
         });
 });
 
-router.put('/questions/:id', function (req, res) {
+router.put('/questions/:id', function (req, res, next) {
     var question = req.body.question,
         answer = req.body.answer,
         id = req.params.id;
@@ -499,6 +500,11 @@ router.put('/questions/:id', function (req, res) {
         .catch(function (err) {
             next(err);
         });
+});
+/*------------------------end question-------------------------------*/
+
+router.get('', function (req, res) {
+
 });
 
 function render(path) {
