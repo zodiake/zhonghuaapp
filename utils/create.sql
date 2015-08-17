@@ -52,7 +52,7 @@ create table orders(
     license varchar(15),
     consignor char(11),
     consignee char(11),
-    consignee_name varchar(6),
+    consignee_name varchar(20),
     company_name varchar(50),
     category int,
     cargoo_name int,

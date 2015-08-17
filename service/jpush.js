@@ -1,7 +1,7 @@
 /*jslint node: true */
 'use strict';
 var JPush = require('jpush-sdk');
-var client = JPush.buildClient('7e2ab42a38f11bf3e47ae819', '73bb7f19ff365bbffd23cd98');
+var client = JPush.buildClient('7867df712b8a722667e3df5f', '79481b91afa10953574f9983');
 
 //easy push
 module.exports = function (tag, message) {

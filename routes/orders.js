@@ -427,7 +427,7 @@ router.post('/:id/state', fileMulter, confirmStateVerify, refuseStateConfirm, fu
     if (state === orderState.arrive) {
         if (req.files.file) {
             var file = req.files.file;
-            s.img_url = file.path.split(path.sep).slice(1).join(path.sep);
+            s.img_url = file.path.split(path.sep).slice(1).join('/');
         }
     } else if (state === orderState.refuse) {
         var desc = req.body.desc,

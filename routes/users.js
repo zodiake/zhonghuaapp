@@ -328,7 +328,7 @@ router.post('/detail',
 router.post('/portrait', verify, fileMulter, function (req, res, next) {
     var file = req.files.file,
         userId = req.user.id;
-    var urlPath = file.path.split(path.sep).slice(1).join(path.sep);
+    var urlPath = file.path.split(path.sep).slice(1).join('/');
     userDetailService
         .updatePortrait(urlPath, userId)
         .then(function (data) {
