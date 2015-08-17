@@ -199,7 +199,7 @@ router.get('/user/aggregate', function (req, res, next) {
         .then(function (data) {
             res.json({
                 status: 'success',
-                data: data
+                data: '您有' + data[0][0].dispatchCount + '笔运单待分配,您有' + data[1][0].refuseCount + '笔运单已被司机拒绝,您有' + data[2][0].confirmCount + '笔运单待确认,您有' + data[3][0].transportCount + '笔运单待运输,您有' + data[4][0].arriveCount + '笔运单已送达'
             });
         })
         .fail(function (err) {

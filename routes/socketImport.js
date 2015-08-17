@@ -2,12 +2,13 @@
 'use strict';
 var csv = require('csv');
 var _ = require('lodash');
+var moment = require('moment');
 
 var fs = require('fs');
 var join = require('path').join;
 var crypto = require('crypto');
 
-var userService = require('../service/userService');
+var orderService = require('../service/orderService');
 var categoryService = require('../service/categoryService');
 
 function importBegin(nsp, filePath, room) {
@@ -37,14 +38,16 @@ function importBegin(nsp, filePath, room) {
             var result = {
                 consignor: data[0],
                 mobile: data[1],
-                licence: data[2],
+                license: data[2],
                 consignee_name: data[3],
                 category: data[4],
                 cargoo_name: data[5],
                 origin: data[6],
                 destination: data[7],
-                etd: Date.parse(data[8]),
-                quantity: Number(data[9])
+                etd: data[8],
+                quantity: Number(data[9]),
+                company_name: data[10],
+                created_Time: new Date()
             };
             result.row = parser.count;
             return result;
@@ -58,10 +61,10 @@ function importBegin(nsp, filePath, room) {
                 socketEmitFail(data, 'mobile shoule 11');
             }
             if (data.consignor.length != 11) {
-                socketEmitFail(data, 'mobile shoule 11');
+                socketEmitFail(data, 'consignor shoule 11');
             }
-            if (data.licence.length > 7) {
-                return socketEmitFail(data, 'licence less than 11');
+            if (data.license.length > 7) {
+                return socketEmitFail(data, 'license less than 11');
             }
             if (data.origin.length > 50) {
                 return socketEmitFail(data, 'origin less then 10');
@@ -72,11 +75,17 @@ function importBegin(nsp, filePath, room) {
             if (_.isNaN(data.quantity)) {
                 return socketEmitFail(data, 'quantity should be number');
             }
+            if (data.company_name > 15) {
+                return socketEmitFail(data, 'company_name should less than 15');
+            }
+            if (!moment(data.etd, 'YYYY-MM-DD HH:mm:ss').isValid()) {
+                return socketEmitFail(data, 'etd not valid');
+            }
         }
 
         function requiredValidate(data) {
-            if (!data.licence) {
-                return socketEmitFail(data, 'licence can not be null');
+            if (!data.license) {
+                return socketEmitFail(data, 'license can not be null');
             }
             if (!data.mobile) {
                 return socketEmitFail(data, 'mobile can not be null');
@@ -114,7 +123,7 @@ function importBegin(nsp, filePath, room) {
                     .findByName(result.category)
                     .then(function (data) {
                         if (data) {
-                            result.category = data.name;
+                            result.category = data.id;
                             return result;
                         } else {
                             return socketEmitFail(result, 'can not find catgory');
@@ -131,7 +140,7 @@ function importBegin(nsp, filePath, room) {
                     .findByName(result.cargoo_name)
                     .then(function (data) {
                         if (data) {
-                            result.cargoo_name = data.name;
+                            result.cargoo_name = data.id;
                             return result;
                         } else {
                             return socketEmitFail(data, 'can not find cargoo_name');
@@ -143,22 +152,24 @@ function importBegin(nsp, filePath, room) {
         }
 
         if (data && !data.error) {
-            userService
-                .findByName(data.mobile)
-                .then(convertCategory)
+            convertCategory(data)
                 .then(convertCargooName)
                 .then(function (data) {
                     data.order_number = crypto.randomBytes(6).toString('hex');
+                    return data;
+                })
+                .then(function (data) {
+                    console.log(data);
                     if (total && data.row == total) {
                         nsp.to(room).emit('finish');
                     }
+                    delete data.row;
+                    orderService.insert(data);
                 })
                 .fail(function (err) {
-                    console.log('fail', err);
                     data.message = err.message;
                 })
                 .catch(function (err) {
-                    console.log('err', err);
                     data.message = err.message;
                 });
         }

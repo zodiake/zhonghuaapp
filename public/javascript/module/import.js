@@ -22,7 +22,6 @@ importOrder.controller('ImportController', [
 
         socketio.on('fail', function (data) {
             $scope.fails.push(data);
-
         });
 
         socketio.on('finish', function (data) {
@@ -90,5 +89,9 @@ importOrder.controller('ImportController', [
         $scope.closeAlert = function (index) {
             $scope.alerts.splice(index, 1);
         };
+
+        $scope.clear = function () {
+            $scope.fails = [];
+        }
     }
 ]);

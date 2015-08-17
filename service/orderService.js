@@ -136,6 +136,10 @@ var service = {
         var sql = 'select count(*) as countNum from orders where current_state=? and consignee=?';
         return pool.query(sql, [order.state, order.consignee]);
     },
+    insert: function (order) {
+        var sql = 'insert into orders set ?';
+        return pool.query(sql, order);
+    },
     save: function (order) {
         var sql = 'insert into orders set ?';
         return pool.insert(sql, order);
