@@ -6,6 +6,7 @@ var e_jwt = require('express-jwt');
 var multer = require('multer');
 var q = require('q');
 var _ = require('lodash');
+var moment = require('moment');
 
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
@@ -171,14 +172,8 @@ router.get('/orders', function (req, res, next) {
         state = req.query.state;
     var option = {
         consignor: consignor,
-        begin_time: {
-            operator: '>',
-            value: beginTime
-        },
-        end_time: {
-            operator: '<',
-            value: endTime
-        },
+        beginTime: beginTime,
+        endTime: endTime,
         order_number: orderNumber
     };
 

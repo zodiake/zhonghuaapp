@@ -57,12 +57,20 @@ order.controller('OrderController', ['$scope', 'OrderService', function ($scope,
     init();
 
     $scope.search = function () {
+        var begin = $scope.option.beginTime;
+        if (begin) {
+            var beginTime = begin.getFullYear() + '-' + (begin.getMonth() + 1) + '-' + begin.getDate();
+        }
+        var end = $scope.option.endTime;
+        if (end) {
+            var endTime = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate();
+        }
         init({
             page: $scope.currentPage,
             size: $scope.size,
             state: $scope.option.state,
-            begin_time: $scope.option.begin_time,
-            end_time: $scope.option.end_time,
+            beginTime: beginTime,
+            endTime: endTime,
             orderNumber: $scope.option.orderNumber,
             consignor: $scope.option.consignor
         });

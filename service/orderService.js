@@ -108,18 +108,28 @@ var service = {
                 .from('orders')
                 .join('cargoo_name', '', 'cargoo_name.id=orders.cargoo_name');
         }
-        if (option.begin_time && option.begin_time.value) {
-            sql.where('created_time >' + option.begin_time.value);
+        if (option.beginTime && option.endTime) {
+            sql.where("Date(created_time) between '" + option.beginTime + "' and '" + option.endTime + "'");
         }
-        delete option.begin_time;
-        if (option.end_time && option.end_time.value) {
-            sql.where('created_time <' + option.end_time.value);
+        if (option.beginTime && !option.endTime) {
+            sql.where("Date(created_time) between '" + option.beginTime + "' and now()");
         }
-        delete option.end_time;
-        sql = pool.buildSql(sql, option);
+        if (!option.beginTime && option.endTime) {
+            sql.where("Date(created_time) <='" + option.endTime + "'");
+        }
+        if (option.current_state) {
+            sql.where("orders.current_state='" + option.current_state + "'");
+        }
+        if (option.consignor) {
+            sql.where("consignor ='" + option.consignor + "'");
+        }
+        if (option.order_number) {
+            sql.where("order_number ='" + option.order_number + "'");
+        }
         if (!count) {
             sql.offset(offset).limit(limit);
         }
+        console.log(sql.toString());
         return sql;
     },
     findByOption: function (page, option) {
