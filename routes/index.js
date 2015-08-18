@@ -5,11 +5,11 @@ var router = express.Router();
 var versionService = require('../service/versionService');
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
     res.render('index');
 });
 
-router.get('/login.html', function (req, res, next) {
+router.get('/login.html', function (req, res) {
     res.render('login');
 });
 

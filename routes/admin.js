@@ -54,7 +54,7 @@ var usrCall = function (role) {
             activate: req.query.activate,
             authority: role
         };
-        var ceOrCr = role == userAuthority.consignee;
+        var ceOrCr = role === userAuthority.consignee;
         q.all([userService.findByOption(option, pageable, ceOrCr), userService.countByOption(option, pageable, ceOrCr)])
             .then(function (result) {
                 res.json({
@@ -100,7 +100,7 @@ router.put('/user/state', function (req, res, next) {
 
 router.post('/csv', fileMulter, function (req, res, next) {
     var file = req.files.file;
-    if (file.mimetype != 'text/csv') {
+    if (file.mimetype !== 'text/csv') {
         var err = new Error('please upload csv file');
         return next(err);
     }
@@ -238,7 +238,7 @@ router.put('/orders/:id', function (req, res, next) {
         .update(order, orderId, user)
         .then(function (data) {
             res.json({
-                status: 'success',
+                status: 'success'
             });
         })
         .fail(function (err) {
@@ -262,7 +262,7 @@ router.get('/aggregate/orders', function (req, res) {
                 'transport': result[5][0].countNum,
                 'arrive': result[6][0].countNum,
                 'appraise': result[7][0].countNum,
-                'refuse': result[8][0].countNum,
+                'refuse': result[8][0].countNum
             });
         });
 });
@@ -372,7 +372,7 @@ router.put('/category/:id', function (req, res, next) {
             name: name
         })
         .then(function (data) {
-            if (data.changedRows == 1) {
+            if (data.changedRows === 1) {
                 res.json({
                     status: 'success'
                 });
@@ -433,7 +433,7 @@ router.post('/jpush', function (req, res, next) {
 
 router.get('/tabData', function (req, res) {
     var authority = req.user.authority;
-    if (authority == userAuthority.admin) {
+    if (authority === userAuthority.admin) {
         res.json(adminTabData);
     } else {
         res.json(commonTabData);
@@ -497,11 +497,6 @@ router.put('/questions/:id', function (req, res, next) {
         });
 });
 /*------------------------end question-------------------------------*/
-
-router.get('', function (req, res) {
-
-});
-
 function render(path) {
     router.get('/' + path + '.html', function (req, res) {
         res.render(path);
