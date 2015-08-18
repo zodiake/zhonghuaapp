@@ -10,6 +10,7 @@ var crypto = require('crypto');
 
 var orderService = require('../service/orderService');
 var categoryService = require('../service/categoryService');
+var orderState = require('../orderState');
 
 function importBegin(nsp, filePath, room) {
 
@@ -37,7 +38,7 @@ function importBegin(nsp, filePath, room) {
         if (parser.count > 1) {
             var result = {
                 consignor: data[0],
-                mobile: data[1],
+                consignee: data[1],
                 license: data[2],
                 consignee_name: data[3],
                 category: data[4],
@@ -57,8 +58,8 @@ function importBegin(nsp, filePath, room) {
 
     var validate = csv.transform(function (data) {
         function lengthValidate(data) {
-            if (data.mobile.length != 11) {
-                socketEmitFail(data, 'mobile shoule 11');
+            if (data.consignee.length != 11) {
+                socketEmitFail(data, 'consignee mobile shoule 11');
             }
             if (data.consignor.length != 11) {
                 socketEmitFail(data, 'consignor shoule 11');
@@ -87,8 +88,8 @@ function importBegin(nsp, filePath, room) {
             if (!data.license) {
                 return socketEmitFail(data, 'license can not be null');
             }
-            if (!data.mobile) {
-                return socketEmitFail(data, 'mobile can not be null');
+            if (!data.consignee) {
+                return socketEmitFail(data, 'consignee mobile can not be null');
             }
             if (!data.consignor) {
                 return socketEmitFail(data, 'consignor can not be null');
@@ -156,6 +157,7 @@ function importBegin(nsp, filePath, room) {
                 .then(convertCargooName)
                 .then(function (data) {
                     data.order_number = crypto.randomBytes(6).toString('hex');
+                    data.current_state = orderState.dispatch;
                     return data;
                 })
                 .then(function (data) {
