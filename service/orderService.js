@@ -130,7 +130,6 @@ var service = {
         if (!count) {
             sql.offset(offset).limit(limit);
         }
-        console.log(sql.toString());
         return sql;
     },
     findByOption: function (page, option) {

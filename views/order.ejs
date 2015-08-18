@@ -23,6 +23,7 @@
                 <input class="form-control" name="consignor" ng-model="option.consignor" placeholder="请输入您要查找的货主手机号" type="text">
             </div>
             <input class="btn btn-primary btn-xs" type="submit" value="搜索"></input>
+            <a class="btn btn-primary btn-xs" ng-click="export()" href="/admin/orders/export?state={{option.state}}&beginTime={{beginTime}}" ng-show="canDownload">export</a>
         </form>
     </div>
     <table class="table table-bordered">

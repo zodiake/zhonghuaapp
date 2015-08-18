@@ -12,6 +12,11 @@ order.service('OrderService', ['$http', function ($http) {
     this.update = function (item) {
         return $http.put('/admin/orders/' + item.id, item);
     };
+    this.export = function (option) {
+        return $http.get('/admin/orders/export', {
+            params: option
+        });
+    };
 }]);
 
 order.service('CategoryService', ['$http', function ($http) {
@@ -19,12 +24,12 @@ order.service('CategoryService', ['$http', function ($http) {
         return $http.get('/category?id=' + parentId, {
             cache: true
         });
-    }
+    };
     this.findFirst = function () {
         return $http.get('/category', {
             cache: true
         });
-    }
+    };
 }]);
 
 order.service('OrderGisService', ['$http', function ($http) {
@@ -36,6 +41,7 @@ order.service('OrderGisService', ['$http', function ($http) {
 order.controller('OrderController', ['$scope', 'OrderService', function ($scope, OrderService) {
     $scope.currentPage = 1;
     $scope.size = 15;
+    $scope.canDownload = false;
 
     $scope.option = {};
 
@@ -58,12 +64,13 @@ order.controller('OrderController', ['$scope', 'OrderService', function ($scope,
 
     $scope.search = function () {
         var begin = $scope.option.beginTime;
+        $scope.canDownload = true;
         if (begin) {
-            var beginTime = begin.getFullYear() + '-' + (begin.getMonth() + 1) + '-' + begin.getDate();
+            var beginTime = $scope.beginTime = begin.getFullYear() + '-' + (begin.getMonth() + 1) + '-' + begin.getDate();
         }
         var end = $scope.option.endTime;
         if (end) {
-            var endTime = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate();
+            var endTime = $scope.endTime = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate();
         }
         init({
             page: $scope.currentPage,
@@ -75,6 +82,10 @@ order.controller('OrderController', ['$scope', 'OrderService', function ($scope,
             consignor: $scope.option.consignor
         });
     };
+
+    $scope.export = function () {
+        OrderService.export($scope.option);
+    }
 
 }]);
 

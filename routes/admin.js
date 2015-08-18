@@ -7,6 +7,8 @@ var multer = require('multer');
 var q = require('q');
 var _ = require('lodash');
 var path = require('path');
+var csv = require('csv');
+var pool = require('../utils/pool');
 
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
@@ -215,6 +217,23 @@ router.get('/orders', function (req, res, next) {
         .catch(function (err) {
             return next(err);
         });
+});
+
+router.get('/orders/export', function (req, res) {
+    var stringfier = csv.stringify({
+        columns: ['age', 'name'],
+        header: true
+    });
+
+    var transformer = csv.transform(function (data) {
+        return {
+            age: data.name,
+            name: data.password
+        };
+    });
+
+    res.attachment('test.csv');
+    pool.stream('select name ,password from usr where id=1').pipe(transformer).pipe(stringfier).pipe(res);
 });
 
 router.get('/orders/:id', function (req, res, next) {
