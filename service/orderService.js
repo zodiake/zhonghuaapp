@@ -24,8 +24,6 @@ var service = {
         if (usr.authority === userAuthority.consignor) {
             sql = 'select * from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id  LEFT JOIN usr ON orders.consignor = usr.name LEFT JOIN usr_detail ON usr_detail.id = usr.id where orders.id=? and orders.consignor=? order by order_state.created_time desc';
         }
-        console.log('id:', id);
-        console.log('name', usr.name);
         return pool.query(sql, [id, usr.name]);
     },
     convertArrayToString: function (data) {
@@ -53,6 +51,7 @@ var service = {
 
         sql.where(stateFilter);
         sql.where(userFilter);
+        sql.order('created_time', false);
         sql.limit(page.size).offset(page.page * page.size);
         return pool.query(sql.toString(), []);
     },
