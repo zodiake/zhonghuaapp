@@ -9,7 +9,12 @@ var service = {
         var sql = 'select * from scroll_image';
         return pool.query(sql, []);
     },
-    update: function (id, image) {
+    updateUrl: function (id, image) {
+        var sql = 'update scroll_image set image_url=? ,updated_time=? where id=?';
+        cache = [];
+        return pool.query(sql, [image.url, image.updated_time, id]);
+    },
+    updateHref: function (id, image) {
         var sql = 'update scroll_image set image_href=? ,updated_time=? where id=?';
         cache = [];
         return pool.query(sql, [image.href, image.updated_time, id]);

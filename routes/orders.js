@@ -179,7 +179,7 @@ router.get('/:id', function (req, res, next) {
                     data: 'not found'
                 });
             }
-            if (data.currentState == orderState.dispatch && req.user.authority == userAuthority.consignee) {
+            if (data.currentState === orderState.dispatch && req.user.authority === userAuthority.consignee) {
                 return res.json({
                     status: 'success',
                     data: null
@@ -257,14 +257,18 @@ var extractOrder = function () {
             mobile: mobile
         };
         req.order = order;
-        if (order.etd === '')
+        if (order.etd === ''){
             order.etd = null;
-        if (!order.quantity)
+        }
+        if (!order.quantity){
             order.quantity = null;
-        if (!order.category)
+        }
+        if (!order.category){
             order.category = null;
-        if (!order.cargoo_name)
+        }
+        if (!order.cargoo_name){
             order.cargoo_name = null;
+        }
         next();
     };
 };

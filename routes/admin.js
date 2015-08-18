@@ -6,7 +6,7 @@ var e_jwt = require('express-jwt');
 var multer = require('multer');
 var q = require('q');
 var _ = require('lodash');
-var moment = require('moment');
+var path = require('path');
 
 var orderService = require('../service/orderService');
 var userService = require('../service/userService');
@@ -111,9 +111,27 @@ router.post('/csv', fileMulter, function (req, res, next) {
 });
 
 /*----------------------scrollImage------------------------------------*/
-router.post('/scrollImages', fileMulter, function (req, res) {
-    var file = req.files.file;
-    res.json(file.path);
+router.post('/scrollImages', fileMulter, function (req, res, next) {
+    var file = req.files.file,
+        id = req.body.id;
+
+    var urlPath = file.path.split(path.sep).slice(1).join('/');
+    console.log(urlPath.length);
+    console.log(urlPath);
+    scrollImageService
+        .updateUrl(id, {
+            url: urlPath,
+            updated_time: new Date()
+        })
+        .then(function (data) {
+            res.json(file.path);
+        })
+        .fail(function (err) {
+            next(err);
+        })
+        .catch(function (err) {
+            next(err);
+        });
 });
 
 router.get('/scrollImages', function (req, res, next) {
@@ -142,7 +160,7 @@ router.put('/scrollImages/:id', function (req, res, next) {
         };
 
     scrollImageService
-        .update(id, item)
+        .updateHref(id, item)
         .then(function (data) {
             if (data.changedRows == 1) {
                 res.json({
