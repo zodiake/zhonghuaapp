@@ -139,7 +139,8 @@ router.get('/:id', function (req, res, next) {
                 quantity: data[0].quantity,
                 currentState: data[0].current_state,
                 createdTime: data[0].created_time,
-                type: data[0].type
+                type: data[0].type,
+                portrait: data[0].portrait
             };
             result.current_state_code = orderCode[data[0].current_state];
             result.millions = Date.parse(data[0].created_time);
@@ -257,16 +258,16 @@ var extractOrder = function () {
             mobile: mobile
         };
         req.order = order;
-        if (order.etd === ''){
+        if (order.etd === '') {
             order.etd = null;
         }
-        if (!order.quantity){
+        if (!order.quantity) {
             order.quantity = null;
         }
-        if (!order.category){
+        if (!order.category) {
             order.category = null;
         }
-        if (!order.cargoo_name){
+        if (!order.cargoo_name) {
             order.cargoo_name = null;
         }
         next();
