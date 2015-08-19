@@ -22,7 +22,7 @@ var service = {
             sql = 'select * from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id  LEFT JOIN usr ON orders.consignee = usr.name LEFT JOIN usr_detail ON usr_detail.id = usr.id where orders.id=? and orders.consignee=? order by order_state.created_time desc';
         }
         if (usr.authority === userAuthority.consignor) {
-            sql = 'select * from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id  LEFT JOIN usr ON orders.consignor = usr.name LEFT JOIN usr_detail ON usr_detail.id = usr.id where orders.id=? and orders.consignor=? order by order_state.created_time desc';
+            sql = 'select * from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id  LEFT JOIN usr ON orders.consignee = usr.name LEFT JOIN usr_detail ON usr_detail.id = usr.id where orders.id=? and orders.consignor=? order by order_state.created_time desc';
         }
         return pool.query(sql, [id, usr.name]);
     },
