@@ -44,14 +44,12 @@
                     <select name="categoryName" ng-options="category.id as category.name for category in categories" ng-model="item.category" ng-change="changeState(item.category)" required>
                         <option value="">--请选择--</option>
                     </select>
-                    <span ng-show="orderForm.categoryName.$error.required" class="error">请输入货物分类</span>
                 </div>
                 <label class="col-sm-1 control-label">货物名称</label>
                 <div class="col-sm-2">
                     <select name="cargooName" ng-options="name.id as name.name for name in cargooNames" ng-model="item.cargoo_name" required>
                         <option value>--请选择--</option>
                     </select>
-                    <span ng-show="orderForm.cargooName.$error.required" class="error">请输入货物名称</span>
                 </div>
             </div>
             <div class="form-group">
