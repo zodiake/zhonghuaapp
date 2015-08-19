@@ -91,7 +91,7 @@ var service = {
     $$buildOptionSql: function (option) {
         var sql = squel.select()
             .from('orders')
-            .join('cargoo_name', '', 'cargoo_name.id=orders.cargoo_name');
+            .left_join('cargoo_name', null, 'cargoo_name.id=orders.cargoo_name');
         if (option.beginTime && option.endTime) {
             sql.where("Date(created_time) between '" + option.beginTime + "' and '" + option.endTime + "'");
         }
