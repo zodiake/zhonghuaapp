@@ -38,56 +38,68 @@ order.service('OrderGisService', ['$http', function ($http) {
     }
 }]);
 
-order.controller('OrderController', ['$scope', 'OrderService', function ($scope, OrderService) {
-    $scope.currentPage = 1;
-    $scope.size = 15;
-    $scope.canDownload = false;
+order.controller('OrderController', ['$scope', 'OrderService',
+    '$stateParams', '$window',
+    function ($scope, OrderService, $stateParams, $window) {
+        $scope.currentPage = 1;
+        $scope.size = 15;
+        $scope.canDownload = false;
 
-    $scope.option = {};
+        $scope.option = {};
 
-    function init(option) {
-        OrderService
-            .findAll(option)
-            .then(function (data) {
-                if (data.data.status == 'success') {
-                    $scope.items = data.data.data.data;
-                    $scope.total = data.data.data.total;
-                } else {
+        function init(option) {
+            OrderService
+                .findAll(option)
+                .then(function (data) {
+                    if (data.data.status == 'success') {
+                        $scope.items = data.data.data.data;
+                        $scope.total = data.data.data.total;
+                    } else {
 
-                }
-            }).catch(function (err) {
+                    }
+                }).catch(function (err) {
 
-            });
-    }
-
-    init();
-
-    $scope.search = function () {
-        var begin = $scope.option.beginTime;
-        $scope.canDownload = true;
-        if (begin) {
-            var beginTime = $scope.beginTime = begin.getFullYear() + '-' + (begin.getMonth() + 1) + '-' + begin.getDate();
+                });
         }
-        var end = $scope.option.endTime;
-        if (end) {
-            var endTime = $scope.endTime = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate();
+        if ($window.localStorage.orderList) {
+            var opt = JSON.parse($window.localStorage.orderList);
+            $scope.option = opt;
+            $scope.option.beginTime = new Date(opt.beginTime);
+            $scope.option.endTime = new Date(opt.endTime);
+            init(opt);
+        } else {
+            init();
         }
-        init({
-            page: $scope.currentPage,
-            size: $scope.size,
-            state: $scope.option.state,
-            beginTime: beginTime,
-            endTime: endTime,
-            orderNumber: $scope.option.orderNumber,
-            consignor: $scope.option.consignor
-        });
-    };
 
-    $scope.export = function () {
-        OrderService.export($scope.option);
+        $scope.search = function () {
+            var begin = $scope.option.beginTime;
+            $scope.canDownload = true;
+            if (begin) {
+                var beginTime = $scope.beginTime = begin.getFullYear() + '-' + (begin.getMonth() + 1) + '-' + begin.getDate();
+            }
+            var end = $scope.option.endTime;
+            if (end) {
+                var endTime = $scope.endTime = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate();
+            }
+            var option = {
+                page: $scope.currentPage,
+                size: $scope.size,
+                state: $scope.option.state,
+                beginTime: beginTime,
+                endTime: endTime,
+                orderNumber: $scope.option.orderNumber,
+                consignor: $scope.option.consignor
+            };
+            $window.localStorage.orderList = JSON.stringify(option);
+            init(option);
+        };
+
+        $scope.export = function () {
+            OrderService.export($scope.option);
+        }
+
     }
-
-}]);
+]);
 
 order.controller('OrderDetailController', [
     '$scope',

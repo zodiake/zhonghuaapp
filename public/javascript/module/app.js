@@ -69,7 +69,7 @@ app.config(['$stateProvider',
                 controller: 'ConsignorController'
             })
             .state('tabs.order', {
-                url: '/order',
+                url: '/order?id=1',
                 templateUrl: '/admin/order.html',
                 controller: 'OrderController'
             })
