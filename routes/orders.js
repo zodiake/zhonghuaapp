@@ -508,6 +508,24 @@ router.post('/geo', function (req, res, next) {
         });
 });
 
+
+router.post('/geo/batch', function (req, res, next) {
+    var arr = req.body;
+    positionService
+        .batchInsert(arr)
+        .then(function () {
+            res.json({
+                status: 'success'
+            });
+        })
+        .fail(function (err) {
+            return next(err);
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+});
+
 router.get('/:id/geo', function (req, res, next) {
     var id = req.params.id;
     positionService
