@@ -18,6 +18,7 @@ var admin = require('./routes/admin');
 var category = require('./routes/category');
 var commonConsignee = require('./routes/commonConsignee');
 var scrollImage = require('./routes/scrollImage');
+var exp = require('./routes/export');
 
 /*---------------amqp---------------------*/
 var queue = require('./service/amqpService');
@@ -47,6 +48,7 @@ app.use('/admin', admin);
 app.use('/category', category);
 app.use('/commonConsignee', commonConsignee);
 app.use('/scrollImages', scrollImage);
+app.use('/export', exp);
 
 //just test remote web service should deleted from productd
 if (app.get('env') === 'development') {

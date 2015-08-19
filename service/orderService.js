@@ -88,27 +88,10 @@ var service = {
         var sql = 'select * from orders join usr on orders.consignee=usr.id where order_id=?';
         return pool.query(sql, [orderId]);
     },
-    $$buildOptionSql: function (page, option, count) {
-        var limit = page.size;
-        var offset = (page.page - 1) * limit;
-        var sql;
-        if (count) {
-            sql = squel.select().field('count(*)', 'countNum').from('orders').join('cargoo_name', '', 'cargoo_name.id=orders.cargoo_name');
-        } else {
-            sql = squel.select()
-                .field('orders.id', 'id')
-                .field('orders.consignee', 'consignee')
-                .field('orders.consignor', 'consignor')
-                .field('orders.order_number', 'order_number')
-                .field('orders.consignee_name', 'consignee_name')
-                .field('orders.company_name', 'company_name')
-                .field('cargoo_name.name', 'cargoo_name')
-                .field('orders.quantity', 'quantity')
-                .field('orders.created_time', 'created_time')
-                .field('orders.current_state', 'current_state')
-                .from('orders')
-                .join('cargoo_name', '', 'cargoo_name.id=orders.cargoo_name');
-        }
+    $$buildOptionSql: function (option) {
+        var sql = squel.select()
+            .from('orders')
+            .join('cargoo_name', '', 'cargoo_name.id=orders.cargoo_name');
         if (option.beginTime && option.endTime) {
             sql.where("Date(created_time) between '" + option.beginTime + "' and '" + option.endTime + "'");
         }
@@ -127,16 +110,26 @@ var service = {
         if (option.order_number) {
             sql.where("order_number ='" + option.order_number + "'");
         }
-        if (!count) {
-            sql.offset(offset).limit(limit);
-        }
         return sql;
     },
     findByOption: function (page, option) {
-        return pool.query(this.$$buildOptionSql(page, option, false).toString(), []);
-    },
-    countByOption: function (page, option) {
-        return pool.query(this.$$buildOptionSql(page, option, true).toString(), []);
+        var limit = page.size,
+            offset = (page.page - 1) * limit;
+        var countSql = this.$$buildOptionSql(option).field('count(*)', 'countNum');
+        var allSql = this.$$buildOptionSql(option)
+            .field('orders.id', 'id')
+            .field('orders.consignee', 'consignee')
+            .field('orders.consignor', 'consignor')
+            .field('orders.order_number', 'order_number')
+            .field('orders.consignee_name', 'consignee_name')
+            .field('orders.company_name', 'company_name')
+            .field('cargoo_name.name', 'cargoo_name')
+            .field('orders.quantity', 'quantity')
+            .field('orders.created_time', 'created_time')
+            .field('orders.current_state', 'current_state');
+
+        var arr = [countSql.toString(), allSql.offset(offset).limit(limit).toString()];
+        return pool.query(arr.join(';'), []);
     },
     innerJoinUser: function (id) {
         var sql = 'SELECT orders.id, orders.order_number, orders.license, orders.consignee_name AS consigneeName, orders.consignee, orders.consignor, orders.company_name, orders.category, orders.cargoo_name, orders.origin, orders.destination, orders.etd, orders.quantity, orders.created_time FROM orders WHERE orders.id = ?';
