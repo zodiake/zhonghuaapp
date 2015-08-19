@@ -104,7 +104,6 @@ order.controller('OrderDetailController', [
             $q.all(array)
                 .then(function (data) {
                     $scope.item = data[0].data.data;
-                    console.log($scope.item);
                     $scope.categories = data[1].data.data;
                     return CategoryService.findByParent($scope.item.category)
                 })

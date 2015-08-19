@@ -116,8 +116,6 @@ router.post('/scrollImages', fileMulter, function (req, res, next) {
         id = req.body.id;
 
     var urlPath = file.path.split(path.sep).slice(1).join('/');
-    console.log(urlPath.length);
-    console.log(urlPath);
     scrollImageService
         .updateUrl(id, {
             url: urlPath,
@@ -205,7 +203,6 @@ router.get('/orders', function (req, res, next) {
     orderService
         .findByOption(pageable, option)
         .then(function (result) {
-            console.log(result);
             res.json({
                 status: 'success',
                 data: {

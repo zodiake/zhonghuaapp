@@ -97,7 +97,6 @@
                 //create markers
 
                 var mark = function () {
-
                     var lines = opts.markers.map(function (d) {
                         return new BMap.Point(d.longitude, d.latitude);
                     });
@@ -106,6 +105,31 @@
                         strokeWeight: 2,
                         strokeOpacity: 0.5
                     });
+                    if (lines.length > 0) {
+                        var start = lines[lines.length - 1];
+                        var end = lines[0];
+
+                        var startIcon = new BMap.Icon("/start.png", new BMap.Size(40, 100));
+                        var startMarker = new BMap.Marker(start, {
+                            icon: startIcon
+                        });
+                        if (opts.markers[0].current_state == '已送达' || opts.markers[0].current_state == '已评价') {
+                            var endIcon = new BMap.Icon("/end.png", new BMap.Size(40, 100));
+                            var endMarker = new BMap.Marker(end, {
+                                icon: endIcon
+                            });
+                            map.addOverlay(endMarker);
+                        } else if (opts.markers[0].current_state == '运送中') {
+                            var endIcon = new BMap.Icon("/ing.png", new BMap.Size(40, 100));
+                            var endMarker = new BMap.Marker(end, {
+                                icon: endIcon
+                            });
+                            map.addOverlay(endMarker);
+                        }
+
+                        map.addOverlay(startMarker);
+                    }
+
                     map.addOverlay(polyline);
                 };
 

@@ -46,6 +46,7 @@ var service = {
         } else if (user.authority === userAuthority.consignee) {
             userFilter.and("consignee='" + user.name + "'");
             userFilter.and("current_state!='" + orderState.dispatch + "'");
+            userFilter.and("current_state!='" + orderState.confrim + "'");
         }
         userFilter.and("current_state!='" + orderState.closed + "'");
 
