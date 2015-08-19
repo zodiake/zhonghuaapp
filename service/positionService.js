@@ -3,7 +3,6 @@ var config = require('../config');
 
 var service = {
     insert: function (data) {
-        console.log(data);
         var sql = 'insert into order_gis set ?';
         return pool.query(sql, data);
     },
