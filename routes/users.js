@@ -60,13 +60,13 @@ router.get('/captcha', function (req, res, next) {
         type = req.query.type;
 
     if (type == 'signup') {
-        user_mobile[mobile] = 1111; //getRandomInt(1000, 9999);
         userService
             .countByMobile(mobile)
             .then(function (data) {
                 if (data[0].usrCount === 0) {
                     //todo send short message
                     //send sms
+                    user_mobile[mobile] = 1111; //getRandomInt(1000, 9999);
                     res.json({
                         status: 'success',
                     });
