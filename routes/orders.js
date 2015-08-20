@@ -124,7 +124,7 @@ router.get('/:id', function (req, res, next) {
             }
             var state = [];
             var result = {
-                id: data[0].id,
+                id: data[0].orderId,
                 order_number: data[0].order_number,
                 license: data[0].license,
                 consignor: data[0].consignor,
@@ -453,7 +453,7 @@ router.post('/:id/state', fileMulter, confirmStateVerify, refuseStateConfirm, fu
         .then(function (data) {
             if (data.changedRows === 0) {
                 var error = new Error('no data updated');
-                next(error);
+                return next(error);
             } else {
                 return orderStateService.save(s);
             }
