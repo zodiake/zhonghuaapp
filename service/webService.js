@@ -34,7 +34,7 @@ var service = {
             if (err) {
                 defer.reject(err);
             }
-            if (response.statusCode == 200) {
+            if (response&&response.statusCode == 200) {
                 var result = JSON.parse(body)[0];
                 if (result.status) {
                     data.states.unshift({

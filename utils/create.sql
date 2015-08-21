@@ -62,7 +62,7 @@ create table orders(
     actual_weight double,
     current_state varchar(10),
     created_time timestamp,
-    etd timestamp,
+    etd timestamp null,
     type char(4),
     mobile char(11),
     app_or_out smallint default 1,
