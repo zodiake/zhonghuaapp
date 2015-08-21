@@ -86,7 +86,7 @@ create table order_state(
     order_id int,
     state_name varchar(10),
     img_url char(52),
-    refuse_reason char(1) ,
+    refuse_reason varchar(11) ,
     refuse_desc varchar(200),
     created_time timestamp,
     updated_by varchar(20),
