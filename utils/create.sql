@@ -49,11 +49,11 @@ create table common_consignee(
 create table orders(
     id int auto_increment,
     order_number char(12),
-    license varchar(15),
+    license varchar(24),
     consignor char(11),
     consignee char(11),
     consignee_name varchar(20),
-    company_name varchar(50),
+    company_name varchar(60),
     category int,
     cargoo_name int,
     origin varchar(100),
@@ -97,7 +97,7 @@ create table order_state(
 create table reviews(
     reviews_id int auto_increment,
     consignor_id int,
-    description varchar(200),
+    description varchar(420),
     order_id int,
     level smallint,
     primary key(reviews_id),
@@ -107,7 +107,7 @@ create table reviews(
 
 create table suggestion(
     id int auto_increment,
-    description varchar(200),
+    description varchar(600),
     created_time timestamp,
     consignor char(11),
     primary key(id)

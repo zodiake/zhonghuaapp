@@ -47,6 +47,7 @@ var service = {
             userFilter.and("consignee='" + user.name + "'");
             userFilter.and("current_state!='" + orderState.dispatch + "'");
             userFilter.and("current_state!='" + orderState.confrim + "'");
+            userFilter.and("current_state!='" + orderState.refuse + "'");
         }
         userFilter.and("current_state!='" + orderState.closed + "'");
 
