@@ -28,7 +28,6 @@ consignee.controller('ConsigneeController', ['$scope',
             ConsigneeService
                 .findAll(option)
                 .success(function (data) {
-                    console.log(data);
                     if (data.status == 'success') {
                         $scope.items = data.data.data;
                         $scope.total = data.data.total;

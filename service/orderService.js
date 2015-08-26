@@ -33,7 +33,19 @@ var service = {
         return array.join(',');
     },
     findByUsrAndState: function (user, state, page) {
-        var sql = squel.select().from('orders'),
+        var sql = squel.select()
+            .from('orders')
+            .left_join('cargoo_name', null, 'cargoo_name.id=orders.cargoo_name')
+            .field('orders.id', 'id')
+            .field('orders.company_name', 'company_name')
+            .field('orders.order_number', 'order_number')
+            .field('orders.license', 'license')
+            .field('orders.consignee', 'consignee')
+            .field('orders.consignee_name', 'consignee_name')
+            .field('cargoo_name.name', 'cargoo_name')
+            .field('orders.current_state', 'current_state')
+            .field('orders.created_time', 'created_time')
+            .field('orders.type', 'type'),
             stateFilter = squel.expr(),
             userFilter = squel.expr();
         if (state.length > 0) {
