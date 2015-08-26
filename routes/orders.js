@@ -150,7 +150,7 @@ router.get('/:id', function (req, res, next) {
                     createTime: d.state_time
                 };
                 if (d.state_name === orderState.refuse) {
-                    s.refuse_reason = reason[d.refuse_reason];
+                    s.refuse_reason = d.refuse_reason;
                     s.refuse_desc = d.refuse_desc;
                 }
                 if (d.state_name === orderState.arrive) {
