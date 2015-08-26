@@ -40,7 +40,7 @@ var service = {
             .field('orders.company_name', 'company_name')
             .field('orders.order_number', 'order_number')
             .field('orders.license', 'license')
-            .field('orders.consignee', 'consignee')
+            .field('orders.consignee', 'mobile')
             .field('orders.consignee_name', 'consignee_name')
             .field('cargoo_name.name', 'cargoo_name')
             .field('orders.current_state', 'current_state')
@@ -53,21 +53,21 @@ var service = {
                 stateFilter.or("current_state='" + d + "'");
             });
         }
-		
-		if(state.length === 0 &&  user.authority === userAuthority.consignee){
-			userFilter.and("current_state!='" + orderState.confirm + "'");
-			userFilter.and("current_state!='" + orderState.refuse + "'");
-		}
-		
+
+        if (state.length === 0 && user.authority === userAuthority.consignee) {
+            userFilter.and("current_state!='" + orderState.confirm + "'");
+            userFilter.and("current_state!='" + orderState.refuse + "'");
+        }
+
         if (user.authority === userAuthority.consignor) {
             userFilter.and("consignor='" + user.name + "'");
         } else if (user.authority === userAuthority.consignee) {
             userFilter.and("consignee='" + user.name + "'");
-			userFilter.and("current_state!='" + orderState.dispatch + "'");			
+            userFilter.and("current_state!='" + orderState.dispatch + "'");
         }
-		
+
         userFilter.and("current_state!='" + orderState.closed + "'");
-		
+
         sql.where(stateFilter);
         sql.where(userFilter);
         sql.order('created_time', false);
