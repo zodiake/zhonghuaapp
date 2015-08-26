@@ -19,10 +19,10 @@ var service = {
     findOneAndState: function (usr, id) {
         var sql;
         if (usr.authority === userAuthority.consignee) {
-            sql = 'select *,orders.id as orderId from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id  LEFT JOIN usr ON orders.consignee = usr.name LEFT JOIN usr_detail ON usr_detail.id = usr.id where orders.id=? and orders.consignee=? order by order_state.created_time desc';
+            sql = 'select *,orders.id as orderId,order_state.created_time as state_time,cargoo_name.name as cargooName from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id  LEFT JOIN usr ON orders.consignee = usr.name LEFT JOIN usr_detail ON usr_detail.id = usr.id left join cargoo_name on orders.cargoo_name=cargoo_name.id where orders.id=? and orders.consignee=? order by order_state.created_time desc';
         }
         if (usr.authority === userAuthority.consignor) {
-            sql = 'select *,orders.id as orderId from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id  LEFT JOIN usr ON orders.consignee = usr.name LEFT JOIN usr_detail ON usr_detail.id = usr.id where orders.id=? and orders.consignor=? order by order_state.created_time desc';
+            sql = 'select *,orders.id as orderId,order_state.created_time as state_time,cargoo_name.name as cargooName from orders left join order_state on order_state.order_id=orders.id left join reviews on reviews.order_id=orders.id  LEFT JOIN usr ON orders.consignee = usr.name LEFT JOIN usr_detail ON usr_detail.id = usr.id left join cargoo_name on orders.cargoo_name=cargoo_name.id where orders.id=? and orders.consignor=? order by order_state.created_time desc';
         }
         return pool.query(sql, [id, usr.name]);
     },
@@ -53,16 +53,21 @@ var service = {
                 stateFilter.or("current_state='" + d + "'");
             });
         }
+		
+		if(state.length === 0 &&  user.authority === userAuthority.consignee){
+			userFilter.and("current_state!='" + orderState.confirm + "'");
+			userFilter.and("current_state!='" + orderState.refuse + "'");
+		}
+		
         if (user.authority === userAuthority.consignor) {
             userFilter.and("consignor='" + user.name + "'");
         } else if (user.authority === userAuthority.consignee) {
             userFilter.and("consignee='" + user.name + "'");
-            userFilter.and("current_state!='" + orderState.dispatch + "'");
-            userFilter.and("current_state!='" + orderState.confrim + "'");
-            userFilter.and("current_state!='" + orderState.refuse + "'");
+			userFilter.and("current_state!='" + orderState.dispatch + "'");			
         }
+		
         userFilter.and("current_state!='" + orderState.closed + "'");
-
+		
         sql.where(stateFilter);
         sql.where(userFilter);
         sql.order('created_time', false);

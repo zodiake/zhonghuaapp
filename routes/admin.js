@@ -60,7 +60,7 @@ var usrCall = function (role) {
                 res.json({
                     status: 'success',
                     data: {
-                        totol: result[1][0].countNum,
+                        total: result[1][0].countNum,
                         data: result[0]
                     }
                 });

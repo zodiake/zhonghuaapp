@@ -157,7 +157,7 @@ select {
     width: 70px;
     overflow: hidden;
     position:absolute; 
-    right: 130px;
+    right: 10.5%;
     z-index:100; 
     font-size:12px;
     opacity:0;
@@ -177,13 +177,16 @@ header{
     position: relative;
 }
 header,footer{  
-    height: 6%;
+    height: 55px;
     background-color: #428BCA; 
 }
 header a{
     color: #fff;
     position: absolute;
-    top: 30%;
+    top: 12%;
+}
+header a img{
+    margin-right: 10px;
 }
 header a:hover{
     color: #fff;

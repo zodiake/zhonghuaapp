@@ -133,24 +133,24 @@ router.get('/:id', function (req, res, next) {
                 consignee: data[0].consignee,
                 companyName: data[0].company_name,
                 category: data[0].category,
-                cargooName: data[0].cargoo_name,
+                cargooName: data[0].cargooName,
                 origin: data[0].origin,
                 destination: data[0].destination,
                 quantity: data[0].quantity,
                 currentState: data[0].current_state,
                 createdTime: data[0].created_time,
                 type: data[0].type,
-                portrait: data[0].portrait
+                portrait: data[0].portrait,
             };
             result.current_state_code = orderCode[data[0].current_state];
             result.millions = Date.parse(data[0].created_time);
             data.forEach(function (d) {
                 var s = {
                     stateName: d.state_name,
-                    createTime: d.created_time
+                    createTime: d.state_time
                 };
                 if (d.state_name === orderState.refuse) {
-                    s.refuse_reason = d.refuse_reason;
+                    s.refuse_reason = reason[d.refuse_reason];
                     s.refuse_desc = d.refuse_desc;
                 }
                 if (d.state_name === orderState.arrive) {
