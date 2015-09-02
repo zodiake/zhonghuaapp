@@ -72,7 +72,27 @@ function validateConsignee(req, res, next) {
         });
 }
 
-router.post('/', validateConsignee, function (req, res, next) {
+function uniqueConsignee(req, res, next) {
+    var consignee = req.body.consignee;
+    var user = req.user;
+    service
+        .countByConsignorAndConsignee(user.id, consignee)
+        .then(function (data) {
+            if (data[0].countNum > 0) {
+                var err = new Error('duplicate');
+                next(err);
+            }
+            next();
+        })
+        .fail(function (err) {
+            return next(err);
+        })
+        .catch(function (err) {
+            return next(err);
+        })
+}
+
+router.post('/', validateConsignee, uniqueConsignee, function (req, res, next) {
     var user = req.user,
         consignee = req.body.consignee;
     service

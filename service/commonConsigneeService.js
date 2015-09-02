@@ -12,6 +12,10 @@ var service = {
         };
         return pool.query('insert into common_consignee set ?', common);
     },
+    countByConsignorAndConsignee: function (consignor, consignee) {
+        var sql = 'select count(*) as countNum from common_consignee where consignee_id=? and consignor_id=?';
+        return pool.query(sql, [consignee, consignor]);
+    },
     findByConsignor: function (user) {
         var sql = 'SELECT usr.id as id,usr.name AS mobile, usr_detail.detail_name,usr_detail.portrait, vehicle.license, usr_detail.praise FROM common_consignee LEFT JOIN usr ON common_consignee.consignee_id = usr.id LEFT JOIN vehicle ON vehicle.usr_id = usr.id LEFT JOIN usr_detail ON usr_detail.id = usr.id where common_consignee.consignor_id=?';
         return pool.query(sql, [user.id]);

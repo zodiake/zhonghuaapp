@@ -41,7 +41,7 @@ order.service('OrderGisService', ['$http', function ($http) {
 order.controller('OrderController', ['$scope', 'OrderService',
     '$stateParams', '$window',
     function ($scope, OrderService, $stateParams, $window) {
-		
+
         $scope.size = 15;
         $scope.canDownload = false;
 
@@ -64,14 +64,13 @@ order.controller('OrderController', ['$scope', 'OrderService',
         if ($window.localStorage.orderList) {
             var opt = JSON.parse($window.localStorage.orderList);
             $scope.option = opt;
-			if(opt.beginTime){
-				$scope.option.beginTime = new Date(opt.beginTime);
-			}
-			$scope.currentPage=opt.page||1;
-			console.log($scope.currentPage);
-			if(opt.endTime){
-				$scope.option.endTime = new Date(opt.endTime);
-			}
+            if (opt.beginTime) {
+                $scope.option.beginTime = new Date(opt.beginTime);
+            }
+            $scope.currentPage = opt.page || 1;
+            if (opt.endTime) {
+                $scope.option.endTime = new Date(opt.endTime);
+            }
             init(opt);
         } else {
             init();
