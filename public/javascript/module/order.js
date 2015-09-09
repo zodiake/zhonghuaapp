@@ -51,6 +51,7 @@ order.controller('OrderController', ['$scope', 'OrderService',
             OrderService
                 .findAll(option)
                 .then(function (data) {
+                    console.log(data)
                     if (data.data.status == 'success') {
                         $scope.items = data.data.data.data;
                         $scope.total = data.data.data.total;

@@ -455,3 +455,7 @@ label {
     left: 40%;
     top:40%;
 }
+tbody>tr:hover{
+    cursor: pointer;
+    background: #f7f7f7;
+}
