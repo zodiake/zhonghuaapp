@@ -19,7 +19,6 @@ var jpush = require('../service/jpush');
 
 var orderState = require('../orderState');
 var orderCode = require('../orderCode');
-var reason = require('../reason');
 var userAuthority = require('../userAuthority');
 var config = require('../config');
 
@@ -204,7 +203,7 @@ router.get('/user/aggregate', function (req, res, next) {
             logger.log('info', '/user/aggregate info %s', data);
             res.json({
                 status: 'success',
-                data: '您有' + data[0][0].dispatchCount + '笔运单待分配,您有' + data[1][0].refuseCount + '笔运单已被司机拒绝,您有' + data[2][0].confirmCount + '笔运单待确认,您有' + data[3][0].transportCount + '笔运单待运输,您有' + data[4][0].arriveCount + '笔运单已送达'
+                data: '您有' + data[0][0].dispatchCount + '笔运单待分配,您有' + data[1][0].refuseCount + '笔运单已被司机拒绝,您有' + data[2][0].confirmCount + '笔运单待确认,您有' + data[3][0].transportCount + '笔运单运送中,您有' + data[4][0].arriveCount + '笔运单已送达'
             });
         })
         .fail(function (err) {
@@ -459,17 +458,6 @@ router.post('/:id/state', fileMulter, confirmStateVerify, refuseStateConfirm, fu
             }
         })
         .then(function (data) {
-            var flag = state === orderState.refuse || state === orderState.confirm || state === orderState.arrive;
-            if (flag) {
-                orderService
-                    .findOne(id)
-                    .then(function (data) {
-                        var order_number = data[0].order_number,
-                            consignor = data[0].consignor;
-                        var message = 'you order_number ' + order_number + ' was' + state + ' on' + new Date();
-                        jpush(consignor, message);
-                    });
-            }
             res.json({
                 status: 'success'
             });

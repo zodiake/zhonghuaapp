@@ -6,6 +6,7 @@ var userAuthority = require('../userAuthority');
 var orderState = require('../orderState');
 var squel = require('squel');
 var q = require('q');
+var jpush = require('../service/jpush');
 
 var service = {
     findOne: function (id) {
@@ -164,6 +165,9 @@ var service = {
     },
     save: function (order) {
         var sql = 'insert into orders set ?';
+        if (order.current_state === orderState.dispatch) {
+            jpush(order.consignee, '您有一笔新的运单');
+        }
         return pool.insert(sql, order);
     },
     countAll: function () {
@@ -202,12 +206,30 @@ var service = {
     },
     updateStateByIdAndUser: function (order, user) {
         var sql;
+        var self = this;
         if (user.authority === userAuthority.consignor) {
             sql = 'update orders set current_state=? where id=? and consignor=?';
         } else if (user.authority === userAuthority.consignee) {
             sql = 'update orders set current_state=? where id=? and consignee=?';
         }
-        return pool.query(sql, [order.state, order.id, user.name]);
+        return pool
+            .query(sql, [order.state, order.id, user.name])
+            .then(function (row) {
+                return self
+                    .findOne(order.id)
+                    .then(function (data) {
+                        if (data[0].current_state === orderState.confirm) {
+                            jpush(data[0].consignee, '您有一笔新的运单');
+                        } else if (data[0].current_state === orderState.refuse) {
+                            jpush(data[0].consignor, '您有一笔运单，已被司机拒绝');
+                        } else if (data[0].current_state === orderState.transport) {
+                            jpush(data[0].consignor, '您有一笔运单，已被司机接收，正在运送中');
+                        } else if (data[0].current_state === orderState.arrive) {
+                            jpush(data[0].consignor, '您有一笔运单已到货，请查收');
+                        }
+                        return row;
+                    });
+            })
     },
     update: function (order, id, user) {
         var sql = 'update orders set ? where id=? and consignor=?';

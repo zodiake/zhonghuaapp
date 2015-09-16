@@ -11,7 +11,7 @@ var url = 'http://112.33.1.13/jaxws/smsServiceEndpoint/sendSms?wsdl';
 var jpush = require('../service/jpush');
 
 var connection = amqp.createConnection({
-    url: 'amqp://guest:guest@localhost:5672/zhonghua'
+    url: 'amqp://guest:guest@localhost:5672/app'
 });
 
 router.get('/', function (req, res) {
@@ -68,33 +68,15 @@ router.get('/sms', function (req, res) {
 });
 
 router.get('/amqp', function (req, res) {
-    var exchange = connection.exchange('order-exchange', {
-        autoDelete: false,
+    var exc = connection.exchange('order-exchange', {
+        durable: true
+    }, function (exchange) {
+        console.log('Exchange ' + exchange.name + ' is open');
+        exchange.publish('order.create', {
+            a: 'bb'
+        });
+        res.json('ok');
     });
-    exchange.publish('order.create', {
-        id: 1,
-        name: 'tom'
-    }, {
-        contentType: 'application/json'
-    });
-    exchange.publish('order.update', {
-        id: 2,
-        name: 'peter'
-    }, {
-        contentType: 'application/json'
-    });
-    exchange.publish('order.delete', {
-        id: 3
-    }, {
-        contentType: 'application/json'
-    });
-    exchange.publish('orderstate.create', {
-        state: 'aa',
-        type: 8822
-    }, {
-        contentType: 'application/json'
-    });
-    res.json('ok');
 });
 
 router.get('/push', function (req, res) {

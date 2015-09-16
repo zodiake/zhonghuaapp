@@ -13,9 +13,26 @@ router.get('/login.html', function (req, res) {
     res.render('login');
 });
 
-router.get('/version', function (req, res, next) {
+router.get('/version/consignee', function (req, res, next) {
     versionService
-        .findOne()
+        .findConsigneeVersion()
+        .then(function (data) {
+            res.json({
+                status: 'success',
+                data: data[0]
+            });
+        })
+        .catch(function (err) {
+            next(err);
+        })
+        .fail(function (err) {
+            next(err);
+        });
+});
+
+router.get('/version/consignor', function (req, res, next) {
+    versionService
+        .findConsignorVersion()
         .then(function (data) {
             res.json({
                 status: 'success',

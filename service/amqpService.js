@@ -5,22 +5,22 @@ var categoryService = require('../service/categoryService');
 var orderService = require('../service/orderService');
 var orderStateService = require('../service/orderStateService');
 var stateType = require('../stateType');
+var jpush = require('../service/jpush');
+var orderState = require('../orderState');
 
 var connection = amqp.createConnection({
-    url: 'amqp://guest:guest@localhost:5672/zhonghua'
+    url: 'amqp://guest:guest@localhost:5672/app'
 });
 
 connection.on('ready', function () {
-    var exchange = connection.exchange('order-exchange', {
-        autoDelete: false
-    });
     /*-----------------orderCreate queue----------------------------*/
     connection.queue('orderCreate-queue', {
-            autoDelete: false
+            passive: true
         },
         function (q) {
-            q.bind(exchange, 'order.create');
-            q.subscribe(exchange, function (message, headers, deliveryInfo, messageObject) {
+            q.bind('order-exchange', 'order.create');
+            q.subscribe(function (message, headers, deliveryInfo, messageObject) {
+                console.log(message);
                 var order = {
                     consignor: message.user_mobile,
                     created_time: message.order_time,
@@ -35,7 +35,8 @@ connection.on('ready', function () {
                     etd: message.eta,
                     quantity: message.quantity,
                     type: message.type,
-                    app_or_out: 0
+                    app_or_out: 0,
+                    current_state: orderState.dispatch
                 };
                 categoryService
                     .findByName(order.cargoo_name)
@@ -45,7 +46,11 @@ connection.on('ready', function () {
                         return order;
                     })
                     .then(function (order) {
-                        orderService.save(order);
+                        console.log(order);
+                        return orderService.save(order);
+                    })
+                    .then(function (order) {
+                        jpush(order.consignor, '您有一笔新的运单，等待发送。');
                     })
                     .fail(function (err) {
                         console.log(err);
@@ -57,10 +62,11 @@ connection.on('ready', function () {
         });
     /*-----------------orderUpdate queue----------------------------*/
     connection.queue('orderUpdate-queue', {
-        autoDelete: false
+        passive: true
     }, function (q) {
-        q.bind(exchange, 'order.update');
-        q.subscribe(exchange, function (message, headers, deliveryInfo, messageObject) {
+        q.bind('order-exchange', 'order.update');
+        q.subscribe(function (message, headers, deliveryInfo, messageObject) {
+            console.log(message);
             var order = {
                 consignor: message.user_mobile,
                 created_time: message.order_time,
@@ -96,10 +102,11 @@ connection.on('ready', function () {
     });
     /*-----------------orderDelete queue----------------------------*/
     connection.queue('orderDelete-queue', {
-        autoDelete: false
+        passive: true
     }, function (q) {
-        q.bind(exchange, 'order.delete');
-        q.subscribe(exchange, function (message, headers, deliveryInfo, messageObject) {
+        q.bind('order-exchange', 'order.delete');
+        q.subscribe(function (message, headers, deliveryInfo, messageObject) {
+            console.log(message);
             orderService
                 .close(message.order_id)
                 .fail(function (err) {
@@ -112,10 +119,11 @@ connection.on('ready', function () {
     });
     /*-----------------orderState queue----------------------------*/
     connection.queue('orderstate-queue', {
-        autoDelete: false
+        passive: true
     }, function (q) {
-        q.bind(exchange, 'orderstate.create');
-        q.subscribe(exchange, function (message, headers, deliveryInfo, messageObject) {
+        q.bind('order-exchange', 'orderstate.create');
+        q.subscribe(function (message, headers, deliveryInfo, messageObject) {
+            console.log(message);
             orderService
                 .findByOrderNumber(message.order_id)
                 .then(function (data) {
