@@ -46,7 +46,7 @@ router.post('/', function (req, res, next) {
         .save({
             description: desc,
             created_time: new Date(),
-            consignee: usr.name,
+            mobile: usr.name,
         })
         .then(function (data) {
             res.json({

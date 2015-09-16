@@ -109,7 +109,7 @@ create table suggestion(
     id int auto_increment,
     description varchar(600),
     created_time timestamp,
-    consignor char(11),
+    mobile char(11),
     primary key(id)
 )CHARACTER SET utf8;
 
