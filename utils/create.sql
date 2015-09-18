@@ -150,6 +150,8 @@ create table question(
 create table app_version(
     id int auto_increment,
     version double,
+    apple varchar(100),
+    android varchar(100),
     primary key(id)
 )CHARACTER set utf8;
 

@@ -7,8 +7,7 @@ var client = JPush.buildClient('7867df712b8a722667e3df5f', '79481b91afa10953574f
 module.exports = function (tag, message, cb) {
     client.push().setPlatform('ios', 'android')
         .setAudience(JPush.tag(tag))
-        .setNotification('Hi, JPush', JPush.ios('ios alert'), JPush.android('android alert', null, 1))
-        .setMessage(message)
+        .setNotification('Hi, JPush', JPush.ios(message), JPush.android(message, null, 1))
         .setOptions(null, 60)
         .send(function (err, res) {
             if (err) {

@@ -7,9 +7,10 @@ var factoryType = require('../factoryType');
 var service = {
     queryFromWeb: function (type, query) {
         var defer = q.defer();
+        logger.log('info', 'webservice query: %s', factoryType[type] + query);
         request({
             url: factoryType[type] + query,
-            timeout: 5000
+            timeout: 10000
         }, function (err, response, body) {
             if (err) {
                 defer.reject(err);
@@ -39,7 +40,7 @@ var service = {
                 if (result.status) {
                     data.states.unshift({
                         stateName: '排队中',
-                        waiting: result.Waiting,
+                        waiting: result.Wating,
                         createTime: new Date()
                     });
                 }

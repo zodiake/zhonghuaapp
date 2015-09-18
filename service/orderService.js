@@ -29,7 +29,7 @@ var service = {
     },
     convertArrayToString: function (data) {
         var array = data.map(function (d) {
-            return d.id;
+            return d.order_number;
         });
         return array.join(',');
     },
@@ -251,7 +251,7 @@ var service = {
         return _.map(data, function (d) {
             _.each(webData, function (wd) {
                 if (wd.Status === true && d.order_number === wd.BillCode) {
-                    d.waiting = wd.Waiting;
+                    d.waiting = wd.Wating;
                     d.actual_weight = wd.actual_weight;
                     return;
                 }

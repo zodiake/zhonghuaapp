@@ -84,8 +84,6 @@ router.get('/', function (req, res, next) {
 
                 for (var i in filtedData) {
                     var query = orderService.convertArrayToString(filtedData[i]);
-                    query = 'cmd=getMulti&order_id=' + query;
-                    logger.log('info', 'webservice query: %s', query);
                     remote.push(webService.queryFromWeb(i, query));
                 }
                 return q.all(remote).then(function (result) {
@@ -583,6 +581,33 @@ router.post('/:id/reviews', verifyConsignor, function (req, res, next) {
             res.json({
                 status: 'fail',
                 message: '插入失败'
+            });
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+});
+
+router.get('/:id/hint', function (req, res, next) {
+    var id = req.params.id;
+    orderService
+        .findOne(id)
+        .then(function (data) {
+            if (data.length > 0) {
+                jpush(data[0].consignee, '你有一笔新的订单请尽快确认');
+                res.json({
+                    status: 'success'
+                });
+            } else {
+                res.json({
+                    'status': 'fail'
+                });
+            }
+        })
+        .fail(function () {
+            res.json({
+                status: 'fail',
+                message: 'push fail'
             });
         })
         .catch(function (err) {
