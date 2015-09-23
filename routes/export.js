@@ -28,7 +28,7 @@ router.get('/orders', function (req, res) {
         };
     });
 
-    res.attachment('test.csv');
+    res.attachment(new Date() + '.csv');
     console.log(orderService.buildQuery(req.query));
     pool.stream(orderService.buildQuery(req.query))
         .pipe(transformer)

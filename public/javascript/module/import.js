@@ -39,6 +39,7 @@ importOrder.controller('ImportController', [
             var reader = new FileReader();
 
             fd.append('file', file);
+            alert(file.type);
             if (file.type != 'text/csv') {
                 $scope.$apply(function () {
                     $scope.alerts.push({
