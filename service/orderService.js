@@ -146,7 +146,8 @@ var service = {
             .field('cargoo_name.name', 'cargoo_name')
             .field('orders.quantity', 'quantity')
             .field('orders.created_time', 'created_time')
-            .field('orders.current_state', 'current_state');
+            .field('orders.current_state', 'current_state')
+            .order('created_time', false);
 
         var arr = [countSql.toString(), allSql.offset(offset).limit(limit).toString()];
         return pool.query(arr.join(';'), []);
@@ -258,6 +259,21 @@ var service = {
             });
             return d;
         });
+    },
+    buildQuery: function (option) {
+        var allSql = this.$$buildOptionSql(option)
+            .field('orders.id', 'id')
+            .field('orders.consignee', 'consignee')
+            .field('orders.consignor', 'consignor')
+            .field('orders.order_number', 'order_number')
+            .field('orders.consignee_name', 'consignee_name')
+            .field('orders.company_name', 'company_name')
+            .field('cargoo_name.name', 'cargoo_name')
+            .field('orders.quantity', 'quantity')
+            .field('orders.created_time', 'created_time')
+            .field('orders.current_state', 'current_state')
+            .order('created_time', false);
+        return allSql.toString();
     }
 };
 

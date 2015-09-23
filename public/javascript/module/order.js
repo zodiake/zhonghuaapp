@@ -183,7 +183,7 @@ order.controller('OrderMapController', [
                     $scope.mapOptions.markers = data.data.data;
                     $scope.mapOptions.center = data.data.data[0];
                 } else {
-                    alert('null');
+                    alert('没有地理位置信息');
                     $scope.mapOptions.markers = [];
                     $scope.mapOptions.center = {
                         longitude: 116.404,

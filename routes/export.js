@@ -6,21 +6,34 @@ var router = express.Router();
 var csv = require('csv');
 var pool = require('../utils/pool');
 
+var orderService = require('../service/orderService');
+
 router.get('/orders', function (req, res) {
     var stringfier = csv.stringify({
-        columns: ['age', 'name'],
+        columns: ['司机', '货主', '运单号', '司机姓名', '公司名称', '货物名称', '重量', '生成日期', '状态'],
         header: true
     });
 
     var transformer = csv.transform(function (data) {
         return {
-            age: data.name,
-            name: data.password
+            司机: data.consignee,
+            货主: data.consignor,
+            运单号: data.order_number,
+            司机姓名: data.consignee_name,
+            公司名称: data.consignee_name,
+            货物名称: data.cargoo_name,
+            重量: data.quantity,
+            生成日期: data.created_time,
+            状态: data.current_state
         };
     });
 
     res.attachment('test.csv');
-    pool.stream('select name ,password from usr where id=1').pipe(transformer).pipe(stringfier).pipe(res);
+    console.log(orderService.buildQuery(req.query));
+    pool.stream(orderService.buildQuery(req.query))
+        .pipe(transformer)
+        .pipe(stringfier)
+        .pipe(res);
 });
 
 module.exports = router;

@@ -23,7 +23,7 @@
                 <input class="form-control" name="consignor" ng-model="option.consignor" placeholder="请输入您要查找的货主手机号" type="text">
             </div>
             <input class="btn btn-primary btn-xs" type="submit" value="搜索"></input>
-            <a class="btn btn-primary btn-xs" ng-click="export()" href="/export/orders?state={{option.state}}&beginTime={{beginTime}}" ng-show="canDownload">export</a>
+            <a class="btn btn-primary btn-xs" ng-click="export()" href="/export/orders?state={{option.state}}&beginTime={{option.beginTime}}&endTime={{option.endTIme}}&consignor={{option.consignor}}&orderNumber={{option.orderNumber}}" ng-show="canDownload">export</a>
         </form>
     </div>
     <table class="table table-bordered">
@@ -39,11 +39,12 @@
                 <th>货物数量/吨</th>
                 <th>状态</th>
                 <th>生成日期</th>
+                <th>操作</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in items">
-                <td><a href="#/tabs/order/{{item.id}}">{{$index+1}}</a></td>
+                <td>{{$index+1}}</td>
                 <td>{{item.order_number}}</td>
                 <td>{{item.consignee}}</td>
                 <td>{{item.consignee_name}}</td>
@@ -53,6 +54,7 @@
                 <td>{{item.quantity}}</td>
                 <td>{{item.current_state}}</td>
                 <td>{{item.created_time}}</td>
+                <td><a href="#/tabs/order/{{item.id}}" class="btn btn-primary btn-xs">查看</a></td>
             </tr>
         </tbody>
     </table>
