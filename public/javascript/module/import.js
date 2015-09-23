@@ -21,6 +21,7 @@ importOrder.controller('ImportController', [
         });
 
         socketio.on('fail', function (data) {
+            console.log(data);
             $scope.fails.push(data);
         });
 
@@ -39,16 +40,6 @@ importOrder.controller('ImportController', [
             var reader = new FileReader();
 
             fd.append('file', file);
-            alert(file.type);
-            if (file.type != 'text/csv') {
-                $scope.$apply(function () {
-                    $scope.alerts.push({
-                        type: 'danger',
-                        msg: '请上传csv格式文件'
-                    });
-                })
-                return;
-            }
 
             $http.post('/admin/csv', fd, {
                     withCredentials: true,

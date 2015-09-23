@@ -100,7 +100,8 @@ router.put('/user/state', function (req, res, next) {
 
 router.post('/csv', fileMulter, function (req, res, next) {
     var file = req.files.file;
-    if (file.mimetype !== 'text/csv') {
+    console.log(file.mimetype);
+    if (file.mimetype !== 'text/csv' && file.mimetype !== 'application/vnd.ms-excel') {
         var err = new Error('please upload csv file');
         return next(err);
     }
