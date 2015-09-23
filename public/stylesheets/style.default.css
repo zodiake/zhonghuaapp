@@ -1,12 +1,15 @@
 @import url('bootstrap.min.css');
 @import url('bootstrap-override.css');
+
 /********** 2. RESET STYLES **********/
+
+
 /*************************************/
 
 body {
     font-size: 14px;
     color: #636E7B;
-    overflow:hidden;
+    overflow: hidden;
     background-color: #fff;
     font-family: 'Microsoft Yahei'
 }
@@ -24,9 +27,11 @@ a:focus {
 a:hover {
     cursor: pointer;
 }
-.error{
-    color:red;
+
+.error {
+    color: red;
 }
+
 .user_d dl {
     margin: 0 20px 30px;
     padding: 0;
@@ -84,9 +89,11 @@ a:hover {
     width: 500px;
     height: 100px;
 }
-.mt20{
+
+.mt20 {
     margin-top: 20px;
 }
+
 .ml30 {
     margin-left: 30px;
 }
@@ -135,11 +142,13 @@ select {
     border-radius: 3px;
     border: 1px solid #ccc;
 }
-.files_tab img{
-    width:100px;
-    height:100px;
+
+.files_tab img {
+    width: 100px;
+    height: 100px;
 }
-.files_tab #uploadImg{ 
+
+.files_tab #uploadImg {
     position: relative;
     font-size: 12px;
     color: #fff;
@@ -148,71 +157,78 @@ select {
     background-color: #5cb85c;
     border-color: #5cb85c;
 }
-.files_tab #uploadImg a{
-    color:#fff;
+
+.files_tab #uploadImg a {
+    color: #fff;
 }
-.files_tab #uploadImg.padd{
-    padding:5px 10px;
+
+.files_tab #uploadImg.padd {
+    padding: 5px 10px;
 }
-.files_tab input[type=file]{
+
+.files_tab input[type=file] {
     width: 70px;
     height: 30px;
+    top: -2px;
     overflow: hidden;
     position: absolute;
     left: 0;
-    top: -2px;
     z-index: 100;
     font-size: 12px;
     opacity: 0;
     filter: alpha(opacity=0);
+    margin-top: 1px;
 }
-html,body,section.ng-scope{
+
+html,
+body,
+section.ng-scope {
     width: 100%;
     height: 100%;
 }
-div.box{
+
+div.box {
     height: 88%;
     max-height: 88%;
 }
-header{
-    padding:15px;
-    position: relative;
+
+header,
+footer {
+    height: 50px;
+    background-color: #428BCA;
 }
-header,footer{  
-    height: 6%;
-    background-color: #428BCA; 
-}
-header a{
+
+header a {
     color: #fff;
-    position: absolute;
-    top: 12%;
 }
-header a img{
+
+header a img {
     margin-right: 10px;
 }
-header a:hover{
+
+header a:hover {
     color: #fff;
 }
-header .pull-right{
-    position: absolute;
-    right: 50px;
-    top: 28%;
+
+header {
+    overflow: hidden;
+    line-height: 35px;
+    padding: 5px 15px;
 }
-header .pull-right a{
-    position: relative;
-    top: 30%;
-}
-.footerwrapper{
+
+.footerwrapper {
     width: 100%;
-    color:#fff;
+    color: #fff;
     position: relative;
 }
-.footerwrapper .text-center{
+
+.footerwrapper .text-center {
     position: absolute;
-    top:30%;
+    top: 30%;
     left: 42%;
 }
-.headerwrapper{
+
+.headerwrapper {
     background-color: #428BCA;
     width: 100%;
     height: 10%;
@@ -223,6 +239,8 @@ header .pull-right a{
     display: block;
     content: '';
 }
+
+
 /***** 3.1 HEADER LEFT *****/
 
 .headerwrapper .header-left {
@@ -238,16 +256,19 @@ header .pull-right a{
     color: #fff;
     font-size: 16px;
 }
+
 .leftpanel {
     width: 9.4%;
     background-color: #fff;
-    border:1px solid #e7e7e7;
-    border-top:none;
+    border: 1px solid #e7e7e7;
+    border-top: none;
     border-bottom: none;
 }
-.mainwrapper{
+
+.mainwrapper {
     height: 100%;
 }
+
 .leftpanel .profile-left {
     padding: 15px;
     min-height: 90px;
@@ -266,6 +287,7 @@ header .pull-right a{
     border: 2px solid #5cb85c;
     padding: 2px;
 }
+
 
 /***** 4.1.1 LEFT PANEL NAVIGATION *****/
 
@@ -323,20 +345,24 @@ header .pull-right a{
     background-color: #428bca;
 }
 
+
 /***** 4.2 MAIN PANEL STYLES *****/
 
 .mainpanel {
     width: 90%;
     height: 100%;
 }
+
+
 /***** 4.2.1 CONTENT PANEL STYLES *****/
 
 .contentpanel {
-    height:100%;
+    height: 100%;
     position: relative;
     padding: 10px;
-    overflow:auto;
+    overflow: auto;
 }
+
 .panel-metro,
 .panel-metro .panel-heading,
 .panel-metro .panel-footer {
@@ -344,6 +370,8 @@ header .pull-right a{
     -webkit-border-radius: 0;
     border-radius: 0;
 }
+
+
 /***** 9.7 SIGN IN/UP PAGE *****/
 
 body.signin {
@@ -403,8 +431,8 @@ body.signin {
     padding: 3px;
 }
 
-.table > thead > tr > th{
-    padding:8px;
+.table > thead > tr > th {
+    padding: 8px;
 }
 
 .panel-title {
@@ -429,6 +457,7 @@ body.signin {
 .cargoo-list table {
     width: 80%;
 }
+
 label {
     width: 60px;
     display: inline-block;
@@ -439,25 +468,28 @@ label {
 .panel {
     border-color: #ccc;
 }
-    
+
 .ml100 {
     margin-left: 100px;
 }
 
-.input-group.mb15{
+.input-group.mb15 {
     margin-bottom: 15px;
 }
-.logins span.error{
+
+.logins span.error {
     display: block;
     margin-left: 80px;
 }
-.upload-modal{
+
+.upload-modal {
     width: 500px;
-    position:fixed;
+    position: fixed;
     left: 40%;
-    top:40%;
+    top: 40%;
 }
-tbody>tr:hover{
+
+tbody>tr:hover {
     cursor: pointer;
     background: #f7f7f7;
 }
