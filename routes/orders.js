@@ -594,7 +594,7 @@ router.get('/:id/hint', function (req, res, next) {
         .findOne(id)
         .then(function (data) {
             if (data.length > 0) {
-                jpush(data[0].consignee, '你有一笔新的订单请尽快确认');
+                jpush.pushConsignee(data[0].consignee, '你有一笔新的订单请尽快确认');
                 res.json({
                     status: 'success'
                 });

@@ -14,7 +14,7 @@ router.use(e_jwt({
 }));
 
 var verify = function (req, res, next) {
-    if (req.user.authority != userAuthority.admin) {
+    if (req.user.authority !== userAuthority.admin) {
         var err = new Error();
         err.name = 'UnauthorizedError';
         return next(err);
@@ -47,6 +47,7 @@ router.post('/', function (req, res, next) {
             description: desc,
             created_time: new Date(),
             mobile: usr.name,
+            state: 0
         })
         .then(function (data) {
             res.json({
@@ -66,7 +67,7 @@ router.get('/:id', verify, function (req, res, next) {
         .findOne(id)
         .then(function (data) {
             //if state is readed do nothing
-            if (data[0].state == 1) {
+            if (data[0].state === 1) {
                 return data[0];
             } else {
                 //if state is unreaded update state to readed

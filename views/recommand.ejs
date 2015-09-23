@@ -23,14 +23,18 @@
                 <th>内容</th>
                 <th>状态</th>
                 <th>反馈日期</th>
+                <th>操作</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in items">
-                <td><a href="#/tabs/recommandDetail">{{item.recommand_id}}</a></td>
-                <td>{{item.con}}</td>
-                <td>{{item.read_state}}</td>
+                <td>{{$index+1}}</td>
+                <td>{{item.description}}</td>
+                <td>{{item.state|readStateFilter}}</td>
                 <td>{{item.created_time}}</td>
+                <td>
+                    <a class="btn btn-primary btn-xs" href="#/tabs/recommand/{{item.id}}">查看</a>
+                </td>
             </tr>
         </tbody>
     </table>

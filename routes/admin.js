@@ -179,11 +179,22 @@ router.put('/scrollImages/:id', function (req, res, next) {
 
 /*------------------------------orders-------------------------------*/
 router.get('/orders', function (req, res, next) {
+
+    function convertTime(time) {
+        if (time !== null) {
+            var array = time.split('T')[0].split('-');
+            array[2] = Number(array[2]) + 1;
+            return array.join('-');
+        } else {
+            return null;
+        }
+    }
+    var beginTime = convertTime(req.query.beginTime || null);
+    var endTime = convertTime(req.query.endTime || null);
+
     var page = req.query.page || 1,
         size = req.query.size || 15,
         consignor = req.query.consignor,
-        beginTime = req.query.beginTime,
-        endTime = req.query.endTime,
         orderNumber = req.query.orderNumber,
         state = req.query.state;
     var option = {
@@ -409,13 +420,26 @@ router.put('/category/:id', function (req, res, next) {
 /*------------------------end category-------------------------------*/
 
 router.get('/suggestion', function (req, res, next) {
+    function convertTime(time) {
+        if (time !== null) {
+            var array = time.split('T')[0].split('-');
+            array[2] = Number(array[2]) + 1;
+            return array.join('-');
+        } else {
+            return null;
+        }
+    }
+    var beginTime = convertTime(req.query.beginTime || null);
+    var endTime = convertTime(req.query.endTime || null);
+
     var option = {
-        beginTime: req.query.beginTime,
-        endTime: req.query.endTime,
+        beginTime: beginTime,
+        endTime: endTime,
         state: req.query.state,
         page: req.query.page - 1 || 0,
         size: req.query.size || 15
     };
+
     q.all([suggestionService.search(option, true), suggestionService.search(option)])
         .then(function (result) {
             res.json({
@@ -424,6 +448,33 @@ router.get('/suggestion', function (req, res, next) {
                     totol: result[0][0].countNum,
                     data: result[1]
                 }
+            });
+        })
+        .fail(function (err) {
+            return next(err);
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+});
+
+router.get('/suggestion/:id', function (req, res, next) {
+    var id = req.params.id;
+    suggestionService
+        .findOneAndUser(id)
+        .then(function (data) {
+            if (data.length > 0) {
+                suggestionService.updateState(1, id);
+                return data[0]
+            } else {
+                var error = new Error('not found')
+                return next(error);
+            }
+        })
+        .then(function (data) {
+            res.json({
+                status: 'success',
+                data: data
             });
         })
         .fail(function (err) {

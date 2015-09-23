@@ -21,7 +21,7 @@ cargoo.service('CargooService', ['$http', function ($http) {
 
     this.update = function (item) {
         return $http.put('/admin/category/' + item.id, item);
-    }
+    };
 
     this.save = function (item) {
         return $http.post('/admin/category', item);

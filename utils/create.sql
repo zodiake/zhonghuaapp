@@ -110,6 +110,7 @@ create table suggestion(
     description varchar(600),
     created_time timestamp,
     mobile char(11),
+    state smallint,
     primary key(id)
 )CHARACTER SET utf8;
 

@@ -165,8 +165,8 @@ var service = {
     },
     save: function (order) {
         var sql = 'insert into orders set ?';
-        if (order.current_state === orderState.dispatch) {
-            jpush(order.consignee, '您有一笔新的运单');
+        if (order.current_state === orderState.confirm) {
+            jpush.pushConsignee(order.consignee, '您有一笔新的运单');
         }
         return pool.insert(sql, order);
     },
@@ -219,13 +219,13 @@ var service = {
                     .findOne(order.id)
                     .then(function (data) {
                         if (data[0].current_state === orderState.confirm) {
-                            jpush(data[0].consignee, '您有一笔新的运单');
+                            jpush.pushConsignee(data[0].consignee, '您有一笔新的运单');
                         } else if (data[0].current_state === orderState.refuse) {
-                            jpush(data[0].consignor, '您有一笔运单，已被司机拒绝');
+                            jpush.pushConsignor(data[0].consignor, '您有一笔运单，已被司机拒绝');
                         } else if (data[0].current_state === orderState.transport) {
-                            jpush(data[0].consignor, '您有一笔运单，已被司机接收，正在运送中');
+                            jpush.pushConsignor(data[0].consignor, '您有一笔运单，已被司机接收，正在运送中');
                         } else if (data[0].current_state === orderState.arrive) {
-                            jpush(data[0].consignor, '您有一笔运单已到货，请查收');
+                            jpush.pushConsignor(data[0].consignor, '您有一笔运单已到货，请查收');
                         }
                         return row;
                     });

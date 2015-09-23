@@ -139,9 +139,9 @@ app.config(['$stateProvider',
                 controller: 'ScrollImageAddController'
             })
             .state('tabs.recommandDetail', {
-                url: '/recommandDetail',
+                url: '/recommand/:id',
                 templateUrl: '/admin/recommandDetail.html',
-                controller: 'recommandDetailController'
+                controller: 'RecommandDetailController'
             })
             .state('tabs.questions', {
                 url: '/questions',
