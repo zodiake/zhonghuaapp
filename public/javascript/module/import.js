@@ -3,7 +3,7 @@ var importOrder = angular.module('Import', ['socketModule']);
 importOrder.service('importService', ['$http', function ($http) {
     this.fakeSocket = function (path) {
         $http.get('/admin/csv');
-    }
+    };
 }]);
 
 importOrder.controller('ImportController', [
@@ -21,7 +21,6 @@ importOrder.controller('ImportController', [
         });
 
         socketio.on('fail', function (data) {
-            console.log(data);
             $scope.fails.push(data);
         });
 
@@ -84,6 +83,6 @@ importOrder.controller('ImportController', [
 
         $scope.clear = function () {
             $scope.fails = [];
-        }
+        };
     }
 ]);
