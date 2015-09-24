@@ -7,7 +7,6 @@ var factoryType = require('../factoryType');
 var service = {
     queryFromWeb: function (type, query) {
         var defer = q.defer();
-        logger.log('info', 'webservice query: %s', factoryType[type] + query);
         request({
             url: factoryType[type] + query,
             timeout: 10000
@@ -15,7 +14,7 @@ var service = {
             if (err) {
                 defer.reject(err);
             }
-            if (response && response.statusCode == 200) {
+            if (response && response.statusCode === 200) {
                 defer.resolve(JSON.parse(body));
             } else {
                 defer.reject({
@@ -35,7 +34,7 @@ var service = {
             if (err) {
                 defer.reject(err);
             }
-            if (response && response.statusCode == 200) {
+            if (response && response.statusCode === 200) {
                 var result = JSON.parse(body)[0];
                 if (result.status) {
                     data.states.unshift({
