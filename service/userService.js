@@ -81,13 +81,13 @@ var service = {
     },
     aggregate: function () {
         var date = new Date();
-        var today = date.getFullYear() + '-' + (data.getMonth() + 1) + '-' + data.getDate();
-        var countUsr = "select count(*) as countNum from usr where authority!='ROLE_ADMIN'";
-        var countConsignee = "select count(*) as countNum from usr where authority!='ROLE_CONSIGNEE'";
-        var countConsignor = "select count(*) as countNum from usr where authority!='ROLE_CONSIGNOR'";
-        var countUsrToday = "select count(*) as countNum from usr join usr_detail where Date(created_time)=?";
-        var countUsrMonth = "select count(*) as countNum from usr join usr_detail on usr.id=usr_detail.id where Date(created_time) BETWEEN DATE_SUB(NOW(), INTERVAL 30 DAY) AND NOW() and authority!='ROLE_ADMIN";
-        var countUsrWeek = "select count(*) as countNum from usr join usr_detail on usr.id=usr_detail.id where Date(created_time) BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW() and authority!='ROLE_ADMIN";
+        var today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+        var countUsr = "select count(*) as countNum from usr where authority!='ROLE_ADMIN' and authority!='ROLE_COMMON'";
+        var countConsignee = "select count(*) as countNum from usr where authority='ROLE_CONSIGNEE'";
+        var countConsignor = "select count(*) as countNum from usr where authority='ROLE_CONSIGNOR'";
+        var countUsrToday = "select count(*) as countNum from usr join usr_detail where Date(created_time)='" + today + "'";
+        var countUsrMonth = "select count(*) as countNum from usr join usr_detail on usr.id=usr_detail.id where Date(created_time) BETWEEN DATE_SUB(NOW(), INTERVAL 30 DAY) AND NOW() and authority!='ROLE_ADMIN'";
+        var countUsrWeek = "select count(*) as countNum from usr join usr_detail on usr.id=usr_detail.id where Date(created_time) BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW() and authority!='ROLE_ADMIN'";
         var array = [countUsr, countConsignee, countConsignor, countUsrToday, countUsrMonth, countUsrWeek];
         return pool.query(array.join(';'), []);
     }

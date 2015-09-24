@@ -286,7 +286,7 @@ router.get('/aggregate/orders', function (req, res) {
                 'all': result[0][0].countNum,
                 'app': result[1][0].countNum,
                 'out': result[2][0].countNum,
-                'dispatch': result[3][0].countNum    ,
+                'dispatch': result[3][0].countNum,
                 'confirm': result[4][0].countNum,
                 'transport': result[5][0].countNum,
                 'arrive': result[6][0].countNum,
@@ -297,8 +297,8 @@ router.get('/aggregate/orders', function (req, res) {
 });
 
 router.get('/aggregate/users', function (req, res) {
-    orderService
-        .aggregateByUser()
+    userService
+        .aggregate()
         .then(function (result) {
             res.json({
                 countUser: result[0][0].countNum,
