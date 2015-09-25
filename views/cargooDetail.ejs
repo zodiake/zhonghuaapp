@@ -16,17 +16,16 @@
             <div class="form-group">
                 <label class="col-sm-1 control-label">货物名称</label>
                 <div class="col-sm-2 w180 ml0">
-                    <input type="text" class="form-control" ng-required="true" ng-model="item.name" required ng-maxLength="7" name="cargooName">
+                    <input type="text" class="form-control" ng-required="true" ng-model="item.name" required ng-maxLength="10" name="cargooName">
                     <span ng-show="cargooForm.cargooName.$error.maxlength">超过最大长度</span>
                 </div>
             </div>
             <div class="col-sm-2 mt20 ml100">
-                <input type="submit" class="btn btn-primary">
-                </button>
+                <input type="submit" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 <div class="upload-modal">
-    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    <alert ng-repeat="alert in alerts" dismiss-on-timeout="1000" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 </div>

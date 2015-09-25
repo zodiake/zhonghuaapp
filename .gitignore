@@ -46,3 +46,4 @@ csv/
 *.iml
 
 admin/src/main/resources/static/upload/
+/log/

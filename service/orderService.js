@@ -169,7 +169,7 @@ var service = {
         if (order.current_state === orderState.confirm) {
             jpush.pushConsignee(order.consignee, '您有一笔新的运单');
         }
-        return pool.insert(sql, order);
+        return pool.query(sql, order);
     },
     countAll: function () {
         var sql = 'select count(*) as countNum from orders';

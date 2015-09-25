@@ -1,11 +1,5 @@
 var cargoo = angular.module('Cargoo', []);
 
-function pop($timeout, $scope) {
-    $timeout(function () {
-        $scope.alerts.splice(0, 1);
-    }, 1000);
-}
-
 cargoo.service('CargooService', ['$http', function ($http) {
     this.findAll = function (id) {
         return $http.get('/admin/category');
@@ -87,22 +81,31 @@ cargoo.controller('CargooDetailController', [
         init();
 
         $scope.submit = function () {
-            CargooService
-                .update($scope.item)
-                .success(function (data) {
-                    $scope.alerts.push({
-                        type: 'success',
-                        msg: '更新成功'
+            if ($scope.cargooForm.$valid) {
+                CargooService
+                    .update($scope.item)
+                    .success(function (data) {
+                        $scope.alerts.push({
+                            type: 'success',
+                            msg: '更新成功'
+                        });
+                    })
+                    .error(function (err) {
+                        $scope.alerts.push({
+                            type: 'danger',
+                            msg: '服务器错误'
+                        });
                     });
-                    pop($timeout, $scope);
+            } else {
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: '提交信息有错'
                 })
-                .error(function (err) {
-                    $scope.alerts.push({
-                        type: 'danger',
-                        msg: '服务器错误'
-                    });
-                    pop($timeout, $scope);
-                });
+            }
+        };
+
+        $scope.closeAlert = function (index) {
+            $scope.alerts.splice(index, 1);
         };
     }
 ]);
@@ -123,14 +126,12 @@ cargoo.controller('CargooAddController', [
                         type: 'success',
                         msg: '添加成功'
                     });
-                    pop($timeout, $scope);
                 })
                 .error(function (err) {
                     $scope.alerts.push({
                         type: 'fail',
                         msg: '添加失败'
                     });
-                    pop($timeout, $scope);
                 });
         };
     }

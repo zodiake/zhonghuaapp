@@ -9,7 +9,7 @@ var jpush = require('../service/jpush');
 var orderState = require('../orderState');
 
 var connection = amqp.createConnection({
-    url: 'amqp://guest:guest@localhost:5672/app'
+    url: 'amqp://guest:guest@localhost:5672/test'
 });
 
 connection.on('ready', function () {
@@ -20,7 +20,6 @@ connection.on('ready', function () {
         function (q) {
             q.bind('order-exchange', 'order.create');
             q.subscribe(function (message, headers, deliveryInfo, messageObject) {
-                console.log(message);
                 var order = {
                     consignor: message.user_mobile,
                     created_time: message.order_time,
@@ -46,11 +45,10 @@ connection.on('ready', function () {
                         return order;
                     })
                     .then(function (order) {
-                        console.log(order);
                         return orderService.save(order);
                     })
-                    .then(function (order) {
-                        jpush(order.consignor, '您有一笔新的运单，等待发送。');
+                    .then(function (d) {
+                        jpush.pushConsignor(order.consignor, '您有一笔新的运单，等待发送。');
                     })
                     .fail(function (err) {
                         console.log(err);
