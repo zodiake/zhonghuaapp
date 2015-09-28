@@ -46,15 +46,15 @@ router.use(function (req, res, next) {
 var usrCall = function (role) {
     return function (req, res, next) {
         var pageable = {
-            page: req.query.page - 1 || 0,
-            size: req.query.size || 15
-        };
-        var option = {
-            name: req.query.mobile,
-            activate: req.query.activate,
-            authority: role
-        };
-        var ceOrCr = role === userAuthority.consignee;
+                page: req.query.page - 1 || 0,
+                size: req.query.size || 15
+            },
+            option = {
+                name: req.query.mobile,
+                activate: req.query.activate,
+                authority: role
+            },
+            ceOrCr = role === userAuthority.consignee;
         q.all([userService.findByOption(option, pageable, ceOrCr), userService.countByOption(option, pageable, ceOrCr)])
             .then(function (result) {
                 res.json({
@@ -77,9 +77,9 @@ router.get('/consignee', usrCall(userAuthority.consignee));
 
 router.put('/user/state', function (req, res, next) {
     var state = req.body.state,
-        userId = req.body.userId;
+        userId = req.body.userId,
+        err = new Error('state not exist');
     if (state !== 0 && state !== 1) {
-        var err = new Error('state not exist');
         return next(err);
     }
 
@@ -252,16 +252,16 @@ router.put('/orders/:id', function (req, res, next) {
         destination = req.body.destination,
         etd = req.body.etd,
         quantity = req.body.quantity,
-        user = req.user;
-    var order = {
-        category: category,
-        cargoo_name: cargoo_name,
-        origin: origin,
-        destination: destination,
-        etd: etd,
-        quantity: quantity,
-        company_name: company_name
-    };
+        user = req.user,
+        order = {
+            category: category,
+            cargoo_name: cargoo_name,
+            origin: origin,
+            destination: destination,
+            etd: etd,
+            quantity: quantity,
+            company_name: company_name
+        };
 
     orderService
         .update(order, orderId, user)

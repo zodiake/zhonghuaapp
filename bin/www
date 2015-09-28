@@ -7,7 +7,10 @@
 var app = require('../app');
 var debug = require('debug')('zhonghuaApp:server');
 var http = require('http');
-var socketImport=require('../routes/socketImport');
+var socketImport = require('../routes/socketImport');
+
+var cluster = require('cluster');
+var cpuCount = require('os').cpus().length;
 
 /**
  * Get port from environment and store in Express.
@@ -19,90 +22,91 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
+if (cluster.isMaster) {
+    for (var i = 0; i < cpuCount; i += 1) {
+        cluster.fork();
+    }
+} else {
+    var server = http.createServer(app);
+    var sio = require('socket.io')(server);
+    var nsp = sio.of('/upload');
 
-var server = http.createServer(app);
-var sio = require('socket.io')(server);
-var nsp=sio.of('/upload');
+    nsp.on('connection', function (socket) {
+        socket.on('join', function (data) {
+            socket.join(data.room);
+        });
 
-nsp.on('connection', function (socket) {
-  socket.on('join',function(data){
-    socket.join(data.room);
-  });
+        socket.on('begin', function (data) {
+            socketImport(nsp, data.file, data.room);
+        });
+    });
+    /**
+     * Listen on provided port, on all network interfaces.
+     */
 
-  socket.on('begin',function(data){
-    socketImport(nsp,data.file,data.room);
-  });
-});
-/**
- * Listen on provided port, on all network interfaces.
- */
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+    /**
+     * Normalize a port into a number, string, or false.
+     */
 
-/**
- * Normalize a port into a number, string, or false.
- */
+    function normalizePort(val) {
+        var port = parseInt(val, 10);
 
-function normalizePort(val) {
-  var port = parseInt(val, 10);
+        if (isNaN(port)) {
+            // named pipe
+            return val;
+        }
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+        if (port >= 0) {
+            // port number
+            return port;
+        }
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+        return false;
+    }
 
-  return false;
-}
+    /**
+     * Event listener for HTTP server "error" event.
+     */
 
-/**
- * Event listener for HTTP server "error" event.
- */
+    function onError(error) {
+        if (error.syscall !== 'listen') {
+            throw error;
+        }
 
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+        var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+        // handle specific listen errors with friendly messages
+        switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+        }
+    }
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
+    /**
+     * Event listener for HTTP server "listening" event.
+     */
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+    function onListening() {
+        var addr = server.address();
+        var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+        debug('Listening on ' + bind);
+    }
 }
 
 exports = module.exports = server;
 // delegates use() function
-exports.use = function() {
-  app.use.apply(app, arguments);
+exports.use = function () {
+    app.use.apply(app, arguments);
 };
