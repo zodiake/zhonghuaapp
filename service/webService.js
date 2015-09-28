@@ -52,6 +52,12 @@ var service = {
             }
         });
         return defer.promise;
+    },
+    sendSms: function (mobile, content) {
+        request.post('http://192.168.1.100:8080/t/test').form({
+            mobile: mobile,
+            smsContent: content
+        });
     }
 };
 

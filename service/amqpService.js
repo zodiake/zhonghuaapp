@@ -7,10 +7,15 @@ var orderStateService = require('../service/orderStateService');
 var stateType = require('../stateType');
 var jpush = require('../service/jpush');
 var orderState = require('../orderState');
+var webService = require('./webService');
 
 var connection = amqp.createConnection({
     url: 'amqp://guest:guest@localhost:5672/test'
 });
+
+var sendSms = function (mobile, content) {
+    webService.sendSms(mobile, content);
+};
 
 connection.on('ready', function () {
     /*-----------------orderCreate queue----------------------------*/
@@ -48,6 +53,7 @@ connection.on('ready', function () {
                         return orderService.save(order);
                     })
                     .then(function (d) {
+                        sendSms(order.consignor, '［油运宝］您有一笔新的运单，等待发送。App下载地址:www.allpetro.cn');
                         jpush.pushConsignor(order.consignor, '您有一笔新的运单，等待发送。');
                     })
                     .fail(function (err) {

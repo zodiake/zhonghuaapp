@@ -12,6 +12,7 @@ var genderType = require('../gender');
 var crypto = require('crypto');
 var multer = require('multer');
 var path = require('path');
+var webService = require('../webService');
 
 var fileMulter = multer({
     dest: './uploads/',
@@ -64,9 +65,9 @@ router.get('/captcha', function (req, res, next) {
             .countByMobile(mobile)
             .then(function (data) {
                 if (data[0].usrCount === 0) {
-                    //todo send short message
-                    //send sms
-                    user_mobile[mobile] = 1111; //getRandomInt(1000, 9999);
+                    var captcha = getRandomInt(1000, 9999);
+                    webService.sendSms(mobile, captcha);
+                    user_mobile[mobile] = captcha;
                     res.json({
                         status: 'success',
                     });
@@ -78,7 +79,9 @@ router.get('/captcha', function (req, res, next) {
                 }
             });
     } else if (type == 'forget') {
-        forget[mobile] = 1111;
+        var captcha = getRandomInt(1000, 9999);
+        webService.sendSms(mobile, captcha);
+        forget[mobile] = captcha;
         res.json({
             status: 'success'
         });

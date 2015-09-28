@@ -7,6 +7,7 @@ var orderState = require('../orderState');
 var squel = require('squel');
 var q = require('q');
 var jpush = require('../service/jpush');
+var webService = require('./webService');
 
 var service = {
     findOne: function (id) {
@@ -220,10 +221,12 @@ var service = {
                     .findOne(order.id)
                     .then(function (data) {
                         if (data[0].current_state === orderState.confirm) {
+                            webService.sendSms(data[0].consignee, '［油运宝］您有一笔新的运单。 App下载地址: www.allpetro.cn');
                             jpush.pushConsignee(data[0].consignee, '您有一笔新的运单');
                         } else if (data[0].current_state === orderState.refuse) {
                             jpush.pushConsignor(data[0].consignor, '您有一笔运单，已被司机拒绝');
                         } else if (data[0].current_state === orderState.transport) {
+                            webService.sendSms(data[0].consignee, '［油运宝］您有一笔运单已到货，请查收。App下载地址:www.allpetro.cn ');
                             jpush.pushConsignor(data[0].consignor, '您有一笔运单，已被司机接收，正在运送中');
                         } else if (data[0].current_state === orderState.arrive) {
                             jpush.pushConsignor(data[0].consignor, '您有一笔运单已到货，请查收');
