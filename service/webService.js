@@ -54,9 +54,9 @@ var service = {
         return defer.promise;
     },
     sendSms: function (mobile, content) {
-        request.post('http://192.168.1.100:8080/t/test').form({
+        request.post('http://192.168.1.100:8080/t/test1').form({
             mobile: mobile,
-            smsContent: content
+            smscontent: content
         });
     }
 };

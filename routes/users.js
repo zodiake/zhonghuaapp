@@ -12,7 +12,7 @@ var genderType = require('../gender');
 var crypto = require('crypto');
 var multer = require('multer');
 var path = require('path');
-var webService = require('../webService');
+var webService = require('../service/webService');
 
 var fileMulter = multer({
     dest: './uploads/',
