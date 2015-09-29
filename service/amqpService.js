@@ -36,7 +36,6 @@ connection.on('ready', function () {
                     cargoo_name: message.cargoo_name,
                     destination: message.destination,
                     origin: message.origin,
-                    etd: message.eta,
                     quantity: message.quantity,
                     type: message.type,
                     app_or_out: 0,

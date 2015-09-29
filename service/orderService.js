@@ -168,9 +168,10 @@ var service = {
     save: function (order) {
         var sql = 'insert into orders set ?';
         if (order.current_state === orderState.confirm) {
+            webService.sendSms(data[0].consignee, '［油运宝］您有一笔新的运单。 App下载地址: www.allpetro.cn');
             jpush.pushConsignee(order.consignee, '您有一笔新的运单');
         }
-        return pool.query(sql, order);
+        return pool.insert(sql, order);
     },
     countAll: function () {
         var sql = 'select count(*) as countNum from orders';
@@ -226,9 +227,9 @@ var service = {
                         } else if (data[0].current_state === orderState.refuse) {
                             jpush.pushConsignor(data[0].consignor, '您有一笔运单，已被司机拒绝');
                         } else if (data[0].current_state === orderState.transport) {
-                            webService.sendSms(data[0].consignee, '［油运宝］您有一笔运单已到货，请查收。App下载地址:www.allpetro.cn ');
                             jpush.pushConsignor(data[0].consignor, '您有一笔运单，已被司机接收，正在运送中');
                         } else if (data[0].current_state === orderState.arrive) {
+                            webService.sendSms(data[0].consignor, '［油运宝］您有一笔运单已到货，请查收。App下载地址:www.allpetro.cn ');
                             jpush.pushConsignor(data[0].consignor, '您有一笔运单已到货，请查收');
                         }
                         return row;
