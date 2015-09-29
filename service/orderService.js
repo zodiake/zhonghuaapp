@@ -168,7 +168,7 @@ var service = {
     save: function (order) {
         var sql = 'insert into orders set ?';
         if (order.current_state === orderState.confirm) {
-            webService.sendSms(data[0].consignee, '［油运宝］您有一笔新的运单。 App下载地址: www.allpetro.cn');
+            webService.sendSms(order.consignee, '［油运宝］您有一笔新的运单。 App下载地址: www.allpetro.cn');
             jpush.pushConsignee(order.consignee, '您有一笔新的运单');
         }
         return pool.insert(sql, order);
