@@ -13,38 +13,31 @@ router.get('/login.html', function (req, res) {
     res.render('login');
 });
 
-router.get('/version/consignee', function (req, res, next) {
-    versionService
-        .findConsigneeVersion()
-        .then(function (data) {
-            res.json({
-                status: 'success',
-                data: data[0]
+function findVersion(id) {
+    return function (req, res, next) {
+        versionService
+            .findOne(id)
+            .then(function (data) {
+                res.json({
+                    status: 'success',
+                    data: data[0]
+                });
+            })
+            .catch(function (err) {
+                next(err);
+            })
+            .fail(function (err) {
+                next(err);
             });
-        })
-        .catch(function (err) {
-            next(err);
-        })
-        .fail(function (err) {
-            next(err);
-        });
-});
+    }
+}
 
-router.get('/version/consignor', function (req, res, next) {
-    versionService
-        .findConsignorVersion()
-        .then(function (data) {
-            res.json({
-                status: 'success',
-                data: data[0]
-            });
-        })
-        .catch(function (err) {
-            next(err);
-        })
-        .fail(function (err) {
-            next(err);
-        });
-});
+router.get('/android/version/consignee', findVersion(1));
+
+router.get('/android/version/consignor', findVersion(2));
+
+router.get('/ios/version/consignor', findVersion(3));
+
+router.get('/ios/version/consignee', findVersion(4));
 
 module.exports = router;
