@@ -504,7 +504,7 @@ router.get('/suggestion/:id', function (req, res, next) {
 router.post('/jpush', function (req, res, next) {
     var type = req.body.type,
         content = req.body.content;
-    jpush(type, content, function (err) {
+    jpush.pushTag(type, content, function (err) {
         if (err) {
             var error = new Error('send fail');
             return next(error);

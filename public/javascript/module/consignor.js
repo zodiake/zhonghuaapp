@@ -1,7 +1,7 @@
 var consignor = angular.module('Consignor', []);
 
-consignor.service('ConsignorService', ['$http', function($http) {
-    this.findAll = function(option) {
+consignor.service('ConsignorService', ['$http', function ($http) {
+    this.findAll = function (option) {
         return $http.get('/admin/consignor', {
             params: option
         });
@@ -18,7 +18,7 @@ consignor.service('ConsignorService', ['$http', function($http) {
 consignor.controller('ConsignorController', ['$scope',
     'ConsignorService',
     '$modal',
-    function($scope, ConsignorService,$modal) {
+    function ($scope, ConsignorService, $modal) {
         $scope.option = {};
         $scope.currentPage = 1;
         $scope.size = 15;
@@ -26,7 +26,7 @@ consignor.controller('ConsignorController', ['$scope',
         function init(option) {
             ConsignorService
                 .findAll(option)
-                .success(function(data) {
+                .success(function (data) {
                     console.log(data);
                     if (data.status == 'success') {
                         $scope.items = data.data.data;
@@ -35,13 +35,14 @@ consignor.controller('ConsignorController', ['$scope',
 
                     }
                 })
-                .error(function(err) {
+                .error(function (err) {
 
                 });
         }
+
         init();
 
-        $scope.search = function() {
+        $scope.search = function () {
             init({
                 page: $scope.currentPage,
                 size: $scope.size,
@@ -49,7 +50,7 @@ consignor.controller('ConsignorController', ['$scope',
                 activate: $scope.option.activate
             });
         };
-         $scope.changeState = function (item) {
+        $scope.changeState = function (item) {
             var modalInstance = $modal.open({
                 animation: $scope.animationsEnabled,
                 templateUrl: 'ConsignorModal.html',
@@ -63,7 +64,7 @@ consignor.controller('ConsignorController', ['$scope',
         };
     }
 ]);
-   consignor.controller('ConsignorModalCtrl', [
+consignor.controller('ConsignorModalCtrl', [
     '$scope',
     '$modalInstance',
     'item',

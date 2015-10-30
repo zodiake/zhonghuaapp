@@ -4,7 +4,7 @@
             <div class="form-group">
                 <label class="col-sm-1 control-label">推送对象：</label>
                 <div class="col-sm-2">
-                    <select name='type' ng-model="push.type">
+                    <select name='type' ng-model="message.type">
                         <option value='consignee'>司机</option>
                         <option value='consignor'>货主</option>
                     </select>
@@ -13,8 +13,9 @@
             <div class="form-group">
                 <label class="col-sm-1 control-label">内容：</label>
                 <div class="col-sm-4">
-                    <textarea ng-model="push.content" name="content" required></textarea>
-                    <span ng-show="pushForm.content.$error.required" class="error">empty</span>
+                    <textarea ng-model="message.content" name="content" required ng-maxLength=58></textarea>
+                    <span ng-show="pushForm.content.$error.required" class="error">请输入内容</span>
+                    <span ng-show="pushForm.content.$error.maxlength" class="error">最多58个字</span>
                 </div>
             </div>
             <div class="col-sm-2 text-right">
