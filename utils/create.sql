@@ -127,7 +127,7 @@ create table vehicle(
 
 create table scroll_image(
     id int auto_increment,
-    image_url char(50),
+    image_url char(52),
     image_href varchar(20),
     updated_time timestamp,
     primary key(id)
@@ -149,10 +149,8 @@ create table question(
 )CHARACTER set utf8;
 
 create table app_version(
-    id int auto_increment,
-    version double,
-    apple varchar(100),
-    android varchar(100),
+	id int auto_increment,
+    version varchar(10),
     primary key(id)
 )CHARACTER set utf8;
 

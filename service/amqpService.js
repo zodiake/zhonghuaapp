@@ -13,8 +13,8 @@ var connection = amqp.createConnection({
     url: 'amqp://guest:guest@localhost:5672/test'
 });
 
-var sendSms = function (mobile, content) {
-    webService.sendSms(mobile, content);
+var sendSms = function (mobile, content, code) {
+    webService.sendSms(mobile, content, code);
 };
 
 connection.on('ready', function () {
@@ -52,7 +52,7 @@ connection.on('ready', function () {
                         return orderService.save(order);
                     })
                     .then(function (d) {
-                        sendSms(order.consignor, '［油运宝］您有一笔新的运单，等待发送。App下载地址:www.allpetro.cn');
+                        sendSms(order.consignor, '［油运宝］您有一笔新的运单，等待发送', 898);
                         jpush.pushConsignor(order.consignor, '您有一笔新的运单，等待发送。');
                     })
                     .fail(function (err) {

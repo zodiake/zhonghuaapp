@@ -36,18 +36,18 @@ var service = {
     },
     findByUsrAndState: function (user, state, page) {
         var sql = squel.select()
-            .from('orders')
-            .left_join('cargoo_name', null, 'cargoo_name.id=orders.cargoo_name')
-            .field('orders.id', 'id')
-            .field('orders.company_name', 'company_name')
-            .field('orders.order_number', 'order_number')
-            .field('orders.license', 'license')
-            .field('orders.consignee', 'mobile')
-            .field('orders.consignee_name', 'consignee_name')
-            .field('cargoo_name.name', 'cargoo_name')
-            .field('orders.current_state', 'current_state')
-            .field('orders.created_time', 'created_time')
-            .field('orders.type', 'type'),
+                .from('orders')
+                .left_join('cargoo_name', null, 'cargoo_name.id=orders.cargoo_name')
+                .field('orders.id', 'id')
+                .field('orders.company_name', 'company_name')
+                .field('orders.order_number', 'order_number')
+                .field('orders.license', 'license')
+                .field('orders.consignee', 'mobile')
+                .field('orders.consignee_name', 'consignee_name')
+                .field('cargoo_name.name', 'cargoo_name')
+                .field('orders.current_state', 'current_state')
+                .field('orders.created_time', 'created_time')
+                .field('orders.type', 'type'),
             stateFilter = squel.expr(),
             userFilter = squel.expr();
         if (state.length > 0) {
@@ -168,7 +168,7 @@ var service = {
     save: function (order) {
         var sql = 'insert into orders set ?';
         if (order.current_state === orderState.confirm) {
-            webService.sendSms(order.consignee, '［油运宝］您有一笔新的运单。 App下载地址: www.allpetro.cn');
+            webService.sendSms(order.consignee, '［油运宝］您有一笔新的运单。', 898);
             jpush.pushConsignee(order.consignee, '您有一笔新的运单');
         }
         return pool.insert(sql, order);
@@ -222,14 +222,14 @@ var service = {
                     .findOne(order.id)
                     .then(function (data) {
                         if (data[0].current_state === orderState.confirm) {
-                            webService.sendSms(data[0].consignee, '［油运宝］您有一笔新的运单。 App下载地址: www.allpetro.cn');
+                            webService.sendSms(data[0].consignee, '［油运宝］您有一笔新的运单。', 896);
                             jpush.pushConsignee(data[0].consignee, '您有一笔新的运单');
                         } else if (data[0].current_state === orderState.refuse) {
                             jpush.pushConsignor(data[0].consignor, '您有一笔运单，已被司机拒绝');
                         } else if (data[0].current_state === orderState.transport) {
                             jpush.pushConsignor(data[0].consignor, '您有一笔运单，已被司机接收，正在运送中');
                         } else if (data[0].current_state === orderState.arrive) {
-                            webService.sendSms(data[0].consignor, '［油运宝］您有一笔运单已到货，请查收。App下载地址:www.allpetro.cn ');
+                            webService.sendSms(data[0].consignor, '［油运宝］您有一笔运单已到货，请查收。', 897);
                             jpush.pushConsignor(data[0].consignor, '您有一笔运单已到货，请查收');
                         }
                         return row;
