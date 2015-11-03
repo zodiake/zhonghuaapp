@@ -44,16 +44,25 @@ connection.on('ready', function () {
                 categoryService
                     .findByName(order.cargoo_name)
                     .then(function (data) {
-                        order.cargoo_name = data.id;
-                        order.category = data.parent_id;
-                        return order;
+                        if (data != null) {
+                            order.cargoo_name = data.id;
+                            order.category = data.parent_id;
+                            return order;
+                        } else {
+                            return null;
+                        }
                     })
                     .then(function (order) {
-                        return orderService.save(order);
+                        if (order != null)
+                            return orderService.save(order);
+                        else
+                            return null;
                     })
                     .then(function (d) {
-                        sendSms(order.consignor, '［油运宝］您有一笔新的运单，等待发送', 898);
-                        jpush.pushConsignor(order.consignor, '您有一笔新的运单，等待发送。');
+                        if (d != null) {
+                            sendSms(order.consignor, '［油运宝］您有一笔新的运单，等待发送', 898);
+                            jpush.pushConsignor(order.consignor, '您有一笔新的运单，等待发送。');
+                        }
                     })
                     .fail(function (err) {
                         console.log(err);
@@ -81,19 +90,24 @@ connection.on('ready', function () {
                 cargoo_name: message.cargoo_name,
                 destination: message.destination,
                 origin: message.origin,
-                etd: message.eta,
                 quantity: message.quantity,
                 type: message.type,
             };
             categoryService
                 .findByName(order.cargoo_name)
                 .then(function (data) {
-                    order.cargoo_name = data.id;
-                    order.category = data.parent_id;
-                    return order;
+                    if (data == null) {
+                        return null;
+                    } else {
+                        order.cargoo_name = data.id;
+                        order.category = data.parent_id;
+                        return order;
+                    }
                 })
                 .then(function (order) {
-                    orderService.updateByOrderNumber(order.order_number, order);
+                    if (order != null) {
+                        orderService.updateByOrderNumber(order.order_number, order);
+                    }
                 })
                 .fail(function (err) {
                     console.log(err);
@@ -130,7 +144,6 @@ connection.on('ready', function () {
             orderService
                 .findByOrderNumber(message.order_id)
                 .then(function (data) {
-                    message.order_id = data[0].order_number;
                     var result = {
                         order_id: data[0].id,
                         state_name: stateType[message.order_state],
@@ -140,7 +153,7 @@ connection.on('ready', function () {
                         return orderStateService
                             .save(result)
                             .then(function () {
-                                orderService.updateWeightByOrderNumber(data[0].actual_weight);
+                                orderService.updateWeightByOrderNumber(message.actual_weight, message.order_id);
                             });
                     }
                     return orderStateService.save(result);

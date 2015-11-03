@@ -67,7 +67,7 @@ router.get('/captcha', function (req, res, next) {
                 if (data[0].usrCount === 0) {
                     var captcha = getRandomInt(1000, 9999);
                     webService.sendSms(mobile, captcha, 895);
-                    user_mobile[mobile] = 1111;
+                    user_mobile[mobile] = captcha;
                     res.json({
                         status: 'success'
                     });
@@ -98,9 +98,9 @@ router.post('/forget', function (req, res, next) {
         error;
     if (captcha == forget[mobile]) {
         userService.updatePwdByName({
-            name: mobile,
-            password: cryptoPwd(password)
-        })
+                name: mobile,
+                password: cryptoPwd(password)
+            })
             .then(function (data) {
                 delete forget[mobile];
                 res.json({
