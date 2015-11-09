@@ -8,6 +8,11 @@ var pool = require('../utils/pool');
 
 var orderService = require('../service/orderService');
 
+router.get('/template', function (req, res, next) {
+    var path = __dirname + '/template.csv';
+    res.download(path);
+});
+
 router.get('/orders', function (req, res) {
     var stringfier = csv.stringify({
         columns: ['司机', '货主', '运单号', '司机姓名', '公司名称', '货物名称', '重量', '生成日期', '状态'],
