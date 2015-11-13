@@ -160,7 +160,7 @@ router.put('/scrollImages/:id', function (req, res, next) {
     scrollImageService
         .updateHref(id, item)
         .then(function (data) {
-            if (data.changedRows == 1) {
+            if (data.changedRows === 1) {
                 res.json({
                     status: 'success',
                     data: item
@@ -185,10 +185,10 @@ router.get('/orders', function (req, res, next) {
             var array = time.split('T')[0].split('-');
             array[2] = Number(array[2]);
             return array.join('-');
-        } else {
-            return null;
         }
+        return null;
     }
+
     var beginTime = convertTime(req.query.beginTime || null);
     var endTime = convertTime(req.query.endTime || null);
 
@@ -199,6 +199,15 @@ router.get('/orders', function (req, res, next) {
         state = req.query.state,
         type = req.query.type,
         batch = req.query.batch;
+
+    if (req.user.name === 'admin1') {
+        type = '5681';
+    } else if (req.user.name === 'admin2') {
+        type = '5591';
+    } else if (req.user.name === 'admin3') {
+        type = '5641';
+    }
+
     var option = {
         consignor: consignor,
         beginTime: beginTime,
@@ -444,10 +453,10 @@ router.get('/suggestion', function (req, res, next) {
             var array = time.split('T')[0].split('-');
             array[2] = Number(array[2]);
             return array.join('-');
-        } else {
-            return null;
         }
+        return null;
     }
+
     var beginTime = convertTime(req.query.beginTime || null);
     var endTime = convertTime(req.query.endTime || null);
 
@@ -484,7 +493,7 @@ router.get('/suggestion/:id', function (req, res, next) {
         .then(function (data) {
             if (data.length > 0) {
                 suggestionService.updateState(1, id);
-                return data[0]
+                return data[0];
             } else {
                 var error = new Error('not found')
                 return next(error);
@@ -530,19 +539,6 @@ router.get('/tabData', function (req, res) {
 
 /*------------------------begin question-------------------------------*/
 router.get('/questions', function (req, res, next) {
-    var page = req.params.page || 1,
-        size = req.params.size || 15;
-    questionService
-        .findAll()
-        .then(function (data) {
-
-        })
-        .fail(function (err) {
-            next(err);
-        })
-        .catch(function (err) {
-            next(err);
-        });
 });
 
 router.post('/questions', function (req, res, next) {

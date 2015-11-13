@@ -134,7 +134,7 @@ var service = {
         if (option.batch) {
             sql.where("is_batch=1");
         } else {
-            sql.where("is_batch=0")
+            sql.where("is_batch=0");
         }
         if (option.type) {
             sql.where("type='" + option.type + "'");
