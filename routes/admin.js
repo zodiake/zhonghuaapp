@@ -100,7 +100,6 @@ router.put('/user/state', function (req, res, next) {
 
 router.post('/csv', fileMulter, function (req, res, next) {
     var file = req.files.file;
-    console.log(file.mimetype);
     if (file.mimetype !== 'text/csv' && file.mimetype !== 'application/vnd.ms-excel') {
         var err = new Error('please upload csv file');
         return next(err);
@@ -184,7 +183,7 @@ router.get('/orders', function (req, res, next) {
     function convertTime(time) {
         if (time !== null) {
             var array = time.split('T')[0].split('-');
-            array[2] = Number(array[2]) + 1;
+            array[2] = Number(array[2]);
             return array.join('-');
         } else {
             return null;
@@ -197,12 +196,16 @@ router.get('/orders', function (req, res, next) {
         size = req.query.size || 15,
         consignor = req.query.consignor,
         orderNumber = req.query.orderNumber,
-        state = req.query.state;
+        state = req.query.state,
+        type = req.query.type,
+        batch = req.query.batch;
     var option = {
         consignor: consignor,
         beginTime: beginTime,
         endTime: endTime,
-        order_number: orderNumber
+        order_number: orderNumber,
+        batch: batch,
+        type: type
     };
 
     if (state !== undefined && orderState[state] !== undefined) {
@@ -439,7 +442,7 @@ router.get('/suggestion', function (req, res, next) {
     function convertTime(time) {
         if (time !== null) {
             var array = time.split('T')[0].split('-');
-            array[2] = Number(array[2]) + 1;
+            array[2] = Number(array[2]);
             return array.join('-');
         } else {
             return null;

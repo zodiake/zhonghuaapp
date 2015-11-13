@@ -36,18 +36,18 @@ var service = {
     },
     findByUsrAndState: function (user, state, page) {
         var sql = squel.select()
-                .from('orders')
-                .left_join('cargoo_name', null, 'cargoo_name.id=orders.cargoo_name')
-                .field('orders.id', 'id')
-                .field('orders.company_name', 'company_name')
-                .field('orders.order_number', 'order_number')
-                .field('orders.license', 'license')
-                .field('orders.consignee', 'mobile')
-                .field('orders.consignee_name', 'consignee_name')
-                .field('cargoo_name.name', 'cargoo_name')
-                .field('orders.current_state', 'current_state')
-                .field('orders.created_time', 'created_time')
-                .field('orders.type', 'type'),
+            .from('orders')
+            .left_join('cargoo_name', null, 'cargoo_name.id=orders.cargoo_name')
+            .field('orders.id', 'id')
+            .field('orders.company_name', 'company_name')
+            .field('orders.order_number', 'order_number')
+            .field('orders.license', 'license')
+            .field('orders.consignee', 'mobile')
+            .field('orders.consignee_name', 'consignee_name')
+            .field('cargoo_name.name', 'cargoo_name')
+            .field('orders.current_state', 'current_state')
+            .field('orders.created_time', 'created_time')
+            .field('orders.type', 'type'),
             stateFilter = squel.expr(),
             userFilter = squel.expr();
         if (state.length > 0) {
@@ -130,6 +130,14 @@ var service = {
         }
         if (option.order_number) {
             sql.where("order_number ='" + option.order_number + "'");
+        }
+        if (option.batch) {
+            sql.where("is_batch=1");
+        } else {
+            sql.where("is_batch=0")
+        }
+        if (option.type) {
+            sql.where("type='" + option.type + "'");
         }
         return sql;
     },

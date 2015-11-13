@@ -15,6 +15,7 @@ importOrder.controller('ImportController', [
     function ($scope, socketio, importService, $http, $window) {
         $scope.fails = [];
         $scope.alerts = [];
+        $scope.imported = false;
 
         socketio.emit('join', {
             room: $window.localStorage.userName
@@ -71,10 +72,18 @@ importOrder.controller('ImportController', [
                 });
                 return;
             }
+            if ($scope.imported) {
+                $scope.alerts.push({
+                    type: 'warning',
+                    msg: '请上传文件'
+                });
+                return;
+            }
             socketio.emit('begin', {
                 file: $scope.file,
                 room: $window.localStorage.userName
             });
+            $scope.imported = true;
         };
 
         $scope.closeAlert = function (index) {

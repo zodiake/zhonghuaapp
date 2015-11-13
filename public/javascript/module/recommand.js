@@ -42,12 +42,21 @@ recommand.controller('RecommandController', [
         init();
 
         $scope.search = function () {
+            var begin = $scope.option.beginTime;
+            $scope.canDownload = true;
+            if (begin) {
+                var beginTime = $scope.beginTime = begin.getFullYear() + '-' + (begin.getMonth() + 1) + '-' + begin.getDate();
+            }
+            var end = $scope.option.endTime;
+            if (end) {
+                var endTime = $scope.endTime = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate();
+            }
             init({
                 page: $scope.currentPage,
                 size: $scope.size,
                 state: $scope.option.state,
-                beginTime: $scope.option.beginTime,
-                endTime: $scope.option.endTime
+                beginTime: beginTime,
+                endTime: endTime
             });
         };
 }]);

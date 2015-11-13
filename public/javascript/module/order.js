@@ -51,7 +51,6 @@ order.controller('OrderController', ['$scope', 'OrderService',
             OrderService
                 .findAll(option)
                 .then(function (data) {
-                    console.log(data)
                     if (data.data.status == 'success') {
                         $scope.items = data.data.data.data;
                         $scope.total = data.data.data.total;
@@ -94,7 +93,9 @@ order.controller('OrderController', ['$scope', 'OrderService',
                 beginTime: beginTime,
                 endTime: endTime,
                 orderNumber: $scope.option.orderNumber,
-                consignor: $scope.option.consignor
+                consignor: $scope.option.consignor,
+                batch: $scope.option.batch,
+                type: $scope.option.type
             };
             $window.localStorage.orderList = JSON.stringify(option);
             init(option);

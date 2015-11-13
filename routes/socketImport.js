@@ -48,7 +48,8 @@ function importBegin(nsp, filePath, room) {
                 etd: data[8],
                 quantity: Number(data[9]),
                 company_name: data[10],
-                created_Time: new Date()
+                created_Time: new Date(),
+                type: data[11]
             };
             result.row = parser.count;
             return result;
@@ -85,6 +86,9 @@ function importBegin(nsp, filePath, room) {
         }
 
         function requiredValidate(data) {
+            if (!data.type) {
+                return socketEmitFail(data, 'type can not be null');
+            }
             if (!data.license) {
                 return socketEmitFail(data, 'license can not be null');
             }
@@ -158,6 +162,7 @@ function importBegin(nsp, filePath, room) {
                 .then(function (data) {
                     data.order_number = crypto.randomBytes(6).toString('hex');
                     data.current_state = orderState.dispatch;
+                    data.is_batch = 1;
                     return data;
                 })
                 .then(function (data) {
