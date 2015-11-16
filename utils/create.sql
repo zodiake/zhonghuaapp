@@ -154,6 +154,7 @@ create table app_version(
     primary key(id)
 )CHARACTER set utf8;
 
+alter table orders add column is_batch smallint default 0;
 /*test usr*/
 insert into usr(id,name,password,authority,activate) values(1,'tom','202cb962ac59075b964b07152d234b70','ROLE_CONSIGNEE',1);
 insert into usr(id,name,password,authority,activate) values(2,'peter','202cb962ac59075b964b07152d234b70','ROLE_CONSIGNOR',1);

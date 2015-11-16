@@ -35,13 +35,13 @@ order.service('CategoryService', ['$http', function ($http) {
 order.service('OrderGisService', ['$http', function ($http) {
     this.findByOrderId = function (id) {
         return $http.get('/orders/' + id + '/geo');
-    }
+    };
 }]);
 
 order.controller('OrderController', ['$scope', 'OrderService',
     '$stateParams', '$window',
     function ($scope, OrderService, $stateParams, $window) {
-
+        $scope.typeShow = $window.localStorage.userName === 'admin';
         $scope.size = 15;
         $scope.canDownload = false;
 
@@ -51,16 +51,16 @@ order.controller('OrderController', ['$scope', 'OrderService',
             OrderService
                 .findAll(option)
                 .then(function (data) {
-                    if (data.data.status == 'success') {
+                    if (data.data.status === 'success') {
                         $scope.items = data.data.data.data;
                         $scope.total = data.data.data.total;
                     } else {
-
+                        alert('system error');
                     }
                 }).catch(function (err) {
-
-                });
+            });
         }
+
         if ($window.localStorage.orderList) {
             var opt = JSON.parse($window.localStorage.orderList);
             $scope.option = opt;
@@ -103,7 +103,7 @@ order.controller('OrderController', ['$scope', 'OrderService',
 
         $scope.export = function () {
             OrderService.export($scope.option);
-        }
+        };
 
     }
 ]);
@@ -130,6 +130,7 @@ order.controller('OrderDetailController', [
                     $scope.cargooNames = data.data.data;
                 });
         }
+
         init();
 
         $scope.changeState = function (category) {
