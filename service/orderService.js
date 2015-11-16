@@ -131,10 +131,10 @@ var service = {
         if (option.order_number) {
             sql.where("order_number ='" + option.order_number + "'");
         }
-        if (option.batch) {
+        if (option.batch === 'batch') {
             sql.where("is_batch=1");
-        } else {
-            sql.where("is_batch=0");
+        } else if (option.batch === 'mq') {
+            sql.where("app_or_not=1");
         }
         if (option.type) {
             sql.where("type='" + option.type + "'");
@@ -242,7 +242,7 @@ var service = {
                         }
                         return row;
                     });
-            })
+            });
     },
     update: function (order, id, user) {
         var sql = 'update orders set ? where id=? and consignor=?';
