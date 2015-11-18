@@ -134,7 +134,9 @@ var service = {
         if (option.batch === 'batch') {
             sql.where("is_batch=1");
         } else if (option.batch === 'mq') {
-            sql.where("app_or_not=1");
+            sql.where("app_or_out=0");
+        } else if (option.batch === 'app') {
+            sql.where("app_or_out=1");
         }
         if (option.type) {
             sql.where("type='" + option.type + "'");
