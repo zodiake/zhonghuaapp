@@ -200,12 +200,22 @@ router.get('/orders', function (req, res, next) {
         type = req.query.type,
         batch = req.query.batch;
 
-    if (req.user.name === 'admin1') {
+    if (req.user.name === 'admin5681') {
         type = '5681';
-    } else if (req.user.name === 'admin2') {
+    } else if (req.user.name === 'admin5591') {
         type = '5591';
-    } else if (req.user.name === 'admin3') {
+    } else if (req.user.name === 'admin5641') {
         type = '5641';
+    } else if (req.user.name === 'admin5001') {
+        type = '5001';
+    } else if (req.user.name === 'admin5002') {
+        type = '5002';
+    } else if (req.user.name === 'admin5003') {
+        type = '5003';
+    } else if (req.user.name === 'admin5004') {
+        type = '5004';
+    } else if (req.user.name === 'admin5005') {
+        type = '5005';
     }
 
     var option = {

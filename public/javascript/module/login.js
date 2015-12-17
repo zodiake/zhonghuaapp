@@ -13,7 +13,7 @@ login.service('LoginService', ['$http', function ($http) {
 login.service('TabService', ['$http', function ($http) {
     this.findAll = function () {
         return $http.get('/admin/tabData');
-    }
+    };
 }]);
 
 //all login controller
@@ -40,9 +40,9 @@ login.controller('LoginController', [
                     .error(function (err) {
                         alert(22);
                     });
-            }else{
-                $scope.loginForm.submitted=true;
+            } else {
+                $scope.loginForm.submitted = true;
             }
-        }
+        };
     }
 ]);
